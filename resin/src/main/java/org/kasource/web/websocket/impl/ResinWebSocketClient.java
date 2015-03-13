@@ -1,80 +1,117 @@
-package org.kasource.web.websocket.impl.jetty;
+package org.kasource.web.websocket.impl;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.Map;
 
-import org.eclipse.jetty.websocket.WebSocket;
+import org.apache.commons.io.IOUtils;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 
+import com.caucho.websocket.WebSocketContext;
+import com.caucho.websocket.WebSocketListener;
 
-public class JettyWebSocketClient implements WebSocket, WebSocket.OnBinaryMessage, WebSocket.OnTextMessage, WebSocketClient {
-
-    private WebSocketClientConfig clientConfig;
-    private Connection connection;
+public class ResinWebSocketClient implements WebSocketListener, WebSocketClient  {
+    private  WebSocketClientConfig clientConfig;
+  
+    private WebSocketContext context;
     private ProtocolHandler<String> textProtocolHandler;
     private ProtocolHandler<byte[]> binaryProtocolHandler;
     
-    public JettyWebSocketClient( WebSocketClientConfig clientConfig) {
-        this.clientConfig = clientConfig;
+    public ResinWebSocketClient(WebSocketClientConfig clientConfig) {
+       this.clientConfig = clientConfig;
+    }
+
+
+
+    @Override
+    public void onClose(WebSocketContext context) throws IOException {
+
+    }
+
+
+
+    @Override
+    public void onDisconnect(WebSocketContext context) throws IOException {
+        clientConfig.getManager().unregisterClient(this);
+    }
+
+
+
+    @Override
+    public void onReadBinary(WebSocketContext context, InputStream in) throws IOException {
+        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(in));
        
+
+    }
+
+
+
+    @Override
+    public void onReadText(WebSocketContext context, Reader reader) throws IOException {
+        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(reader));
+
+    }
+
+
+
+    @Override
+    public void onStart(WebSocketContext context) throws IOException {
+        this.context = context;
+        clientConfig.getManager().registerClient(this);
+    }
+
+
+
+    @Override
+    public void onTimeout(WebSocketContext context) throws IOException {
+      
+
     }
     
-    @Override
-    public void onMessage(String data) {
-        clientConfig.getManager().onWebSocketMessage(this, data);
+   
+    public void sendMessage(String message) throws IOException  {
+        BufferedWriter out = new BufferedWriter(context.startTextMessage());
+        out.append(message);
+        out.close();
     }
 
-    @Override
-    public void onMessage(byte[] data, int offset, int length) {
-        byte[] message = new byte[length];
-        System.arraycopy(message, 0, data, offset, length);
-        clientConfig.getManager().onWebSocketMessage(this, message);
-       
-        
+
+
+ 
+    public void sendBinaryMessage(byte[] message) throws IOException  {
+        BufferedOutputStream out = new BufferedOutputStream(context.startBinaryMessage());
+        out.write(message);
+        out.close();
     }
 
-    @Override
-    public void onClose(int closeCode, String message) {
-        clientConfig.getManager().unregisterClient(this);
-        
-    }
 
-    @Override
-    public void onOpen(Connection connection) {
-       this.connection = connection;
-       clientConfig.getManager().registerClient(this); 
-    }
-
-    /**
-     * @return the connection
-     */
-    public Connection getConnection() {
-        return connection;
-    }
 
     @Override
     public void sendMessageToSocket(String message) {
         try {
-            getConnection().sendMessage(message);
+            sendMessage(message);
         } catch (IOException e) {
-            
         }
         
     }
+
+
 
     @Override
     public void sendMessageToSocket(byte[] message) {
         try {
-            getConnection().sendMessage(message, 0, message.length);
+            sendBinaryMessage(message);
         } catch (IOException e) {
-           
         }
         
     }
 
-  
+   
 
     /**
      * @return the username

@@ -34,6 +34,7 @@ public class XmlWebSocketConfig implements WebSocketConfig {
     private WebSocketManagerRepositoryImpl managerRepository;
     private WebSocketChannelFactory channelFactory;
     private WebSocketListenerRegister listenerRegister;
+   
     public XmlWebSocketConfig(WebsocketXmlConfigRoot config, ServletContext servletContext) {
         this.config = config;
         initialize(servletContext);
@@ -71,7 +72,7 @@ public class XmlWebSocketConfig implements WebSocketConfig {
     private void loadServletConfigs(ClientIdGenerator idGenerator) {
         for(WebsocketXml websocket :config.getWebsocket()) {
             XmlWebSocketServletConfig servletConfig = new XmlWebSocketServletConfig(websocket, managerRepository, originWhitelist);
-            if(servletConfig.getClientIdGenerator() == null) {
+            if (!servletConfig.hasClientIdGenerator()) {
                 servletConfig.setClientIdGenerator(idGenerator);
             }
             servletConfigs.put(servletConfig.getServletName(), servletConfig);

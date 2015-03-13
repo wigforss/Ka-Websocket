@@ -1,5 +1,5 @@
 
-package org.kasource.web.websocket.impl.tomcat;
+package org.kasource.web.websocket.impl;
 
 
 
@@ -14,6 +14,7 @@ import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.security.AuthenticationException;
+import org.kasource.web.websocket.util.HttpRequestHeaderLookup;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +22,9 @@ import org.slf4j.LoggerFactory;
 
 
 
-public class TomcatWebsocketImpl extends WebSocketServlet {
+public class WebsocketServletImpl extends WebSocketServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger LOG = LoggerFactory.getLogger(TomcatWebsocketImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WebsocketServletImpl.class);
    
     private ServletConfigUtil configUtil; 
     private WebSocketServletConfig webSocketServletConfig;
@@ -72,15 +73,14 @@ public class TomcatWebsocketImpl extends WebSocketServlet {
                 throw e;
             }
         
-            String id = webSocketServletConfig.getClientIdGenerator().getId(request, manager);
-            WebSocketClientConfig clientConfig = new WebSocketClientConfig.Builder(manager)
+            
+            WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(request.getParameterMap(), 
+                                                                                                      new HttpRequestHeaderLookup(request))
                                                     .url(url)
-                                                    .clientId(id)
                                                     .username(username)
-                                                    .connectionParams(request.getParameterMap())
                                                     .subProtocol(subProtocol)
                                                     .build();
-            TomcatWebSocketClient client = new TomcatWebSocketClient(clientConfig);
+            Tomcat7WebSocketClient client = new Tomcat7WebSocketClient(clientConfig);
    
         
             if (outboundByteBufferSize != 0) {
@@ -89,7 +89,7 @@ public class TomcatWebsocketImpl extends WebSocketServlet {
             if (outboundCharBufferSize != 0) {
                 client.setOutboundCharBufferSize(outboundCharBufferSize);
             }
-            LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + id + " on " + url);
+            LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + clientConfig.getClientId() + " on " + url);
             return client;
         
     }
@@ -113,7 +113,7 @@ public class TomcatWebsocketImpl extends WebSocketServlet {
      */
     @Override
     protected boolean verifyOrigin(String origin) {
-        boolean validOrigin = webSocketServletConfig.isValidOrigin(origin);;
+        boolean validOrigin = webSocketServletConfig.isValidOrigin(origin);
         LOG.warn("Invalid origin: " + origin +" in connection attempt");
         return validOrigin;
         

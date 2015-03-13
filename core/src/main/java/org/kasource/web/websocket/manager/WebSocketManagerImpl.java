@@ -185,7 +185,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
     
     
     private void addClientForUser(WebSocketClient client) {
-        if(client.getUsername() != null) {
+        if (client.getUsername() != null) {
             Set<WebSocketClient> clientsForUser = clientsByUser.get(client.getUsername());
             if(clientsForUser == null) {
                 clientsForUser = new HashSet<WebSocketClient>();
@@ -197,7 +197,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
     
     @Override
     public String authenticate(HttpServletRequest request) throws AuthenticationException {
-        if(authenticationProvider != null) {
+        if (authenticationProvider != null) {
             try {
                 String username = authenticationProvider.authenticate(request);
                 fireAuthentication(username, request, null);
@@ -214,7 +214,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
     }
     
     private void fireAuthentication(String username, HttpServletRequest request, Throwable error) {
-        if(!webSocketClientListeners.isEmpty()) {
+        if (!webSocketClientListeners.isEmpty()) {
             for(ClientListener listener: webSocketClientListeners) {
                 listener.onAuthentication(username, request, error);
             }
@@ -237,7 +237,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
     }
 
     private void removeClientForUser(WebSocketClient client) {
-        if(client.getUsername() != null) {
+        if (client.getUsername() != null) {
             Set<WebSocketClient> clientsForUser = clientsByUser.get(client.getUsername());
             if(clientsForUser != null) {
                 clientsForUser.remove(client);
@@ -256,7 +256,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
     @Override
     public void onWebSocketMessage(WebSocketClient client, String message) {
        
-        if(!webSocketClientListeners.isEmpty()) {
+        if (!webSocketClientListeners.isEmpty()) {
             for(ClientListener listener: webSocketClientListeners) {
                 listener.onMessage(client, message, client.getTextProtocolHandler());
             }  
@@ -273,7 +273,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
     public void onWebSocketMessage(WebSocketClient client, byte[] message) {
       
        
-        if(!webSocketClientListeners.isEmpty()) {
+        if (!webSocketClientListeners.isEmpty()) {
             for(ClientListener listener: webSocketClientListeners) {
                 listener.onBinaryMessage(client, message, client.getBinaryProtocolHandler());
             }

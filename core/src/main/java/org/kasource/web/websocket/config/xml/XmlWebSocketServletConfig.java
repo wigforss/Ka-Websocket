@@ -2,7 +2,7 @@ package org.kasource.web.websocket.config.xml;
 
 import java.util.Set;
 
-
+import org.kasource.web.websocket.client.WebSocketClientBuilderFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.kasource.web.websocket.config.xml.jaxb.WebsocketXml;
@@ -44,11 +44,9 @@ public class XmlWebSocketServletConfig implements WebSocketServletConfig {
     }
 
     @Override
-    public ClientIdGenerator getClientIdGenerator() {
-        return clientIdGenerator;
+    public WebSocketClientBuilderFactory getClientBuilder(WebSocketManager manager) {
+        return new WebSocketClientBuilderFactory(manager, clientIdGenerator);
     }
-
-
 
     /**
      * @param clientIdGenerator the clientIdGenerator to set
@@ -83,6 +81,11 @@ public class XmlWebSocketServletConfig implements WebSocketServletConfig {
         }
         return true;
         
+    }
+    
+    @Override
+    public boolean hasClientIdGenerator() {
+        return clientIdGenerator != null;
     }
 
 }

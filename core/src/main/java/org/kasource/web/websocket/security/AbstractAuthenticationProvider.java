@@ -12,7 +12,7 @@ public abstract class AbstractAuthenticationProvider implements AuthenticationPr
     
     protected String getUsername(HttpServletRequest request) {
         String username = null;
-        if(headerBased) {
+        if (headerBased) {
             username = request.getHeader(usernameKey);
         } else {
             username = request.getParameter(usernameKey);
@@ -23,7 +23,7 @@ public abstract class AbstractAuthenticationProvider implements AuthenticationPr
     
     protected String getPassword(HttpServletRequest request) {
         String password = null;
-        if(headerBased) {
+        if (headerBased) {
             password = request.getHeader(passwordKey);
         } else {
             password = request.getParameter(passwordKey);

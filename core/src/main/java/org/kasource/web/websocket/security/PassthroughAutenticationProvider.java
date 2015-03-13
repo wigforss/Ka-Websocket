@@ -14,7 +14,7 @@ public class PassthroughAutenticationProvider extends AbstractAuthenticationProv
         String username = getUsername(request);
        
         if(username == null) {
-            throw new AuthenticationException("No username found. Request needs to include "+(isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username);
+            throw new AuthenticationException("No username found. Request needs to include " + (isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username);
         }
         return username;
     }

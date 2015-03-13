@@ -19,13 +19,13 @@ public class XmlClientIdGenerator {
     
     private ClientIdGenerator loadClientIdGenerator(ClientIdGeneratorXmlConfig generatorConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         
-        if(generatorConfig != null) {
+        if (generatorConfig != null) {
             Class<?> clazz = Class.forName(generatorConfig.getClazz());
             ClientIdGenerator generator = (ClientIdGenerator) clazz.newInstance();
-            if(generator instanceof AbstractClientIdGenerator) {
+            if (generator instanceof AbstractClientIdGenerator) {
                 AbstractClientIdGenerator abstractGenerator = (AbstractClientIdGenerator) generator;
-                abstractGenerator.setHeaderValue(generatorConfig.isHeaderValue());
-                if(generatorConfig.getIdKey() != null) {
+                abstractGenerator.setUseHeaderValue(generatorConfig.isHeaderValue());
+                if (generatorConfig.getIdKey() != null) {
                     abstractGenerator.setIdKey(generatorConfig.getIdKey());
                 }
                 

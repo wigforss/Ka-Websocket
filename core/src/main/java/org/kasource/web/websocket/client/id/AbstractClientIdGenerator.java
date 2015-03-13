@@ -1,14 +1,16 @@
 package org.kasource.web.websocket.client.id;
 
+import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
+
+import org.kasource.web.websocket.util.HeaderLookup;
 
 public abstract class AbstractClientIdGenerator implements ClientIdGenerator {
     private static final String DEFAULT_ID_KEY = "username";
     
     private String idKey = DEFAULT_ID_KEY;
-    private boolean headerValue;
+    private boolean useHeaderValue;
     
     
     /**
@@ -21,15 +23,21 @@ public abstract class AbstractClientIdGenerator implements ClientIdGenerator {
     /**
      * @param headerValue the headerValue to set
      */
-    public void setHeaderValue(boolean headerValue) {
-        this.headerValue = headerValue;
+    public void setUseHeaderValue(boolean useHeaderValue) {
+        this.useHeaderValue = useHeaderValue;
     }
     
-    protected String getIdValue(HttpServletRequest request) {
-        if(headerValue) {
-            return request.getHeader(idKey);
+    protected String getIdValue(Map<String, String[]> requestParameters, 
+                                HeaderLookup headerLookup) {
+        if (useHeaderValue) {
+            return headerLookup.getHeaderValue(idKey);
         } else {
-            return request.getParameter(idKey);
+            String[] values = requestParameters.get(idKey);
+            if (values != null && values.length > 0) {
+                return values[0];
+            } else {
+                return null;
+            }
         }
     }
     

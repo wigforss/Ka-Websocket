@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+        <groupId>org.kasource.websocket</groupId>
+        <artifactId>ka-websocket</artifactId>
+        <version>0.4-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+	<groupId>org.kasource.websocket</groupId>
+	<artifactId>ka-websocket-jetty9</artifactId>
+	<packaging>jar</packaging>
+	<name>Ka WebSocket Jetty 9</name>
+	<description>Ka Web Socket for Jetty 9</description>
+	<url>http://maven.apache.org</url>
+	
+	
+	<build>
+		<plugins>
+			
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+				</plugin>
+                     		
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>	
+		</plugins>
+	</reporting>
+	<dependencies>
+		<dependency>
+			<groupId>org.kasource.websocket</groupId>
+			<artifactId>ka-websocket-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		 <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+		<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+			</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
+	    <dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+	     
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		 <dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>websocket-servlet</artifactId>
+			<version>9.0.7.v20131107</version>
+			 <scope>provided</scope>
+		</dependency> 
+		<dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>websocket-server</artifactId>
+			<version>9.0.7.v20131107</version>
+			<scope>provided</scope>
+		</dependency>  
+	</dependencies>
+
+</project>

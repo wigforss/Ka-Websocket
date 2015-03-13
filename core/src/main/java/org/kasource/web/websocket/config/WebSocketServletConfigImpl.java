@@ -3,6 +3,7 @@ package org.kasource.web.websocket.config;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.kasource.web.websocket.client.WebSocketClientBuilderFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
@@ -16,31 +17,33 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     private WebSocketManagerRepository managerRepository;
     private ProtocolHandlerRepository protocolRepository = new ProtocolHandlerRepositoryImpl();
     private Set<String> originWhitelist = new HashSet<String>();
-    
+
     @Override
     public boolean isDynamicAddressing() {
         return dynamicAddressing;
     }
-    
+
     @Override
-    public ClientIdGenerator getClientIdGenerator() {
-        return clientIdGenerator;
+    public WebSocketClientBuilderFactory getClientBuilder(WebSocketManager manager) {
+        return new WebSocketClientBuilderFactory(manager, clientIdGenerator);
     }
-    
+
     @Override
     public WebSocketManager getWebSocketManager(String url) {
         return managerRepository.getWebSocketManager(url);
     }
+
     @Override
     public boolean hasProtocol(String protocol, String url) {
         return protocolRepository.hasProtocol(protocol, url);
     }
+
     @Override
     public boolean isValidOrigin(String origin) {
-        if(origin == null) {
+        if (origin == null) {
             return false;
         }
-        if(originWhitelist != null && !originWhitelist.isEmpty()) {
+        if (originWhitelist != null && !originWhitelist.isEmpty()) {
             return originWhitelist.contains(origin);
         }
         return true;
@@ -54,7 +57,8 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     }
 
     /**
-     * @param servletName the servletName to set
+     * @param servletName
+     *            the servletName to set
      */
     public void setServletName(String servletName) {
         this.servletName = servletName;
@@ -68,7 +72,8 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     }
 
     /**
-     * @param managerRepository the managerRepository to set
+     * @param managerRepository
+     *            the managerRepository to set
      */
     public void setManagerRepository(WebSocketManagerRepository managerRepository) {
         this.managerRepository = managerRepository;
@@ -82,7 +87,8 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     }
 
     /**
-     * @param protocolRepository the protocolRepository to set
+     * @param protocolRepository
+     *            the protocolRepository to set
      */
     public void setProtocolRepository(ProtocolHandlerRepository protocolRepository) {
         this.protocolRepository = protocolRepository;
@@ -96,25 +102,32 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     }
 
     /**
-     * @param originWhitelist the originWhitelist to set
+     * @param originWhitelist
+     *            the originWhitelist to set
      */
     public void setOriginWhitelist(Set<String> originWhitelist) {
         this.originWhitelist = originWhitelist;
     }
 
     /**
-     * @param dynamicAddressing the dynamicAddressing to set
+     * @param dynamicAddressing
+     *            the dynamicAddressing to set
      */
     public void setDynamicAddressing(boolean dynamicAddressing) {
         this.dynamicAddressing = dynamicAddressing;
     }
 
     /**
-     * @param clientIdGenerator the clientIdGenerator to set
+     * @param clientIdGenerator
+     *            the clientIdGenerator to set
      */
     public void setClientIdGenerator(ClientIdGenerator clientIdGenerator) {
         this.clientIdGenerator = clientIdGenerator;
     }
-    
-    
+
+    @Override
+    public boolean hasClientIdGenerator() {
+        return clientIdGenerator != null;
+    }
+
 }

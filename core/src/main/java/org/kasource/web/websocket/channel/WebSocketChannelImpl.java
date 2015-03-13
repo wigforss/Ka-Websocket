@@ -75,7 +75,7 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      **/
     @Override
     public void broadcast(String message) {
-        if(sender != null) {
+        if (sender != null) {
             sender.broadcast(message);
         }
         

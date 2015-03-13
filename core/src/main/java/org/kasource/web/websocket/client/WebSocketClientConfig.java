@@ -2,7 +2,9 @@ package org.kasource.web.websocket.client;
 
 import java.util.Map;
 
+import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.util.HeaderLookup;
 
 public class WebSocketClientConfig {
     private final WebSocketManager manager; 
@@ -29,8 +31,10 @@ public class WebSocketClientConfig {
         private Map<String, String[]> connectionParameters; 
         private String subProtocol;
         
-        public Builder(WebSocketManager manager) {
+        Builder(WebSocketManager manager, String clientId, Map<String, String[]> connectionParameters) {
             this.manager = manager;
+            this.clientId = clientId;
+            this.connectionParameters = connectionParameters;
         }
         
         public Builder url(String urlToUse) {
@@ -43,15 +47,6 @@ public class WebSocketClientConfig {
             return this;
         }
         
-        public Builder clientId(String id) {
-            this.clientId = id;
-            return this;
-        }
-        
-        public Builder connectionParams(Map<String, String[]> parameters) {
-            this.connectionParameters = parameters;
-            return this;
-        }
         
         public Builder subProtocol(String protocolName) {
             this.subProtocol = protocolName;
@@ -62,9 +57,7 @@ public class WebSocketClientConfig {
             if(url == null) {
                 throw new IllegalStateException("url is needed to create a WebSocketClient");
             }
-            if(clientId == null) {
-                throw new IllegalStateException("clientId is needed to create a WebSocketClient");
-            }
+            
             return new WebSocketClientConfig(this);
         }
 

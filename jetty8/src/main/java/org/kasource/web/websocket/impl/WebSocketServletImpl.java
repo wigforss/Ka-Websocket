@@ -1,4 +1,4 @@
-package org.kasource.web.websocket.impl.jetty;
+package org.kasource.web.websocket.impl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -7,16 +7,19 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
+import org.kasource.web.websocket.impl.jetty8.Jetty8WebSocketClient;
+import org.kasource.web.websocket.impl.jetty8.Jetty8WebSocketImpl;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.security.AuthenticationException;
+import org.kasource.web.websocket.util.HttpRequestHeaderLookup;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 
-public class JettyWebSocketImpl extends WebSocketServlet {
-    private static final Logger LOG = LoggerFactory.getLogger(JettyWebSocketImpl.class);
+public class WebSocketServletImpl extends WebSocketServlet {
+    private static final Logger LOG = LoggerFactory.getLogger(WebSocketServletImpl.class);
     private static final long serialVersionUID = 1L;
   
     
@@ -62,17 +65,17 @@ public class JettyWebSocketImpl extends WebSocketServlet {
             LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
             throw e;
         }
-        String clientId = webSocketServletConfig.getClientIdGenerator().getId(request, manager);
-        WebSocketClientConfig clientConfig = new WebSocketClientConfig.Builder(manager)
+        
+        WebSocketClientConfig clientConfig =  webSocketServletConfig.getClientBuilder(manager).get(request.getParameterMap(), 
+                                                                                                   new HttpRequestHeaderLookup(request))
+        
                                                     .url(url)
-                                                    .clientId(clientId)
                                                     .username(username)
-                                                    .connectionParams(request.getParameterMap())
                                                     .subProtocol(protocol)
                                                     .build();
          
-        JettyWebSocketClient client = new JettyWebSocketClient(clientConfig);
-        LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + clientId + " on " + url);
+        Jetty8WebSocketClient client = new Jetty8WebSocketClient(clientConfig);
+        LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + clientConfig.getClientId() + " on " + url);
         return client;
     }
 

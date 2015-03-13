@@ -48,9 +48,10 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
  
-  <servlet>
+
+   <servlet>
     <servlet-name>chat</servlet-name>
-    <servlet-class>org.kasource.web.websocket.impl.tomcat.TomcatWebsocketImpl</servlet-class>
+    <servlet-class>org.kasource.web.websocket.impl.WebsocketServletImpl</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   

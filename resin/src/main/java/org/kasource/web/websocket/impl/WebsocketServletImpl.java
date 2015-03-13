@@ -1,5 +1,5 @@
 
-package org.kasource.web.websocket.impl.resin;
+package org.kasource.web.websocket.impl;
 
 
 
@@ -14,6 +14,7 @@ import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.security.AuthenticationException;
+import org.kasource.web.websocket.util.HttpRequestHeaderLookup;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,8 @@ import com.caucho.websocket.WebSocketServletRequest;
 
 
 
-public class ResinWebSocketImpl extends HttpServlet {
-    private static final Logger LOG = LoggerFactory.getLogger(ResinWebSocketImpl.class);
+public class WebsocketServletImpl extends HttpServlet {
+    private static final Logger LOG = LoggerFactory.getLogger(WebsocketServletImpl.class);
     private static final long serialVersionUID = 1L;
    
 
@@ -106,17 +107,16 @@ public class ResinWebSocketImpl extends HttpServlet {
             LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
             throw e;
         }
-        String id = webSocketServletConfig.getClientIdGenerator().getId(request, manager);
-        WebSocketClientConfig clientConfig = new WebSocketClientConfig.Builder(manager)
+        
+        WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(request.getParameterMap(), 
+                    new HttpRequestHeaderLookup(request))
                                                 .url(url)
-                                                .clientId(id)
                                                 .username(username)
-                                                .connectionParams(request.getParameterMap())
                                                 .subProtocol(protocol)
                                                 .build();
         
         ResinWebSocketClient client = new ResinWebSocketClient(clientConfig);
-        LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + id + " on " + url);
+        LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + clientConfig.getClientId() + " on " + url);
         return client;
     }
 

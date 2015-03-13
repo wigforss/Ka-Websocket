@@ -8,10 +8,8 @@ import java.util.Set;
 import org.kasource.web.websocket.channel.WebSocketChannelFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
-
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
 import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 
 public class WebSocketConfigImpl implements WebSocketConfig {
@@ -33,10 +31,10 @@ public class WebSocketConfigImpl implements WebSocketConfig {
     
     public void registerServlet(WebSocketServletConfigImpl servlet) {
        
-        if(getOriginWhitelist() != null) {
+        if (getOriginWhitelist() != null) {
             servlet.setOriginWhitelist(getOriginWhitelist());
         } 
-        if(servlet.getClientIdGenerator() == null) {
+        if (!servlet.hasClientIdGenerator()) {
             servlet.setClientIdGenerator(clientIdGenerator != null ? clientIdGenerator : new DefaultClientIdGenerator());
         }
         getServletConfigs().put(servlet.getServletName(), servlet);

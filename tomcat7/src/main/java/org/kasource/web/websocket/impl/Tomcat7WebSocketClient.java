@@ -1,4 +1,4 @@
-package org.kasource.web.websocket.impl.tomcat;
+package org.kasource.web.websocket.impl;
 
 
 import java.io.IOException;
@@ -10,24 +10,24 @@ import java.util.Map;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WsOutbound;
+import org.apache.commons.io.IOUtils;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
-import org.kasource.web.websocket.util.IoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 
-public class TomcatWebSocketClient extends StreamInbound implements WebSocketClient {
-    private static final Logger LOG = LoggerFactory.getLogger(TomcatWebSocketClient.class);
+public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketClient {
+    private static final Logger LOG = LoggerFactory.getLogger(Tomcat7WebSocketClient.class);
     private WebSocketClientConfig clientConfig;
-    private IoUtils ioUtils = new IoUtils();
+   
     private ProtocolHandler<String> textProtocolHandler;
     
     private ProtocolHandler<byte[]> binaryProtocolHandler;
 
-    protected TomcatWebSocketClient(WebSocketClientConfig clientConfig) {
+    protected Tomcat7WebSocketClient(WebSocketClientConfig clientConfig) {
         this.clientConfig = clientConfig;
     }
 
@@ -35,7 +35,8 @@ public class TomcatWebSocketClient extends StreamInbound implements WebSocketCli
 
     @Override
     protected void onBinaryData(InputStream is) throws IOException {
-        clientConfig.getManager().onWebSocketMessage(this, ioUtils.toByteArray(is));
+        
+        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(is));
 
     }
 
@@ -44,7 +45,7 @@ public class TomcatWebSocketClient extends StreamInbound implements WebSocketCli
     @Override
     protected void onTextData(Reader r) throws IOException {
         
-        clientConfig.getManager().onWebSocketMessage(this, ioUtils.readString(r));
+        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(r));
     }
 
 

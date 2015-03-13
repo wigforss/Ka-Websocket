@@ -1,16 +1,17 @@
 package org.kasource.web.websocket.client.id;
 
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.util.HeaderLookup;
 
-public class DefaultClientIdGenerator implements ClientIdGenerator {
+public class DefaultClientIdGenerator extends AbstractClientIdGenerator {
 
     @Override
-    public String getId(HttpServletRequest request, WebSocketManager manager) {
-        return UUID.randomUUID().toString().replace("-", "").toUpperCase();
+    public String getId(Map<String, String[]> requestParameters, 
+                        HeaderLookup headerLookup, 
+                        WebSocketManager manager) {
+        return getUuid();
     }
 
 }

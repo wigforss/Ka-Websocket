@@ -48,18 +48,43 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
             </plugin>
-               <plugin>
+           <!--     <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.1.5.v20120716</version>
                 <configuration>
                     <webAppSourceDirectory>${webappDirectory}</webAppSourceDirectory>
-                    <contextPath>/chat-example</contextPath>
+                    <webAppConfig>
+                    	<contextPath>/chat-example</contextPath>
+                    </webAppConfig>
+                    
                     <stopPort>9966</stopPort>
+                    
                     <stopKey>foo</stopKey>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>${httpPort}</port>
+                            <port>8080</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+                </configuration>
+            </plugin> --> 
+            <plugin>
+            	<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.0.7.v20131107</version>
+				<configuration>
+                    <webAppSourceDirectory>${webappDirectory}</webAppSourceDirectory>
+                    <webApp>
+                    	<contextPath>/chat-example</contextPath>
+                    </webApp>
+                    
+                    <stopPort>9966</stopPort>
+                    
+                    <stopKey>foo</stopKey>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>8080</port>
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>
@@ -89,7 +114,7 @@
         <!-- Compile -->
         <dependency>
 			<groupId>org.kasource.websocket</groupId>
-			<artifactId>ka-websocket-core</artifactId>
+			<artifactId>ka-websocket-jetty9</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -98,8 +123,8 @@
 			<version>${project.version}</version>
 		</dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+           	<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
         </dependency>
         <dependency>
                 <groupId>org.springframework</groupId>
