@@ -5,8 +5,6 @@ import javax.servlet.ServletException;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
-import org.kasource.web.websocket.impl.jetty9.Jetty9WebsocketCreator;
-import org.kasource.web.websocket.impl.jetty9.Jetty9WebsocketImpl;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

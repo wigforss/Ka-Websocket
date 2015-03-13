@@ -11,8 +11,6 @@ import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
-import org.kasource.web.websocket.impl.jetty9.Jetty9WebsocketClient;
-import org.kasource.web.websocket.impl.jetty9.UpgradeRequestHeaderLookup;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.security.AuthenticationException;
 import org.kasource.web.websocket.util.ServletConfigUtil;
