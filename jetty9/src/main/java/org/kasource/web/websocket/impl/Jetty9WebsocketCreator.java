@@ -1,27 +1,23 @@
 package org.kasource.web.websocket.impl;
 
 import java.lang.reflect.Field;
-import java.net.HttpCookie;
 import java.util.List;
-import java.lang.IllegalStateException;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.eclipse.jetty.websocket.api.UpgradeResponse;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.kasource.web.websocket.impl.jetty9.Jetty9WebsocketClient;
-import org.kasource.web.websocket.impl.jetty9.Jetty9WebsocketCreator;
 import org.kasource.web.websocket.impl.jetty9.UpgradeRequestHeaderLookup;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.security.AuthenticationException;
-import org.kasource.web.websocket.util.HttpRequestHeaderLookup;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 
 public class Jetty9WebsocketCreator implements WebSocketCreator {
     private static final Logger LOG = LoggerFactory.getLogger(Jetty9WebsocketCreator.class);
@@ -59,8 +55,7 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
             return null;
         }
     
-        WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(request.getParameterMap(), 
-                                                                                                  new UpgradeRequestHeaderLookup(request))
+        WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(httpRequest)
                                                         .url(url)
                                                         .username(username)
                                                         .subProtocol(subProtocol)

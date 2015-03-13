@@ -8,10 +8,8 @@ import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.kasource.web.websocket.impl.jetty8.Jetty8WebSocketClient;
-import org.kasource.web.websocket.impl.jetty8.Jetty8WebSocketImpl;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.security.AuthenticationException;
-import org.kasource.web.websocket.util.HttpRequestHeaderLookup;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +64,7 @@ public class WebSocketServletImpl extends WebSocketServlet {
             throw e;
         }
         
-        WebSocketClientConfig clientConfig =  webSocketServletConfig.getClientBuilder(manager).get(request.getParameterMap(), 
-                                                                                                   new HttpRequestHeaderLookup(request))
+        WebSocketClientConfig clientConfig =  webSocketServletConfig.getClientBuilder(manager).get(request)
         
                                                     .url(url)
                                                     .username(username)

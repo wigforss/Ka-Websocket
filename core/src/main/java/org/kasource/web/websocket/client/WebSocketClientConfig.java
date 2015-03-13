@@ -2,9 +2,7 @@ package org.kasource.web.websocket.client;
 
 import java.util.Map;
 
-import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.manager.WebSocketManager;
-import org.kasource.web.websocket.util.HeaderLookup;
 
 public class WebSocketClientConfig {
     private final WebSocketManager manager; 

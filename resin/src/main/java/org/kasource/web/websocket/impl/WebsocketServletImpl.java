@@ -108,8 +108,7 @@ public class WebsocketServletImpl extends HttpServlet {
             throw e;
         }
         
-        WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(request.getParameterMap(), 
-                    new HttpRequestHeaderLookup(request))
+        WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(request)
                                                 .url(url)
                                                 .username(username)
                                                 .subProtocol(protocol)

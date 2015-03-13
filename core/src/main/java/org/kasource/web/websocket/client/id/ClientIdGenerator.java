@@ -1,9 +1,9 @@
 package org.kasource.web.websocket.client.id;
 
-import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.kasource.web.websocket.manager.WebSocketManager;
-import org.kasource.web.websocket.util.HeaderLookup;
 
 public interface ClientIdGenerator {
 
@@ -18,8 +18,7 @@ public interface ClientIdGenerator {
      * 
      * @return A unique client ID for the manager supplied.
      **/
-    public String getId(Map<String, String[]> requestParameters, 
-                        HeaderLookup headerLookup, 
+    public String getId(HttpServletRequest request, 
                         WebSocketManager manager);
 
 }

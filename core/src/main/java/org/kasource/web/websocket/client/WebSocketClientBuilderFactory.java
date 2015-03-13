@@ -1,10 +1,10 @@
 package org.kasource.web.websocket.client;
 
-import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.manager.WebSocketManager;
-import org.kasource.web.websocket.util.HeaderLookup;
 
 public class WebSocketClientBuilderFactory {
     private WebSocketManager manager;
@@ -15,8 +15,8 @@ public class WebSocketClientBuilderFactory {
         this.clientIdGenerator = clientIdGenerator;
     }
     
-    public WebSocketClientConfig.Builder get(Map<String, String[]> requestParameters, HeaderLookup headers) {
-        String clientId = clientIdGenerator.getId(requestParameters, headers, manager);
-        return new WebSocketClientConfig.Builder(manager, clientId, requestParameters);
+    public WebSocketClientConfig.Builder get(HttpServletRequest request) {
+        String clientId = clientIdGenerator.getId(request, manager);
+        return new WebSocketClientConfig.Builder(manager, clientId, request.getParameterMap());
     }
 }

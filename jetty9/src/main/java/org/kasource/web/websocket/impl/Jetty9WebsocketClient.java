@@ -13,7 +13,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
-import org.kasource.web.websocket.impl.jetty9.Jetty9WebsocketClient;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
