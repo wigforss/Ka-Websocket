@@ -20,18 +20,20 @@ import java.lang.annotation.Target;
  * @WebSocketListener("/chat")
  * public class ChatServer {
  * 
- *  @OnWebSocketMessage
- *  public void onMessage(String message) {
+ *  @OnMessage
+ *  @Broadcast
+ *  public String onMessage(String message) {
  *   ...
+ *   return "Broadcast message"
  *  }
  *  
- *  @OnWebSocketMessage
+ *  @OnMessage
  *  public void onMessage(byte[] message) {
  *   ...
  *  }
  *  
  *  @WebSocketListener("/chat2") // chat2 is configured with a protocol.
- *  @OnWebSocketMessage
+ *  @OnMessage
  *  public void onMessage(Message message) {
  *   ...
  *  }
@@ -45,6 +47,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @WebSocketEventAnnotation
-public @interface OnWebSocketMessage {
+public @interface OnMessage {
     
 }

@@ -19,7 +19,7 @@ public class Base64MessageListener extends AbstractdMethodWebSocketEventListener
     public void onWebSocketEvent(WebSocketEvent event) {
         String message = "";
         try {
-            if(WebSocketTextMessageEvent.class.isAssignableFrom(event.getClass())) {
+            if (WebSocketTextMessageEvent.class.isAssignableFrom(event.getClass())) {
                 message = ((WebSocketTextMessageEvent) event).getMessage();
                 byte[] data = base64.toObject(message, byte[].class);
                 

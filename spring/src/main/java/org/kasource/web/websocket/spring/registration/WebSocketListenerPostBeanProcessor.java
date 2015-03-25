@@ -5,8 +5,11 @@ import java.util.Queue;
 
 import javax.servlet.ServletContext;
 
+import org.kasource.web.websocket.bootstrap.WebSocketConfigListener;
+import org.kasource.web.websocket.config.annotation.WebSocket;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
+import org.kasource.web.websocket.servlet.ServletRegistrator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -24,16 +27,20 @@ public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, Se
        private ServletContext servletContext;
        private WebSocketListenerRegister listenerRegister;
        private Queue<Object> beans = new LinkedList<Object>(); 
-        
+       private ServletRegistrator servletRegistrator;
         
         
         @Override
         public Object postProcessAfterInitialization(Object object, String beanName) throws BeansException {
-            if(listenerRegister == null) {
+            if (object.getClass().isAnnotationPresent(WebSocket.class)) {
+                servletRegistrator.addServlet(object.getClass());
+            }
+            if (listenerRegister == null) {
                 beans.add(object);
             } else {
                 listenerRegister.registerListener(object);
             }
+           
             return object;
         }
 
@@ -54,8 +61,8 @@ public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, Se
                     listenerRegister.registerListener(beans.poll());
                 }
             }
-            
-            
+            servletRegistrator = new ServletRegistrator(servletContext);
+          
         }
 
         @Override

@@ -75,7 +75,7 @@ public class WebsocketServletImpl extends HttpServlet {
 
     private String selectSubProtocol(String[] subProtocols) {
         for (String clientProtocol : subProtocols) {
-            if(webSocketServletConfig.hasProtocol(clientProtocol, configUtil.getMaping())) {
+            if(webSocketServletConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
                 return clientProtocol;
             }
         }
@@ -101,7 +101,7 @@ public class WebsocketServletImpl extends HttpServlet {
         WebSocketManager manager = webSocketServletConfig.getWebSocketManager(url);
         String username = null;
         try {
-             username = manager.authenticate(request);
+             username = manager.authenticate(webSocketServletConfig.getAuthenticationProvider(), request);
         } catch (AuthenticationException e) {
             LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
             throw e;
@@ -110,7 +110,7 @@ public class WebsocketServletImpl extends HttpServlet {
         WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(request)
                                                 .url(url)
                                                 .username(username)
-                                                .subProtocol(protocol)
+                                                .protocol(protocol, webSocketServletConfig.getProtocolRepository())
                                                 .build();
         
         ResinWebSocketClient client = new ResinWebSocketClient(clientConfig);

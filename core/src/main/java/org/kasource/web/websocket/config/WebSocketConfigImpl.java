@@ -7,9 +7,8 @@ import java.util.Set;
 
 import org.kasource.web.websocket.channel.WebSocketChannelFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
-import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 
 public class WebSocketConfigImpl implements WebSocketConfig {
@@ -17,7 +16,7 @@ public class WebSocketConfigImpl implements WebSocketConfig {
     
     private Set<String> originWhitelist = new HashSet<String>();
     
-    private ProtocolHandlerRepository protocolHandlerRepository;
+    private ProtocolRepository protocolRepository;
     
     private WebSocketManagerRepository managerRepository;
     
@@ -34,9 +33,7 @@ public class WebSocketConfigImpl implements WebSocketConfig {
         if (getOriginWhitelist() != null) {
             servlet.setOriginWhitelist(getOriginWhitelist());
         } 
-        if (!servlet.hasClientIdGenerator()) {
-            servlet.setClientIdGenerator(clientIdGenerator != null ? clientIdGenerator : new DefaultClientIdGenerator());
-        }
+        
         getServletConfigs().put(servlet.getServletName(), servlet);
     }
 
@@ -70,15 +67,15 @@ public class WebSocketConfigImpl implements WebSocketConfig {
      * @return the protocolHandlerRepository
      */
     @Override
-    public ProtocolHandlerRepository getProtocolHandlerRepository() {
-        return protocolHandlerRepository;
+    public ProtocolRepository getProtocolRepository() {
+        return protocolRepository;
     }
 
     /**
-     * @param protocolHandlerRepository the protocolHandlerRepository to set
+     * @param protocolRepository the protocolHandlerRepository to set
      */
-    public void setProtocolHandlerRepository(ProtocolHandlerRepository protocolHandlerRepository) {
-        this.protocolHandlerRepository = protocolHandlerRepository;
+    public void setProtocolHandlerRepository(ProtocolRepository protocolRepository) {
+        this.protocolRepository = protocolRepository;
     }
 
  

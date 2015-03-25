@@ -4,7 +4,7 @@ import org.kasource.web.websocket.event.WebSocketClientConnectionEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;
 import org.kasource.web.websocket.event.listeners.WebSocketClientConnectionListener;
 
-public class WebSocketClientConnectedHandler implements WebSocketEventListener{
+public class WebSocketClientConnectedHandler implements WebSocketEventListener {
    private WebSocketClientConnectionListener listener;
     
     public WebSocketClientConnectedHandler(WebSocketClientConnectionListener listener) {
@@ -13,7 +13,7 @@ public class WebSocketClientConnectedHandler implements WebSocketEventListener{
 
     @Override
     public void onWebSocketEvent(WebSocketEvent event) {
-        if(event instanceof WebSocketClientConnectionEvent){
+        if (event instanceof WebSocketClientConnectionEvent){
             listener.onClientConnection((WebSocketClientConnectionEvent) event);
         }
         

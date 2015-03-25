@@ -1,6 +1,7 @@
 package org.kasource.web.websocket.event;
 
 
+import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.channel.WebSocketChannel;
 import org.kasource.web.websocket.client.WebSocketClient;
 
@@ -25,8 +26,9 @@ public class WebSocketTextMessageEvent extends WebSocketClientEvent {
      **/
     public WebSocketTextMessageEvent(WebSocketChannel socket, 
                                      String message, 
-                                     WebSocketClient client) {
-        super(socket, client);
+                                     WebSocketClient client,
+                                     ParameterBinder parameterBinder) {
+        super(socket, client, parameterBinder);
         this.message = message;
           
     }

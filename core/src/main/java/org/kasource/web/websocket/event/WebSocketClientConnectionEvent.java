@@ -1,5 +1,6 @@
 package org.kasource.web.websocket.event;
 
+import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.channel.WebSocketChannel;
 import org.kasource.web.websocket.client.WebSocketClient;
 
@@ -20,8 +21,9 @@ public class WebSocketClientConnectionEvent extends WebSocketClientEvent {
      * @param connectionParameters  The connection parameters
      **/
     public WebSocketClientConnectionEvent(WebSocketChannel websocket, 
-                                          WebSocketClient client) {
-        super(websocket, client);
+                                          WebSocketClient client, 
+                                          ParameterBinder parameterBinder) {
+        super(websocket, client, parameterBinder);
         
     }
 

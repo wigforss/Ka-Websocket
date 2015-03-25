@@ -7,7 +7,7 @@ import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
 import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContextAware;
 public class SpringWebSocketConfigFactoryBean  implements FactoryBean<WebSocketConfig>, ApplicationContextAware {
   
     
-    private ProtocolHandlerRepository protocolHandlerRepository;
+    private ProtocolRepository protocolRepository;
     
     private WebSocketManagerRepository managerRepository;
     
@@ -50,7 +50,7 @@ public class SpringWebSocketConfigFactoryBean  implements FactoryBean<WebSocketC
         config.setListenerRegister(listenerRegister);
         config.setChannelFactory(channelFactory);
         config.setManagerRepository(managerRepository);
-        config.setProtocolHandlerRepository(protocolHandlerRepository);
+        config.setProtocolHandlerRepository(protocolRepository);
         if(originList != null && originList.getOriginWhiteList() != null) {
             config.setOriginWhitelist(originList.getOriginWhiteList());
         }
@@ -90,8 +90,8 @@ public class SpringWebSocketConfigFactoryBean  implements FactoryBean<WebSocketC
      * @param protocolHandlerRepository the protocolHandlerRepository to set
      */
     @Required
-    public void setProtocolHandlerRepository(ProtocolHandlerRepository protocolHandlerRepository) {
-        this.protocolHandlerRepository = protocolHandlerRepository;
+    public void setProtocolRepository(ProtocolRepository protocolRepository) {
+        this.protocolRepository = protocolRepository;
     }
 
     /**

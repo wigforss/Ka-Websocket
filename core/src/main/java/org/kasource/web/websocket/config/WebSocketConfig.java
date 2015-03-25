@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.kasource.web.websocket.channel.WebSocketChannelFactory;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 
 
@@ -15,7 +15,7 @@ public interface WebSocketConfig {
     
     public WebSocketServletConfig getServletConfig(String servletName);
     
-    public ProtocolHandlerRepository getProtocolHandlerRepository();
+    public ProtocolRepository getProtocolRepository();
     
     public WebSocketManagerRepository getManagerRepository();
     

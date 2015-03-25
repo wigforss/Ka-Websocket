@@ -13,7 +13,7 @@ import org.kasource.web.websocket.channel.NoSuchWebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.internal.ClientListener;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.security.AuthenticationException;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 import org.slf4j.Logger;
@@ -28,13 +28,13 @@ public class WebSocketManagerImpl implements WebSocketManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketManagerImpl.class);
     
-    private Map<String, WebSocketClient> clients = new ConcurrentHashMap<String, WebSocketClient>();
-    private Map<String, Set<WebSocketClient>> clientsByUser = new ConcurrentHashMap<String, Set<WebSocketClient>>();
+    private Map<String, WebSocketClientRegistration> clients = new ConcurrentHashMap<String, WebSocketClientRegistration>();
+    private Map<String, Set<WebSocketClientRegistration>> clientsByUser = new ConcurrentHashMap<String, Set<WebSocketClientRegistration>>();
 
     private Set<ClientListener> webSocketClientListeners = new HashSet<ClientListener>();
  
     private AuthenticationProvider authenticationProvider;
-    private ProtocolHandlerRepository protocolHandlerRepository;
+
     
     
     /**
@@ -45,11 +45,11 @@ public class WebSocketManagerImpl implements WebSocketManager {
     @Override
     public void broadcast(String message) {
         
-        for (WebSocketClient client : clients.values()) {
+        for (WebSocketClientRegistration clientReg : clients.values()) {
             try {
-                client.sendMessageToSocket(message);   
+                clientReg.getClient().sendMessageToSocket(message);   
             } catch (Exception e) {
-                LOG.debug("Could not broadcast to " + client.getUsername() + " with id " + client.getId(), e);
+                LOG.debug("Could not broadcast to " +  clientReg.getClient().getUsername() + " with id " +  clientReg.getClient().getId(), e);
             }
         }
         
@@ -62,11 +62,11 @@ public class WebSocketManagerImpl implements WebSocketManager {
      **/
     @Override
     public void broadcastBinary(byte[] message) {
-        for (WebSocketClient client : clients.values()) {
+        for (WebSocketClientRegistration clientReg : clients.values()) {
             try {
-             client.sendMessageToSocket(message);
+                clientReg.getClient().sendMessageToSocket(message);
             } catch (Exception e) {
-                LOG.debug("Could not broadcast to " + client.getUsername() + " with id " + client.getId(), e);
+                LOG.debug("Could not broadcast to " + clientReg.getClient().getUsername() + " with id " + clientReg.getClient().getId(), e);
             }
         }
         
@@ -80,14 +80,14 @@ public class WebSocketManagerImpl implements WebSocketManager {
      **/
     @Override
     public void sendMessage(String message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient {
-       if(recipientType == RecipientType.USERNAME) {
+       if (recipientType == RecipientType.USERNAME) {
            sendMessageToUser(recipient, message);
        } else {
-        WebSocketClient client = clients.get(recipient);
-        if(client == null) {
+           WebSocketClientRegistration clientReg = clients.get(recipient);
+        if (clientReg == null) {
             throw new NoSuchWebSocketClient("No client found with ID " + recipient);
         }
-        client.sendMessageToSocket(message);
+        clientReg.getClient().sendMessageToSocket(message);
        }
     }
     
@@ -98,12 +98,12 @@ public class WebSocketManagerImpl implements WebSocketManager {
      * @param message to send.
      **/
     private void sendMessageToUser(String username, String message) throws IOException, NoSuchWebSocketClient {      
-        Set<WebSocketClient> clientsForUser = clientsByUser.get(username);
-        if(clientsForUser == null || clientsForUser.isEmpty()) {
+        Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
+        if (clientsForUser == null || clientsForUser.isEmpty()) {
             throw new NoSuchWebSocketClient("No client found for user " + username);
         }
-        for(WebSocketClient client : clientsForUser) {
-            client.sendMessageToSocket(message);
+        for (WebSocketClientRegistration clientReg : clientsForUser) {
+            clientReg.getClient().sendMessageToSocket(message);
         }
         
         
@@ -117,14 +117,14 @@ public class WebSocketManagerImpl implements WebSocketManager {
      **/
     @Override
     public void sendBinaryMessage(byte[] message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient {
-        if(recipientType == RecipientType.USERNAME) {
+        if (recipientType == RecipientType.USERNAME) {
             sendBinaryMessageToUser(recipient, message);
         } else {
-            WebSocketClient client = clients.get(recipient);
-            if(client == null) {
+            WebSocketClientRegistration clientReg = clients.get(recipient);
+            if(clientReg == null) {
                 throw new NoSuchWebSocketClient("No client found with ID " + recipient);
             }
-            client.sendMessageToSocket(message);
+            clientReg.getClient().sendMessageToSocket(message);
         }
     }
     
@@ -135,12 +135,12 @@ public class WebSocketManagerImpl implements WebSocketManager {
      * @param message to send.
      **/
     private void sendBinaryMessageToUser(String username, byte[] message) throws IOException, NoSuchWebSocketClient {
-        Set<WebSocketClient> clientsForUser = clientsByUser.get(username);
+        Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
         if(clientsForUser == null || clientsForUser.isEmpty()) {
             throw new NoSuchWebSocketClient("No client found for user " + username);
         }
-        for(WebSocketClient client : clientsForUser) {
-            client.sendMessageToSocket(message);
+        for(WebSocketClientRegistration clientReg : clientsForUser) {
+            clientReg.getClient().sendMessageToSocket(message);
         }
         
     }
@@ -170,36 +170,34 @@ public class WebSocketManagerImpl implements WebSocketManager {
      **/
     @Override
     public void registerClient(WebSocketClient client) {
-        ProtocolHandler<String> textProtocolHandler = protocolHandlerRepository.getTextProtocol(client.getSubProtocol(), client.getUrl(), true);
-        client.setTextProtocolHandler(textProtocolHandler);
-        ProtocolHandler<byte[]> binaryProtocolHandler = protocolHandlerRepository.getBinaryProtocol(client.getSubProtocol(), client.getUrl(), true);
-        client.setBinaryProtocolHandler(binaryProtocolHandler);
-        clients.put(client.getId(), client);
-        addClientForUser(client);
+        WebSocketClientRegistration clientReg = new WebSocketClientRegistration(client);
+        clients.put(client.getId(), clientReg);
+        addClientForUser(clientReg);
         if (!webSocketClientListeners.isEmpty()) {
             for(ClientListener listener: webSocketClientListeners) {
-                listener.onConnect(client);
+                listener.onConnect(client, clientReg.getParameterBinder());
             }
         }
     }
     
     
-    private void addClientForUser(WebSocketClient client) {
-        if (client.getUsername() != null) {
-            Set<WebSocketClient> clientsForUser = clientsByUser.get(client.getUsername());
+    private void addClientForUser(WebSocketClientRegistration clientReg) {
+        if (clientReg.getClient().getUsername() != null) {
+            Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(clientReg.getClient().getUsername());
             if(clientsForUser == null) {
-                clientsForUser = new HashSet<WebSocketClient>();
-                clientsByUser.put(client.getUsername(), clientsForUser);
+                clientsForUser = new HashSet<WebSocketClientRegistration>();
+                clientsByUser.put(clientReg.getClient().getUsername(), clientsForUser);
             }
-            clientsForUser.add(client);
+            clientsForUser.add(clientReg);
         }
     }
     
     @Override
-    public String authenticate(HttpServletRequest request) throws AuthenticationException {
-        if (authenticationProvider != null) {
+    public String authenticate(AuthenticationProvider provider, HttpServletRequest request) throws AuthenticationException {
+        AuthenticationProvider auth = resolveAuthenticationProvider(provider);
+        if (auth != null) {
             try {
-                String username = authenticationProvider.authenticate(request);
+                String username = auth.authenticate(request);
                 fireAuthentication(username, request, null);
                 return username;
             } catch(AuthenticationException ae) {
@@ -213,9 +211,18 @@ public class WebSocketManagerImpl implements WebSocketManager {
        
     }
     
+    private AuthenticationProvider resolveAuthenticationProvider(AuthenticationProvider provider) {
+        if (provider != null) {
+            return provider;
+        } else {
+            return authenticationProvider;
+        }
+    }
+    
+    
     private void fireAuthentication(String username, HttpServletRequest request, Throwable error) {
         if (!webSocketClientListeners.isEmpty()) {
-            for(ClientListener listener: webSocketClientListeners) {
+            for (ClientListener listener: webSocketClientListeners) {
                 listener.onAuthentication(username, request, error);
             }
         }
@@ -227,20 +234,20 @@ public class WebSocketManagerImpl implements WebSocketManager {
      * @param id ID of the client to remove.
      */
     public void unregisterClient(WebSocketClient client) {
-        clients.remove(client.getId());
-        removeClientForUser(client);
+        WebSocketClientRegistration clientReg = clients.remove(client.getId());
+        removeClientForUser(clientReg);
         if (!webSocketClientListeners.isEmpty()) {
-            for(ClientListener listener: webSocketClientListeners) {
-                listener.onDisconnect(client);
+            for (ClientListener listener: webSocketClientListeners) {
+                listener.onDisconnect(client, clientReg.getParameterBinder());
             }
         }
     }
 
-    private void removeClientForUser(WebSocketClient client) {
-        if (client.getUsername() != null) {
-            Set<WebSocketClient> clientsForUser = clientsByUser.get(client.getUsername());
-            if(clientsForUser != null) {
-                clientsForUser.remove(client);
+    private void removeClientForUser(WebSocketClientRegistration clientReg) {
+        if (clientReg != null && clientReg.getClient().getUsername() != null) {
+            Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(clientReg.getClient().getUsername());
+            if (clientsForUser != null) {
+                clientsForUser.remove(clientReg);
             }
         }
     }
@@ -255,10 +262,10 @@ public class WebSocketManagerImpl implements WebSocketManager {
      */
     @Override
     public void onWebSocketMessage(WebSocketClient client, String message) {
-       
+        WebSocketClientRegistration clientReg = clients.get(client.getId());
         if (!webSocketClientListeners.isEmpty()) {
-            for(ClientListener listener: webSocketClientListeners) {
-                listener.onMessage(client, message, client.getTextProtocolHandler());
+            for (ClientListener listener: webSocketClientListeners) {
+                listener.onMessage(client, message, client.getTextProtocolHandler(), clientReg.getParameterBinder());
             }  
         }
     }
@@ -272,10 +279,10 @@ public class WebSocketManagerImpl implements WebSocketManager {
     @Override
     public void onWebSocketMessage(WebSocketClient client, byte[] message) {
       
-       
+        WebSocketClientRegistration clientReg = clients.get(client.getId());
         if (!webSocketClientListeners.isEmpty()) {
-            for(ClientListener listener: webSocketClientListeners) {
-                listener.onBinaryMessage(client, message, client.getBinaryProtocolHandler());
+            for (ClientListener listener: webSocketClientListeners) {
+                listener.onBinaryMessage(client, message, client.getBinaryProtocolHandler(), clientReg.getParameterBinder());
             }
         }
     }
@@ -299,25 +306,15 @@ public class WebSocketManagerImpl implements WebSocketManager {
         this.authenticationProvider = authenticationProvider;
     }
 
-    @Override
-    public ProtocolHandlerRepository getProtocolHandlerRepository() {
-        return protocolHandlerRepository;
-    }
 
-    /**
-     * @param protocolHandlerRepository the protocolHandlerRepository to set
-     */
-    public void setProtocolHandlerRepository(ProtocolHandlerRepository protocolHandlerRepository) {
-        this.protocolHandlerRepository = protocolHandlerRepository;
-    }
 
     @Override
     public void broadcast(Object message) {
-        for (WebSocketClient client : clients.values()) {
+        for (WebSocketClientRegistration clientReg : clients.values()) {
             try {
-                client.sendTextMessageToSocket(message);
+                clientReg.getClient().sendTextMessageToSocket(message);
             } catch (Exception e) {
-                LOG.debug("Could not broadcast to " + client.getUsername() + " with id " + client.getId(), e);
+                LOG.debug("Could not broadcast to " + clientReg.getClient().getUsername() + " with id " + clientReg.getClient().getId(), e);
             }
         }
         
@@ -325,11 +322,11 @@ public class WebSocketManagerImpl implements WebSocketManager {
 
     @Override
     public void broadcastBinary(Object message) {
-        for (WebSocketClient client : clients.values()) {
+        for (WebSocketClientRegistration clientReg : clients.values()) {
             try {
-                client.sendBinaryMessageToSocket(message);
+                clientReg.getClient().sendBinaryMessageToSocket(message);
             } catch (Exception e) {
-                LOG.debug("Could not broadcast to " + client.getUsername() + " with id " + client.getId(), e);
+                LOG.debug("Could not broadcast to " + clientReg.getClient().getUsername() + " with id " + clientReg.getClient().getId(), e);
             }
        }
         
@@ -338,14 +335,14 @@ public class WebSocketManagerImpl implements WebSocketManager {
     @Override
     public void sendMessage(Object message, String recipient, RecipientType recipientType) throws IOException,
                 NoSuchWebSocketClient {
-        if(recipientType == RecipientType.USERNAME) {
+        if (recipientType == RecipientType.USERNAME) {
             sendMessageAsObjectToUser(recipient, message);
         } else {
-         WebSocketClient client = clients.get(recipient);
-         if(client == null) {
-             throw new NoSuchWebSocketClient("No client found with ID " + recipient);
-         }
-         client.sendTextMessageToSocket(message);         
+            WebSocketClientRegistration clientReg = clients.get(recipient);
+            if (clientReg == null) {
+                throw new NoSuchWebSocketClient("No client found with ID " + recipient);
+            }
+            clientReg.getClient().sendTextMessageToSocket(message);         
         }
        
         
@@ -359,12 +356,12 @@ public class WebSocketManagerImpl implements WebSocketManager {
      * @param message to send.
      **/
     private void sendMessageAsObjectToUser(String username, Object message) throws IOException, NoSuchWebSocketClient {      
-        Set<WebSocketClient> clientsForUser = clientsByUser.get(username);
-        if(clientsForUser == null || clientsForUser.isEmpty()) {
+        Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
+        if (clientsForUser == null || clientsForUser.isEmpty()) {
             throw new NoSuchWebSocketClient("No client found for user " + username);
         }
-        for(WebSocketClient client : clientsForUser) {
-            client.sendTextMessageToSocket(message);
+        for (WebSocketClientRegistration clientReg : clientsForUser) {
+            clientReg.getClient().sendTextMessageToSocket(message);
         }
         
         
@@ -374,25 +371,25 @@ public class WebSocketManagerImpl implements WebSocketManager {
     @Override
     public void sendBinaryMessage(Object message, String recipient, RecipientType recipientType) throws IOException,
                 NoSuchWebSocketClient {
-        if(recipientType == RecipientType.USERNAME) {
+        if (recipientType == RecipientType.USERNAME) {
             sendBinaryAsObjectMessageToUser(recipient, message);
         } else {
-            WebSocketClient client = clients.get(recipient);
-            if(client == null) {
+            WebSocketClientRegistration clientReg = clients.get(recipient);
+            if(clientReg == null) {
                 throw new NoSuchWebSocketClient("No client found with ID " + recipient);
             }
-            client.sendBinaryMessageToSocket(message);         
+            clientReg.getClient().sendBinaryMessageToSocket(message);         
         }
         
     }
      
     private void sendBinaryAsObjectMessageToUser(String username, Object message) throws IOException, NoSuchWebSocketClient {
-        Set<WebSocketClient> clientsForUser = clientsByUser.get(username);
-        if(clientsForUser == null || clientsForUser.isEmpty()) {
+        Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
+        if (clientsForUser == null || clientsForUser.isEmpty()) {
             throw new NoSuchWebSocketClient("No client found for user " + username);
         }
-        for(WebSocketClient client : clientsForUser) {
-            client.sendBinaryMessageToSocket(message);
+        for (WebSocketClientRegistration clientReg : clientsForUser) {
+            clientReg.getClient().sendBinaryMessageToSocket(message);
         }
         
     }

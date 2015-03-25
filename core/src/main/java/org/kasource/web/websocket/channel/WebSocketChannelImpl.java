@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.RecipientType;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.event.WebSocketAuthenticationFailedEvent;
@@ -184,11 +185,11 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      * @param message Message received from web socket.
      **/
     @Override
-    public void onMessage(WebSocketClient client, String message, ProtocolHandler<String> textProtocol) {
+    public void onMessage(WebSocketClient client, String message, ProtocolHandler<String> textProtocol, ParameterBinder parameterBinder) {
         if(textProtocol == null) {
-            fireEvent(new WebSocketTextMessageEvent(this, message, client));
+            fireEvent(new WebSocketTextMessageEvent(this, message, client, parameterBinder));
         } else {
-            fireEvent(new WebSocketTextObjectMessageEvent(this, message, client, textProtocol));
+            fireEvent(new WebSocketTextObjectMessageEvent(this, message, client, textProtocol, parameterBinder));
         }
        
     }
@@ -199,11 +200,11 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      * @param message Message received from web socket.
      **/
     @Override
-    public void onBinaryMessage(WebSocketClient client, byte[] message, ProtocolHandler<byte[]> binaryProtocol) {
+    public void onBinaryMessage(WebSocketClient client, byte[] message, ProtocolHandler<byte[]> binaryProtocol, ParameterBinder parameterBinder) {
         if(binaryProtocol == null) {
-            fireEvent(new WebSocketBinaryMessageEvent(this, message, client));
+            fireEvent(new WebSocketBinaryMessageEvent(this, message, client, parameterBinder));
         } else {
-            fireEvent(new WebSocketBinaryObjectMessageEvent(this, message, client, binaryProtocol));
+            fireEvent(new WebSocketBinaryObjectMessageEvent(this, message, client, binaryProtocol, parameterBinder));
         }
     }
     
@@ -237,8 +238,8 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      * @param connectionParameters Connection Properties on the client connection request.
      **/
     @Override
-    public void onConnect(WebSocketClient client) {
-        fireEvent(new WebSocketClientConnectionEvent(this, client));
+    public void onConnect(WebSocketClient client, ParameterBinder parameterBinder) {
+        fireEvent(new WebSocketClientConnectionEvent(this, client, parameterBinder));
         
     }
 
@@ -248,8 +249,8 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      * @param clientId ID of the client that was disconnected.
      **/
     @Override
-    public void onDisconnect(WebSocketClient client) {
-        fireEvent(new WebSocketClientDisconnectedEvent(this, client));
+    public void onDisconnect(WebSocketClient client, ParameterBinder parameterBinder) {
+        fireEvent(new WebSocketClientDisconnectedEvent(this, client, parameterBinder));
         
     }
     
@@ -259,7 +260,7 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      * @param event Event to emit.
      **/
     private void fireEvent(WebSocketEvent event) {
-        for(WebSocketEventListener listener : eventListeners) {
+        for (WebSocketEventListener listener : eventListeners) {
             listener.onWebSocketEvent(event);
         }
     }

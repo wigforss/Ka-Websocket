@@ -1,6 +1,7 @@
 package org.kasource.web.websocket.event;
 
 
+import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.channel.WebSocketChannel;
 import org.kasource.web.websocket.client.WebSocketClient;
 
@@ -24,8 +25,8 @@ public class WebSocketBinaryMessageEvent extends WebSocketClientEvent {
      * @param message   The message sent.
      * @param clientId  The ID of client who sent the message
      **/
-    public WebSocketBinaryMessageEvent(WebSocketChannel socket, byte[] message, WebSocketClient client) {
-        super(socket, client);
+    public WebSocketBinaryMessageEvent(WebSocketChannel socket, byte[] message, WebSocketClient client, ParameterBinder parameterBinder) {
+        super(socket, client, parameterBinder);
         this.message = message;
       
     }

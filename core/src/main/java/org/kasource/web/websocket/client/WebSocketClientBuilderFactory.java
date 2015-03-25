@@ -17,6 +17,6 @@ public class WebSocketClientBuilderFactory {
     
     public WebSocketClientConfig.Builder get(HttpServletRequest request) {
         String clientId = clientIdGenerator.getId(request, manager);
-        return new WebSocketClientConfig.Builder(manager, clientId, request.getParameterMap());
+        return new WebSocketClientConfig.Builder(manager, clientId, request);
     }
 }

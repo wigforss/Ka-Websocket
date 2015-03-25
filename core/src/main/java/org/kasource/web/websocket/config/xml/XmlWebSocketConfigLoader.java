@@ -11,8 +11,7 @@ import javax.xml.bind.JAXBException;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigException;
 import org.kasource.web.websocket.config.WebSocketConfigLoader;
-import org.kasource.web.websocket.config.xml.jaxb.WebsocketXmlConfigRoot;
-
+import org.kasource.web.websocket.config.xml.jaxb.WebsocketConfig;
 public class XmlWebSocketConfigLoader implements WebSocketConfigLoader {
 
     private static final String CLASSPATH_RESOURCE_PREFIX = "classpath:";
@@ -28,7 +27,7 @@ public class XmlWebSocketConfigLoader implements WebSocketConfigLoader {
     @Override
     public WebSocketConfig loadConfig() {
         try {
-            JAXBContext context = JAXBContext.newInstance(WebsocketXmlConfigRoot.class.getPackage().getName());
+            JAXBContext context = JAXBContext.newInstance(WebsocketConfig.class.getPackage().getName());
             if (configLocation.startsWith(FILE_RESOURCE_PREFIX)) {
                 return loadConfigFromFile(context);
             } else if (configLocation.startsWith(CLASSPATH_RESOURCE_PREFIX)) {
@@ -46,7 +45,7 @@ public class XmlWebSocketConfigLoader implements WebSocketConfigLoader {
         if (configLocation.startsWith(FILE_RESOURCE_PREFIX)) {
             location = configLocation.substring(FILE_RESOURCE_PREFIX.length());
         }
-        WebsocketXmlConfigRoot configRoot = (WebsocketXmlConfigRoot) context.createUnmarshaller().unmarshal(new File(location));
+        WebsocketConfig configRoot = (WebsocketConfig) context.createUnmarshaller().unmarshal(new File(location));
         return new XmlWebSocketConfig(configRoot, servletContext);
     }
 
@@ -58,7 +57,7 @@ public class XmlWebSocketConfigLoader implements WebSocketConfigLoader {
         InputStream in = null;
         try {
             in = getResource(location);
-            WebsocketXmlConfigRoot configRoot = (WebsocketXmlConfigRoot) context.createUnmarshaller().unmarshal(in);
+            WebsocketConfig configRoot = (WebsocketConfig) context.createUnmarshaller().unmarshal(in);
             return new XmlWebSocketConfig(configRoot, servletContext);
         } finally {
             if (in != null) {

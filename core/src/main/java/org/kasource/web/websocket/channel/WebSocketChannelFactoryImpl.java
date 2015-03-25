@@ -27,7 +27,6 @@ public class WebSocketChannelFactoryImpl implements  WebSocketChannelFactory {
     
     private Map<String, WebSocketChannelImpl> webSockets = new ConcurrentHashMap<String, WebSocketChannelImpl>();
     protected ServletContext servletContext;
-   
     private Map<String, List<WebSocketEventListener>> lazyListeners = new ConcurrentHashMap<String, List<WebSocketEventListener>>();
  
    
@@ -109,9 +108,11 @@ public class WebSocketChannelFactoryImpl implements  WebSocketChannelFactory {
         }
     }
 
+   
+    
     private void addLazyListener(String url, WebSocketEventListener listener) {
         List<WebSocketEventListener> listeners = lazyListeners.get(url);
-        if(listeners == null) {
+        if (listeners == null) {
             listeners = new ArrayList<WebSocketEventListener>();
             lazyListeners.put(url, listeners);
         }

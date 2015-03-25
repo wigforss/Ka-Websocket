@@ -6,10 +6,13 @@ import java.lang.reflect.Method;
 import javax.servlet.ServletContext;
 
 import org.kasource.web.websocket.annotations.OnWebSocketEvent;
-import org.kasource.web.websocket.annotations.OnWebSocketMessage;
+import org.kasource.web.websocket.annotations.OnMessage;
+import org.kasource.web.websocket.annotations.OnClientConnected;
+import org.kasource.web.websocket.annotations.OnClientDisconnected;
 import org.kasource.web.websocket.annotations.WebSocketEventAnnotation;
 import org.kasource.web.websocket.annotations.WebSocketListener;
 import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.config.annotation.WebSocket;
 import org.kasource.web.websocket.event.listeners.WebSocketBinaryMessageListener;
 import org.kasource.web.websocket.event.listeners.WebSocketClientConnectionListener;
 import org.kasource.web.websocket.event.listeners.WebSocketClientDisconnectedListener;
@@ -21,6 +24,8 @@ import org.kasource.web.websocket.listener.WebSocketEventListener;
 import org.kasource.web.websocket.listener.WebSocketEventMethod;
 import org.kasource.web.websocket.listener.WebSocketMessageMethod;
 import org.kasource.web.websocket.listener.WebSocketTextMessageHandler;
+import org.kasource.web.websocket.listener.WebsocketConnectedMethod;
+import org.kasource.web.websocket.listener.WebsocketDisconnectedMethod;
 import org.kasource.web.websocket.listener.extension.ExtendedWebSocketEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,17 +58,19 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
     @Override
     public void registerListener(Object listener) throws IllegalArgumentException {
         WebSocketListener listenerAnnotation = listener.getClass().getAnnotation(WebSocketListener.class);
-        String webSocketChannelName = null;
+        String url = null;
         if (listenerAnnotation == null) {
             // Find out of the WebSocketListenerRegistration is implemented
-            if(listener instanceof WebSocketListenerRegistration) {
-                webSocketChannelName = ((WebSocketListenerRegistration) listener).getWebSocketChannelName();
+            if (listener instanceof WebSocketListenerRegistration) {
+                url = ((WebSocketListenerRegistration) listener).getWebSocketChannelName();
+            } else if (listener.getClass().isAnnotationPresent(WebSocket.class)) {
+                url = listener.getClass().getAnnotation(WebSocket.class).value();
             }
         } else {
-            webSocketChannelName = listenerAnnotation.value();
+            url = listenerAnnotation.value();
         }
-        if (webSocketChannelName != null) {
-            registerListener(listener, webSocketChannelName);
+        if (url != null) {
+            registerListener(listener, url);
         }
     }
     
@@ -72,27 +79,27 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
      * Web Socket listening.
      * 
      * @param listener Object to inspect and register for event listener if properly configured.
-     * @param webSocketChannelName Name of the WebSocketChannel to register the listener at.
+     * @param url URL of the WebSocketChannel to register the listener at.
      * 
      * @throws IllegalArgumentException if any annotated listener method does not contain the correct method signature.
      **/
-    private void registerListener(Object listener, String webSocketChannelName) throws IllegalArgumentException {
-        if(WebSocketEventListener.class.isAssignableFrom(listener.getClass()))  {
-            webSocketFactory.listenTo(webSocketChannelName, (WebSocketEventListener) listener);   
+    private void registerListener(Object listener, String url) throws IllegalArgumentException {
+        if (WebSocketEventListener.class.isAssignableFrom(listener.getClass()))  {
+            webSocketFactory.listenTo(url, (WebSocketEventListener) listener);   
         }
-        if(WebSocketBinaryMessageListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(webSocketChannelName, new WebSocketBinaryMessageHandler((WebSocketBinaryMessageListener) listener));   
+        if (WebSocketBinaryMessageListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new WebSocketBinaryMessageHandler((WebSocketBinaryMessageListener) listener));   
         }
-        if(WebSocketTextMessageListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(webSocketChannelName, new WebSocketTextMessageHandler((WebSocketTextMessageListener) listener));   
+        if (WebSocketTextMessageListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new WebSocketTextMessageHandler((WebSocketTextMessageListener) listener));   
         }
-        if(WebSocketClientConnectionListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(webSocketChannelName, new WebSocketClientConnectedHandler((WebSocketClientConnectionListener) listener));   
+        if (WebSocketClientConnectionListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new WebSocketClientConnectedHandler((WebSocketClientConnectionListener) listener));   
         }
-        if(WebSocketClientDisconnectedListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(webSocketChannelName, new WebSocketClientDisconnectedHandler((WebSocketClientDisconnectedListener) listener));   
+        if (WebSocketClientDisconnectedListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new WebSocketClientDisconnectedHandler((WebSocketClientDisconnectedListener) listener));   
         }
-        registerAnnotatedMethods(listener, webSocketChannelName);
+        registerAnnotatedMethods(listener, url);
     }
     
     
@@ -100,29 +107,33 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
      * Finds and registers all eligible annotated methods as separate listeners.
      * 
      * @param listener               Listener object to register.
-     * @param webSocketChannelName   Name of the WebSocketChannel to register at.
+     * @param url   Name of the WebSocketChannel to register at.
      * @throws IllegalArgumentException if any annotated listener method does not contain the correct method signature.
      **/
-    private void registerAnnotatedMethods(Object listener, String webSocketChannelName) throws IllegalArgumentException {
+    private void registerAnnotatedMethods(Object listener, String url) throws IllegalArgumentException {
         Method[] methods = listener.getClass().getMethods();
         for(Method method : methods) {
-            if (webSocketChannelName != null || method.isAnnotationPresent(WebSocketListener.class)) {
+            if (url != null || method.isAnnotationPresent(WebSocketListener.class)) {
                 WebSocketListener methodListerAnnotation = method.getAnnotation(WebSocketListener.class);
                
-                if(methodListerAnnotation != null) {
-                    webSocketChannelName = methodListerAnnotation.value();
+                if (methodListerAnnotation != null) {
+                    url = methodListerAnnotation.value();
                 }
                 
-                if( method.isAnnotationPresent(OnWebSocketEvent.class)) {
-                    registerListener(webSocketChannelName, new WebSocketEventMethod(listener, method));
-                } else if(method.isAnnotationPresent(OnWebSocketMessage.class)) { 
-                    registerListener(webSocketChannelName, new WebSocketMessageMethod(listener, method));
+                if (method.isAnnotationPresent(OnWebSocketEvent.class)) {
+                    registerListener(url, new WebSocketEventMethod(listener, method));
+                } else if (method.isAnnotationPresent(OnMessage.class)) { 
+                    registerListener(url, new WebSocketMessageMethod(listener, method));
+                } else if (method.isAnnotationPresent(OnClientConnected.class)) {
+                    registerListener(url, new WebsocketConnectedMethod(listener, method));
+                } else if (method.isAnnotationPresent(OnClientDisconnected.class)) {
+                    registerListener(url, new WebsocketDisconnectedMethod(listener, method));               
                 } else {
                     Annotation[] annotations = method.getAnnotations(); 
                 
-                    for(Annotation annotation : annotations) {
-                        if(annotation.annotationType().isAnnotationPresent(WebSocketEventAnnotation.class)) {
-                            registerExtensionListener(method, listener, annotation, webSocketChannelName);
+                    for (Annotation annotation : annotations) {
+                        if (annotation.annotationType().isAnnotationPresent(WebSocketEventAnnotation.class)) {
+                            registerExtensionListener(method, listener, annotation, url);
                             break;
                         }
                     }
@@ -149,7 +160,7 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
             try {
                 Method valueMethod = annotation.annotationType().getMethod("value");
                 Object value = valueMethod.invoke(annotation);
-                if(value instanceof Class && ExtendedWebSocketEventListener.class.isAssignableFrom((Class<?>) value)) {
+                if (value instanceof Class && ExtendedWebSocketEventListener.class.isAssignableFrom((Class<?>) value)) {
                     @SuppressWarnings("unchecked")
                     ExtendedWebSocketEventListener extension = createExtensionInstance((Class<? extends ExtendedWebSocketEventListener>) value, method, listener, annotation);      
                     webSocketFactory.listenTo(socketChannelName, extension);   

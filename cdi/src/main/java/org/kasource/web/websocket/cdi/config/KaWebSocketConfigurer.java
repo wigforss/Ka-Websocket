@@ -36,8 +36,8 @@ import org.kasource.web.websocket.config.WebSocketConfigImpl;
 import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
 import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepositoryImpl;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
 
@@ -84,8 +84,8 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Produces @ApplicationScoped 
-    public ProtocolHandlerRepository getProtocolHandlerRepository() {
-        ProtocolHandlerRepositoryImpl handlerRepo = new ProtocolHandlerRepositoryImpl();
+    public ProtocolRepository getProtocolRepository() {
+        ProtocolRepositoryImpl handlerRepo = new ProtocolRepositoryImpl();
         ProtocolHandlerConfig<String> textProtocolHandlerConfig = null;
         ProtocolHandlerConfig<byte[]> binaryProtocolHandlerConfig = null;
         Set<ProtocolHandlerConfig> protocolHandlers = getBeansOfType(ProtocolHandlerConfig.class);
@@ -104,16 +104,12 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
     }
     
     @Produces @ApplicationScoped 
-    public  WebSocketManagerRepository getWebSocketManagerRepository(ProtocolHandlerRepository protocolHandlerRepository) {
+    public  WebSocketManagerRepository getWebSocketManagerRepository(ProtocolRepository protocolHandlerRepository) {
         WebSocketManagerRepositoryImpl managerRepo = new WebSocketManagerRepositoryImpl();
-        managerRepo.setProtocolHandlerRepository(protocolHandlerRepository);
+       
         managerRepo.setServletContext(servletContext);
         Set<AuthenticationConfig> authConfigSet = getBeansOfType(AuthenticationConfig.class);
-        if(!authConfigSet.isEmpty()) {
-            AuthenticationConfig auth = authConfigSet.iterator().next();
-            managerRepo.setAutenticationProviders(auth.getAuthenticationUrlMapping());
-            managerRepo.setDefaultAuthenticationProvider(auth.getDefaultAuthenticationProvider());
-        }
+       
         
         return managerRepo;
     }
@@ -126,7 +122,7 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
     @Produces @ApplicationScoped 
     public WebSocketConfig getWebSocketConfig(WebSocketChannelFactory channelFactory,
                 WebSocketManagerRepository managerRepository,
-                ProtocolHandlerRepository protocolHandlerRepository,
+                ProtocolRepository protocolHandlerRepository,
                 WebSocketListenerRegister listenerRegister) {
         WebSocketConfigImpl config = new WebSocketConfigImpl();
         
@@ -154,7 +150,7 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
     
     @Produces @Dependent
     public WebSocketServletConfigImpl getWebSocketServletConfig(WebSocketManagerRepository managerRepository,
-                ProtocolHandlerRepository protocolHandlerRepository) {
+                ProtocolRepository protocolHandlerRepository) {
         WebSocketServletConfigImpl servletConfig = new WebSocketServletConfigImpl();
         servletConfig.setManagerRepository(managerRepository);
         servletConfig.setProtocolRepository(protocolHandlerRepository);

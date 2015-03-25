@@ -5,19 +5,22 @@ import java.util.Set;
 
 import org.kasource.web.websocket.client.WebSocketClientBuilderFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
+import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
 import org.kasource.web.websocket.manager.WebSocketManager;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepositoryImpl;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
+import org.kasource.web.websocket.security.AuthenticationProvider;
 
 public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     private String servletName;
     private boolean dynamicAddressing;
-    private ClientIdGenerator clientIdGenerator;
+    private ClientIdGenerator clientIdGenerator = new DefaultClientIdGenerator();
     private WebSocketManagerRepository managerRepository;
-    private ProtocolHandlerRepository protocolRepository = new ProtocolHandlerRepositoryImpl();
+    private ProtocolRepository protocolRepository = new ProtocolRepositoryImpl();
     private Set<String> originWhitelist = new HashSet<String>();
-
+    private AuthenticationProvider authenticationProvider;
+    
     @Override
     public boolean isDynamicAddressing() {
         return dynamicAddressing;
@@ -33,10 +36,7 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
         return managerRepository.getWebSocketManager(url);
     }
 
-    @Override
-    public boolean hasProtocol(String protocol, String url) {
-        return protocolRepository.hasProtocol(protocol, url);
-    }
+   
 
     @Override
     public boolean isValidOrigin(String origin) {
@@ -52,6 +52,7 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     /**
      * @return the servletName
      */
+    @Override
     public String getServletName() {
         return servletName;
     }
@@ -82,7 +83,7 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
     /**
      * @return the protocolRepository
      */
-    public ProtocolHandlerRepository getProtocolRepository() {
+    public ProtocolRepository getProtocolRepository() {
         return protocolRepository;
     }
 
@@ -90,13 +91,14 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
      * @param protocolRepository
      *            the protocolRepository to set
      */
-    public void setProtocolRepository(ProtocolHandlerRepository protocolRepository) {
+    public void setProtocolRepository(ProtocolRepository protocolRepository) {
         this.protocolRepository = protocolRepository;
     }
 
     /**
      * @return the originWhitelist
      */
+    @Override
     public Set<String> getOriginWhitelist() {
         return originWhitelist;
     }
@@ -125,9 +127,48 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
         this.clientIdGenerator = clientIdGenerator;
     }
 
+
     @Override
-    public boolean hasClientIdGenerator() {
-        return clientIdGenerator != null;
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authenticationProvider;
     }
+
+    /**
+     * @param authenticationProvider the authenticationProvider to set
+     */
+    public void setAuthenticationProvider(AuthenticationProvider authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
+    }
+
+    @Override
+    public void merge(WebSocketServletConfig config) {
+        if (authenticationProvider == null) {
+            authenticationProvider = config.getAuthenticationProvider();
+        }
+        if (originWhitelist == null || originWhitelist.isEmpty()) {
+            originWhitelist = config.getOriginWhitelist();
+        }
+        if (clientIdGenerator instanceof DefaultClientIdGenerator) {
+            if (config.getClientIdGenerator() != null) {
+                clientIdGenerator = config.getClientIdGenerator();
+            }
+        }
+        
+        if (protocolRepository == null) {
+            protocolRepository = config.getProtocolRepository();
+        }
+        
+        
+    }
+
+    /**
+     * @return the clientIdGenerator
+     */
+    @Override
+    public ClientIdGenerator getClientIdGenerator() {
+        return clientIdGenerator;
+    }
+
+
 
 }

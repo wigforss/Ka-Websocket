@@ -3,8 +3,11 @@ package org.kasource.web.websocket.listener;
 
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
+import org.kasource.web.websocket.annotations.Broadcast;
+import org.kasource.web.websocket.annotations.Payload;
 import org.kasource.web.websocket.event.WebSocketBinaryMessageEvent;
 import org.kasource.web.websocket.event.WebSocketBinaryObjectMessageEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;
@@ -20,94 +23,127 @@ public class WebSocketMessageMethod implements WebSocketEventListener {
     
     private Object listener;
     private Method method;
-
-    private Class<?> argumentType;
+    private boolean broadcastResponse;
+    
+    private Class<?> payloadType;
     
     public WebSocketMessageMethod(Object listener, Method method) {
-        if(method.isAccessible()) {
+        if (method.isAccessible()) {
             throw new IllegalArgumentException("WebSocket Message Listener method must be public");
         }
-        Class<?>[] params = method.getParameterTypes();
-        if(params.length != 1) {
-            throw new IllegalArgumentException("WebSocket Message Listener method must have one parameter");
+       
+        Parameter[] parameters = method.getParameters();
+        for (Parameter parameter : parameters) {
+            if (parameter.getAnnotation(Payload.class) != null) {
+                if (payloadType != null) {
+                    throw new IllegalStateException("Only one parameter in " + method + " can be annotated with @" + Payload.class);
+                } else {
+                    payloadType = parameter.getType();
+                }
+            }
         }
         
        
         this.method = method;
         this.listener = listener;
-        this.argumentType = method.getParameterTypes()[0];
        
+        this.broadcastResponse = method.isAnnotationPresent(Broadcast.class);
     }
 
     
-    private void onTextMessage(WebSocketTextMessageEvent messageEvent) {
-       if(messageEvent instanceof WebSocketTextObjectMessageEvent) {
-           invokeTextMessageMethodConverted((WebSocketTextObjectMessageEvent) messageEvent);
+    private Object onTextMessage(WebSocketTextMessageEvent messageEvent) {
+       if (messageEvent instanceof WebSocketTextObjectMessageEvent) {
+           return invokeTextMessageMethodConverted((WebSocketTextObjectMessageEvent) messageEvent);
        } else {
-           invokeTextMessageMethod(messageEvent);
+           return invokeTextMessageMethod(messageEvent);
        }
        
     }
     
-    private void invokeTextMessageMethod(WebSocketTextMessageEvent messageEvent) {
-        if(String.class.isAssignableFrom(argumentType)) {
+    private Object invokeTextMessageMethod(WebSocketTextMessageEvent messageEvent) {
+       
             try {
-             method.invoke(listener, messageEvent.getMessage());
+                return method.invoke(listener,messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
             } catch (Exception e) {
-             LOG.warn("Could not invoke " + method, e);
+                throw new IllegalStateException("Could not invoke " + method, e);
             } 
-        }
+        
     }
     
-    private void invokeTextMessageMethodConverted(WebSocketTextObjectMessageEvent messageEvent) {
+    private Object invokeTextMessageMethodConverted(WebSocketTextObjectMessageEvent messageEvent) {
         try {
-            method.invoke(listener, messageEvent.getMessageAsObject(argumentType));
+            if (payloadType != null) {
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessageAsObject(payloadType), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+            } else {
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+            }
         } catch(ConversionException e){
-            LOG.warn("Could not convert " + messageEvent.getMessage() + " to " + argumentType + " as " + messageEvent.getProtocolHandler().getProtocolName());
+            throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType + " as " + messageEvent.getProtocolHandler().getProtocolName());
         } catch (Exception e) {
-            LOG.warn("Could not invoke " + method, e);
+            throw new IllegalStateException("Could not invoke " + method, e);
         }        
     }
 
     
-    private void onBinaryMessage(WebSocketBinaryMessageEvent messageEvent) {
-        if(messageEvent instanceof WebSocketBinaryObjectMessageEvent) {
-            invokeBinaryMessageMethodConverted((WebSocketBinaryObjectMessageEvent) messageEvent);
+    private Object onBinaryMessage(WebSocketBinaryMessageEvent messageEvent) {
+        if (messageEvent instanceof WebSocketBinaryObjectMessageEvent) {
+            return invokeBinaryMessageMethodConverted((WebSocketBinaryObjectMessageEvent) messageEvent);
         } else {
-            invokeBinaryMessageMethod(messageEvent);
+            return invokeBinaryMessageMethod(messageEvent);
         }
         
     }
 
-    private void invokeBinaryMessageMethod(WebSocketBinaryMessageEvent messageEvent) {
-        if(byte[].class.isAssignableFrom(argumentType)) {
-            try {
-                byte[] data =  messageEvent.getMessage();
-                method.invoke(listener, listener, Arrays.asList(data).toArray());
-            } catch (Exception e) {
-             LOG.warn("Could not invoke " + method, e);
-            } 
-        }
-        
+    private Object invokeBinaryMessageMethod(WebSocketBinaryMessageEvent messageEvent) {
+       
+        try {
+            byte[] data =  messageEvent.getMessage();
+            return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, Arrays.asList(data).toArray(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not invoke " + method, e);
+        } 
+             
     }
     
-    private void invokeBinaryMessageMethodConverted(WebSocketBinaryObjectMessageEvent messageEvent) {
+    private Object invokeBinaryMessageMethodConverted(WebSocketBinaryObjectMessageEvent messageEvent) {
         try {
-            method.invoke(listener, messageEvent.getMessageAsObject(argumentType));
+            if (payloadType != null) {
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessageAsObject(payloadType), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+            } else {
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+            }
         } catch(ConversionException e){
-            LOG.warn("Could not convert " + messageEvent.getMessage() + " to " + argumentType + " as " + messageEvent.getProtocolHandler().getProtocolName());
+            throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType + " as " + messageEvent.getProtocolHandler().getProtocolName());
         } catch (Exception e) {
-            LOG.warn("Could not invoke " + method, e);
+            throw new IllegalStateException("Could not invoke " + method, e);
         } 
         
     }
 
     @Override
     public void onWebSocketEvent(WebSocketEvent event) {   
-        if(event instanceof WebSocketTextMessageEvent) {
-            onTextMessage((WebSocketTextMessageEvent) event);
-        } else if(event instanceof WebSocketBinaryMessageEvent) {
-            onBinaryMessage((WebSocketBinaryMessageEvent) event);
+        try {
+            if (event instanceof WebSocketTextMessageEvent) {
+               Object response = onTextMessage((WebSocketTextMessageEvent) event);
+               if (response != null) {
+                   if (broadcastResponse) {
+                       event.getSource().broadcast(response);
+                   } else {
+                       ((WebSocketTextMessageEvent) event).getClient().sendTextMessageToSocket(response);
+                   }
+               }
+            } else if (event instanceof WebSocketBinaryMessageEvent) {
+               Object response = onBinaryMessage((WebSocketBinaryMessageEvent) event);
+               if (response != null) {
+                   if (broadcastResponse) {
+                       event.getSource().broadcastBinary(response);
+                   } else {
+                       ((WebSocketBinaryMessageEvent) event).getClient().sendBinaryMessageToSocket(response);
+                   }
+               }
+            }
+        } catch (RuntimeException e){
+            LOG.warn(e.getMessage(), e);
         }
         
     }

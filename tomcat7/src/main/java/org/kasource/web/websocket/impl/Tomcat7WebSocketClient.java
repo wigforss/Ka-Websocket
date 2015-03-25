@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.io.IOUtils;
@@ -28,6 +30,10 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
     private ProtocolHandler<byte[]> binaryProtocolHandler;
 
     protected Tomcat7WebSocketClient(WebSocketClientConfig clientConfig) {
+        textProtocolHandler = clientConfig.getTextProtocolHandler();
+       
+        binaryProtocolHandler = clientConfig.getBinaryProtocolHandler();
+       
         this.clientConfig = clientConfig;
     }
 
@@ -106,8 +112,8 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
      * @return the connectionParameters
      */
     @Override
-    public Map<String, String[]> getConnectionParameters() {
-        return clientConfig.getConnectionParameters();
+    public HttpServletRequest getUpgradeRequest() {
+        return clientConfig.getRequest();
     }
 
 
@@ -139,17 +145,6 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
     }
 
 
-
-    /**
-     * @param textProtocolHandler the textProtocolHandler to set
-     */
-    @Override
-    public void setTextProtocolHandler(ProtocolHandler<String> textProtocolHandler) {
-        this.textProtocolHandler = textProtocolHandler;
-    }
-
-
-
     /**
      * @return the binaryProtocolHandler
      */
@@ -157,18 +152,6 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
     public ProtocolHandler<byte[]> getBinaryProtocolHandler() {
         return binaryProtocolHandler;
     }
-
-
-
-    /**
-     * @param binaryProtocolHandler the binaryProtocolHandler to set
-     */
-    @Override
-    public void setBinaryProtocolHandler(ProtocolHandler<byte[]> binaryProtocolHandler) {
-        this.binaryProtocolHandler = binaryProtocolHandler;
-    }
-
-
 
     @Override
     public void sendBinaryMessageToSocket(Object message) {

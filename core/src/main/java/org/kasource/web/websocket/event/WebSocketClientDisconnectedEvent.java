@@ -1,5 +1,6 @@
 package org.kasource.web.websocket.event;
 
+import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.channel.WebSocketChannel;
 import org.kasource.web.websocket.client.WebSocketClient;
 
@@ -18,7 +19,7 @@ public class WebSocketClientDisconnectedEvent extends WebSocketClientEvent {
      * @param webSocket The web socket the client closed connection to
      * @param clientId  The ID of the client who closed the connection
      */
-    public WebSocketClientDisconnectedEvent(WebSocketChannel webSocket, WebSocketClient client) {
-        super(webSocket, client);
+    public WebSocketClientDisconnectedEvent(WebSocketChannel webSocket, WebSocketClient client, ParameterBinder parameterBinder) {
+        super(webSocket, client, parameterBinder);
     }
 }

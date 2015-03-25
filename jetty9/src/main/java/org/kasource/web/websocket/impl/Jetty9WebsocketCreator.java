@@ -47,7 +47,7 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
         WebSocketManager manager = webSocketServletConfig.getWebSocketManager(url);
         String username = null;
         try {
-             username = manager.authenticate(httpRequest);
+             username = manager.authenticate(webSocketServletConfig.getAuthenticationProvider(), httpRequest);
         } catch (AuthenticationException e) {
             LOG.error("Unauthorized access for " + httpRequest.getRemoteHost(), e);
             return null;
@@ -56,7 +56,7 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
         WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(httpRequest)
                                                         .url(url)
                                                         .username(username)
-                                                        .subProtocol(subProtocol)
+                                                        .protocol(subProtocol, webSocketServletConfig.getProtocolRepository())
                                                         .build();
         
         return new Jetty9WebsocketClient(clientConfig);
@@ -71,7 +71,7 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
     
     private String selectSubProtocol(List<String> subProtocols) {     
         for (String clientProtocol : subProtocols) {
-            if(webSocketServletConfig.hasProtocol(clientProtocol, configUtil.getMaping())) {
+            if (webSocketServletConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
                 LOG.info("Requested protocol "+ clientProtocol + " found by server");
                 return clientProtocol;
             }

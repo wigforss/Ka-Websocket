@@ -7,7 +7,7 @@ import javax.servlet.ServletContext;
 import org.kasource.web.websocket.config.AuthenticationConfig;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
 import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
@@ -41,15 +41,10 @@ public class WebSocketManagerRepositoryFactoryBean  implements  FactoryBean<WebS
            }
         }
         
-        ProtocolHandlerRepository protocolRepository = applicationContext.getBean(ProtocolHandlerRepository.class);
         
         WebSocketManagerRepositoryImpl managerRepo = new WebSocketManagerRepositoryImpl();
         managerRepo.setServletContext(servletContext);
-        managerRepo.setProtocolHandlerRepository(protocolRepository);
-        if(authConfig != null) {
-            managerRepo.setDefaultAuthenticationProvider(authConfig.getDefaultAuthenticationProvider());
-            managerRepo.setAutenticationProviders(authConfig.getAuthenticationUrlMapping());
-        }
+        
         return managerRepo;
     }
 

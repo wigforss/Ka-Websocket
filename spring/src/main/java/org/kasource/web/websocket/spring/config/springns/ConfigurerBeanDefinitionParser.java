@@ -6,7 +6,7 @@ import org.kasource.web.websocket.spring.config.KaWebSocketBean;
 import org.kasource.web.websocket.spring.config.SpringWebSocketConfigFactoryBean;
 import org.kasource.web.websocket.spring.config.SpringWebSocketConfigurer;
 import org.kasource.web.websocket.spring.manager.WebSocketManagerRepositoryFactoryBean;
-import org.kasource.web.websocket.spring.protocol.ProtocolHandlerRepositoryFactoryBean;
+import org.kasource.web.websocket.spring.protocol.ProtocolRepositoryFactoryBean;
 import org.kasource.web.websocket.spring.registration.SpringWebSocketListenerRegister;
 import org.kasource.web.websocket.spring.registration.WebSocketListenerPostBeanProcessor;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
@@ -76,7 +76,7 @@ public class ConfigurerBeanDefinitionParser extends AbstractSingleBeanDefinition
     private void createProtocolRepository(ParserContext pc) {
         BeanDefinitionBuilder builder = BeanDefinitionBuilder
                 .rootBeanDefinition(
-                            ProtocolHandlerRepositoryFactoryBean.class);
+                            ProtocolRepositoryFactoryBean.class);
         builder.setLazyInit(false);
         
         

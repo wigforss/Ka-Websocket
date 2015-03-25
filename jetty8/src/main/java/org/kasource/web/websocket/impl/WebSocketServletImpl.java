@@ -8,6 +8,9 @@ import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.protocol.ProtocolHandler;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
+import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.security.AuthenticationException;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
@@ -30,10 +33,9 @@ public class WebSocketServletImpl extends WebSocketServlet {
         super.init();
         configUtil = new ServletConfigUtil(getServletConfig());
         webSocketServletConfig = configUtil.getConfiguration();
-       
-        
+           
         configUtil.validateMapping(webSocketServletConfig.isDynamicAddressing());
-        if(!webSocketServletConfig.isDynamicAddressing()) {
+        if (!webSocketServletConfig.isDynamicAddressing()) {
             webSocketServletConfig.getWebSocketManager(configUtil.getMaping());
         }
         LOG.info("Initialization completed.");
@@ -43,31 +45,34 @@ public class WebSocketServletImpl extends WebSocketServlet {
     
     @Override
     public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
-        String url = configUtil.getMaping();
+        ProtocolRepository protocolRepository = webSocketServletConfig.getProtocolRepository();
         
         // Only accept protocols configured
-        if(protocol != null && !protocol.isEmpty() && !webSocketServletConfig.hasProtocol(protocol, url)) {
+        if (protocol != null && !protocolRepository.hasProtocol(protocol)) {
             return null;
         }
         
-        
-        if(webSocketServletConfig.isDynamicAddressing()) {
+        String url = configUtil.getMaping();
+        if (webSocketServletConfig.isDynamicAddressing()) {
             url = request.getRequestURI().substring(request.getContextPath().length());
         }
+        
         WebSocketManager manager =  webSocketServletConfig.getWebSocketManager(url);
+        
         String username = null;
         try {
-             username = manager.authenticate(request);
+             username = manager.authenticate(webSocketServletConfig.getAuthenticationProvider(), request);
         } catch (AuthenticationException e) {
             LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
             throw e;
         }
         
-        WebSocketClientConfig clientConfig =  webSocketServletConfig.getClientBuilder(manager).get(request)
+       
         
+        WebSocketClientConfig clientConfig =  webSocketServletConfig.getClientBuilder(manager).get(request)
                                                     .url(url)
                                                     .username(username)
-                                                    .subProtocol(protocol)
+                                                    .protocol(protocol, protocolRepository)
                                                     .build();
          
         Jetty8WebSocketClient client = new Jetty8WebSocketClient(clientConfig);

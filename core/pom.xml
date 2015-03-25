@@ -45,7 +45,10 @@
 		<groupId>commons-io</groupId>
 		<artifactId>commons-io</artifactId>
 	</dependency>
-     
+     <dependency>
+		<groupId>org.kasource.commons</groupId>
+		<artifactId>ka-commons-reflection</artifactId>
+    </dependency>
 	<dependency>
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-api</artifactId>
@@ -55,9 +58,9 @@
 		<artifactId>jackson-mapper-asl</artifactId>
 	</dependency>
 	<dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>javax.servlet-api</artifactId>
+     </dependency>
 	<dependency>
 		<groupId>javax.websocket</groupId>
 		<artifactId>javax.websocket-api</artifactId>

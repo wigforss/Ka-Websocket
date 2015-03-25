@@ -7,9 +7,12 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.kasource.web.websocket.channel.WebSocketChannelFactoryImpl;
+import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
 import org.kasource.web.websocket.config.WebSocketConfig;
-import org.kasource.web.websocket.config.WebSocketConfigException;
+import org.kasource.web.websocket.config.WebSocketConfigImpl;
 import org.kasource.web.websocket.config.xml.XmlWebSocketConfigLoader;
+import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
+import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +24,8 @@ import org.slf4j.LoggerFactory;
 public class WebSocketConfigListener implements ServletContextListener, ServletContextAttributeListener {
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketConfigListener.class);
     private WebSocketChannelFactoryImpl factory;
-
+    
+   
     /**
      * Listener invoked when a new attribute has been added.
      * 
@@ -30,7 +34,7 @@ public class WebSocketConfigListener implements ServletContextListener, ServletC
      **/
     @Override
     public void attributeAdded(ServletContextAttributeEvent attributeEvent) {
-        if(factory != null) {
+        if (factory != null) {
             factory.addWebSocketManagerFromAttribute(attributeEvent.getName(), attributeEvent.getValue());
         }
     }
@@ -51,7 +55,7 @@ public class WebSocketConfigListener implements ServletContextListener, ServletC
     @Override
     public void contextInitialized(ServletContextEvent event) {
         try {
-
+           
             factory = new WebSocketChannelFactoryImpl();
             factory.initialize(event.getServletContext());
             loadAndpublishConfig(event.getServletContext());
@@ -67,14 +71,21 @@ public class WebSocketConfigListener implements ServletContextListener, ServletC
         String configLocation = servletContext.getInitParameter("webSocketConfigLocation");
         // Validate configLocation
         if (configLocation == null || configLocation.isEmpty()) {
-            throw new WebSocketConfigException(
-                        "context-param named webSocketConfigLocation needs to be set in web.xml to use listener "
-                                    + this.getClass());
+            WebSocketConfigImpl config = new WebSocketConfigImpl();
+            config.setClientIdGenerator(new DefaultClientIdGenerator());
+            config.setManagerRepository(new WebSocketManagerRepositoryImpl(servletContext));
+            config.setProtocolHandlerRepository(new ProtocolRepositoryImpl());
+            servletContext.setAttribute(WebSocketConfig.class.getName(), config);
+        } else {
+            // Load configuration
+            XmlWebSocketConfigLoader configLoader = new XmlWebSocketConfigLoader(configLocation, servletContext);
+            WebSocketConfig config = configLoader.loadConfig();
+            servletContext.setAttribute(WebSocketConfig.class.getName(), config);
         }
-        // Load configuration
-        XmlWebSocketConfigLoader configLoader = new XmlWebSocketConfigLoader(configLocation, servletContext);
-        WebSocketConfig config = configLoader.loadConfig();
-        servletContext.setAttribute(WebSocketConfig.class.getName(), config);
+        
+        
     }
+    
+   
 
 }

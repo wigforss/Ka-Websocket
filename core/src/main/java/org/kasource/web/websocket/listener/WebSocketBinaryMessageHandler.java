@@ -13,7 +13,7 @@ public class WebSocketBinaryMessageHandler implements WebSocketEventListener{
 
     @Override
     public void onWebSocketEvent(WebSocketEvent event) {
-        if(event instanceof WebSocketBinaryMessageEvent){
+        if (event instanceof WebSocketBinaryMessageEvent){
             listener.onBinaryMessage((WebSocketBinaryMessageEvent) event);
         }
         

@@ -1,40 +1,23 @@
 package org.kasource.web.websocket.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
 public class AuthenticationConfig {
-    private AuthenticationProvider defaultAuthenticationProvider;
+    private AuthenticationProvider authenticationProvider;
     
-    private Map<String, AuthenticationProvider> authenticationUrlMapping = new HashMap<String, AuthenticationProvider>();
-
+   
     /**
      * @return the defaultAuthenticationProvider
      */
-    public AuthenticationProvider getDefaultAuthenticationProvider() {
-        return defaultAuthenticationProvider;
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authenticationProvider;
     }
 
     /**
      * @param defaultAuthenticationProvider the defaultAuthenticationProvider to set
      */
-    public void setDefaultAuthenticationProvider(AuthenticationProvider defaultAuthenticationProvider) {
-        this.defaultAuthenticationProvider = defaultAuthenticationProvider;
+    public void setAuthenticationProvider(AuthenticationProvider defaultAuthenticationProvider) {
+        this.authenticationProvider = defaultAuthenticationProvider;
     }
 
-    /**
-     * @return the authenticationUrlMapping
-     */
-    public Map<String, AuthenticationProvider> getAuthenticationUrlMapping() {
-        return authenticationUrlMapping;
-    }
-
-    /**
-     * @param authenticationUrlMapping the authenticationUrlMapping to set
-     */
-    public void setAuthenticationUrlMapping(Map<String, AuthenticationProvider> authenticationUrlMapping) {
-        this.authenticationUrlMapping = authenticationUrlMapping;
-    }
 }

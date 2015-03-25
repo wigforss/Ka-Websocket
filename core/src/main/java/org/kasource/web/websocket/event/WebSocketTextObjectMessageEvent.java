@@ -1,5 +1,6 @@
 package org.kasource.web.websocket.event;
 
+import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.channel.WebSocketChannel;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.protocol.ConversionException;
@@ -20,8 +21,9 @@ public class WebSocketTextObjectMessageEvent  extends WebSocketTextMessageEvent 
     public WebSocketTextObjectMessageEvent(WebSocketChannel socket, 
                                      String message, 
                                      WebSocketClient client,
-                                     ProtocolHandler<String> protocolHandler) {
-        super(socket, message, client);
+                                     ProtocolHandler<String> protocolHandler,
+                                     ParameterBinder parameterBinder) {
+        super(socket, message, client, parameterBinder);
         this.protocolHandler = protocolHandler;
           
     }

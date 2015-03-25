@@ -13,7 +13,7 @@ public class WebSocketTextMessageHandler implements WebSocketEventListener {
 
     @Override
     public void onWebSocketEvent(WebSocketEvent event) {
-        if(event instanceof WebSocketTextMessageEvent){
+        if (event instanceof WebSocketTextMessageEvent){
             listener.onMessage((WebSocketTextMessageEvent)event);
         }
         

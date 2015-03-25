@@ -3,21 +3,20 @@ package org.kasource.web.websocket.config.xml;
 import org.kasource.web.websocket.client.id.AbstractClientIdGenerator;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.config.WebSocketConfigException;
-import org.kasource.web.websocket.config.xml.jaxb.ClientIdGeneratorXmlConfig;
 
 public class XmlClientIdGenerator {
    
     private ClientIdGenerator clientIdGenerator;
     
-    public XmlClientIdGenerator(ClientIdGeneratorXmlConfig generatorConfig) {
+    public XmlClientIdGenerator(org.kasource.web.websocket.config.xml.jaxb.ClientIdGenerator generatorConfig) {
         try {
-        this.clientIdGenerator = loadClientIdGenerator(generatorConfig);
+            this.clientIdGenerator = loadClientIdGenerator(generatorConfig);
         } catch (Exception e) {
             throw new WebSocketConfigException("Could not load ClientIdGenerator: " + generatorConfig.getClass(), e);
         }
     }
     
-    private ClientIdGenerator loadClientIdGenerator(ClientIdGeneratorXmlConfig generatorConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private ClientIdGenerator loadClientIdGenerator(org.kasource.web.websocket.config.xml.jaxb.ClientIdGenerator generatorConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         
         if (generatorConfig != null) {
             Class<?> clazz = Class.forName(generatorConfig.getClazz());

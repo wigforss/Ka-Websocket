@@ -5,19 +5,19 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.kasource.web.websocket.config.ProtocolHandlerConfig;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepositoryImpl;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class ProtocolHandlerRepositoryFactoryBean implements FactoryBean<ProtocolHandlerRepository>, ApplicationContextAware {
+public class ProtocolRepositoryFactoryBean implements FactoryBean<ProtocolRepository>, ApplicationContextAware {
     private ApplicationContext applicationContext;
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public ProtocolHandlerRepository getObject() throws Exception {
+    public ProtocolRepository getObject() throws Exception {
         Map<String, ProtocolHandlerConfig> config = applicationContext.getBeansOfType(ProtocolHandlerConfig.class);
         ProtocolHandlerConfig<String> textProtocolHandlerConfig = null;
         ProtocolHandlerConfig<byte[]> binaryProtocolHandlerConfig = null;
@@ -31,7 +31,7 @@ public class ProtocolHandlerRepositoryFactoryBean implements FactoryBean<Protoco
                 }
             }
         }
-        ProtocolHandlerRepositoryImpl handler = new ProtocolHandlerRepositoryImpl();
+        ProtocolRepositoryImpl handler = new ProtocolRepositoryImpl();
         handler.setBinaryProtocolHandlerConfig(binaryProtocolHandlerConfig);
         handler.setTextProtocolHandlerConfig(textProtocolHandlerConfig);
         return handler;
@@ -39,7 +39,7 @@ public class ProtocolHandlerRepositoryFactoryBean implements FactoryBean<Protoco
 
     @Override
     public Class<?> getObjectType() {
-        return ProtocolHandlerRepository.class;
+        return ProtocolRepository.class;
     }
 
     @Override

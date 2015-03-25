@@ -21,8 +21,8 @@ import org.kasource.web.websocket.guice.extension.InjectionTypeListener;
 import org.kasource.web.websocket.guice.registration.WebSocketListenerInjectionListener;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
 import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepositoryImpl;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
 
@@ -65,7 +65,7 @@ public class KaWebSocketModule  extends AbstractModule {
     }
     
     @Provides @Singleton
-    ProtocolHandlerRepository getProtocolHandlerRepository(Injector injector) {
+    ProtocolRepository getProtocolHandlerRepository(Injector injector) {
         ProtocolHandlerConfig<String> textHandler = null;
         ProtocolHandlerConfig<byte[]> binaryHandler = null;
         try {
@@ -78,14 +78,14 @@ public class KaWebSocketModule  extends AbstractModule {
         }catch (Exception e) {
             // ignore
         }
-        ProtocolHandlerRepositoryImpl handler = new ProtocolHandlerRepositoryImpl();
+        ProtocolRepositoryImpl handler = new ProtocolRepositoryImpl();
         handler.setBinaryProtocolHandlerConfig(binaryHandler);
         handler.setTextProtocolHandlerConfig(textHandler);
         return handler;
     }
     
     @Provides @Singleton
-    WebSocketManagerRepository getWebSocketManagerRepository(Injector injector, ProtocolHandlerRepository protocolHandlerRepository) {
+    WebSocketManagerRepository getWebSocketManagerRepository(Injector injector, ProtocolRepository protocolHandlerRepository) {
         ServletContext servletContext = injector.getInstance(ServletContext.class);
         AuthenticationConfig authConfig = null;
         try {
@@ -96,11 +96,7 @@ public class KaWebSocketModule  extends AbstractModule {
         
         WebSocketManagerRepositoryImpl managerRepo = new WebSocketManagerRepositoryImpl();
         managerRepo.setServletContext(servletContext);
-        managerRepo.setProtocolHandlerRepository(protocolHandlerRepository);
-        if(authConfig != null) {
-            managerRepo.setDefaultAuthenticationProvider(authConfig.getDefaultAuthenticationProvider());
-            managerRepo.setAutenticationProviders(authConfig.getAuthenticationUrlMapping());
-        }
+       
         return managerRepo;
     }
     
@@ -113,7 +109,7 @@ public class KaWebSocketModule  extends AbstractModule {
     @Provides @Singleton 
     WebSocketConfig getWebSocketConfig(WebSocketChannelFactory channelFactory,
                 WebSocketManagerRepository managerRepository,
-                ProtocolHandlerRepository protocolHandlerRepository,
+                ProtocolRepository protocolHandlerRepository,
                 WebSocketListenerRegister listenerRegister,
                 Injector injector) {
         WebSocketConfigImpl config = new WebSocketConfigImpl();
@@ -139,7 +135,7 @@ public class KaWebSocketModule  extends AbstractModule {
     
     @Provides
     public WebSocketServletConfigImpl getWebSocketServletConfig(WebSocketManagerRepository managerRepository,
-                ProtocolHandlerRepository protocolHandlerRepository, Injector injector) {
+                ProtocolRepository protocolHandlerRepository, Injector injector) {
         WebSocketServletConfigImpl servletConfig = new WebSocketServletConfigImpl();
         servletConfig.setManagerRepository(managerRepository);
         servletConfig.setProtocolRepository(protocolHandlerRepository);

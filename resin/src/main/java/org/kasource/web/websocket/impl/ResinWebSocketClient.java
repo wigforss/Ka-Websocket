@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
@@ -24,6 +26,8 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
     
     public ResinWebSocketClient(WebSocketClientConfig clientConfig) {
        this.clientConfig = clientConfig;
+       textProtocolHandler = clientConfig.getTextProtocolHandler();
+       binaryProtocolHandler = clientConfig.getBinaryProtocolHandler();
     }
 
 
@@ -127,8 +131,8 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
      * @return the connectionParameters
      */
     @Override
-    public Map<String, String[]> getConnectionParameters() {
-        return clientConfig.getConnectionParameters();
+    public HttpServletRequest getUpgradeRequest() {
+        return clientConfig.getRequest();
     }
 
 
@@ -161,15 +165,7 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
 
 
 
-    /**
-     * @param textProtocolHandler the textProtocolHandler to set
-     */
-    @Override
-    public void setTextProtocolHandler(ProtocolHandler<String> textProtocolHandler) {
-        this.textProtocolHandler = textProtocolHandler;
-    }
-
-
+   
 
     /**
      * @return the binaryProtocolHandler
@@ -181,13 +177,7 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
 
 
 
-    /**
-     * @param binaryProtocolHandler the binaryProtocolHandler to set
-     */
-    @Override
-    public void setBinaryProtocolHandler(ProtocolHandler<byte[]> binaryProtocolHandler) {
-        this.binaryProtocolHandler = binaryProtocolHandler;
-    }
+    
 
     @Override
     public void sendBinaryMessageToSocket(Object message) {

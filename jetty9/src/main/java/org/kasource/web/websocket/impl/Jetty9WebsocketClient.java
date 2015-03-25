@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -101,21 +103,10 @@ public class Jetty9WebsocketClient implements WebSocketClient {
     }
 
     @Override
-    public Map<String, String[]> getConnectionParameters() {
-        return clientConfig.getConnectionParameters();
+    public HttpServletRequest getUpgradeRequest() {
+        return clientConfig.getRequest();
     }
 
-    @Override
-    public void setTextProtocolHandler(ProtocolHandler<String> protocolHandler) {
-       this.textProtocolHandler = protocolHandler;
-        
-    }
-
-    @Override
-    public void setBinaryProtocolHandler(ProtocolHandler<byte[]> protocolHandler) {
-        this.binaryProtocolHandler = protocolHandler;
-        
-    }
 
     @Override
     public ProtocolHandler<String> getTextProtocolHandler() {
@@ -139,8 +130,6 @@ public class Jetty9WebsocketClient implements WebSocketClient {
     }
     
     
-    
-
     @Override
     public String getId() {
        return clientConfig.getClientId();

@@ -2,6 +2,8 @@ package org.kasource.web.websocket.client;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 
 /**
@@ -35,15 +37,10 @@ public interface WebSocketClient {
     public String getUsername();
 
 
-
     /**
-     * @return the connectionParameters
+     * @return the Upgrdade (connection) request
      */
-    public Map<String, String[]> getConnectionParameters();
-
-    public void setTextProtocolHandler(ProtocolHandler<String> protocolHandler); 
-
-    public void setBinaryProtocolHandler(ProtocolHandler<byte[]> protocolHandler); 
+    public HttpServletRequest getUpgradeRequest();
     
     public ProtocolHandler<String> getTextProtocolHandler();
     

@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
 /**
@@ -19,7 +19,7 @@ public class WebSocketManagerRepositoryImpl implements WebSocketManagerRepositor
     private Map<String, AuthenticationProvider> autenticationProviders = new HashMap<String, AuthenticationProvider>();
     private ServletContext servletContext;
     private AuthenticationProvider defaultAuthenticationProvider;
-    private ProtocolHandlerRepository protocolHandlerRepository;
+    private ProtocolRepository protocolRepository;
 
     public WebSocketManagerRepositoryImpl(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -36,7 +36,7 @@ public class WebSocketManagerRepositoryImpl implements WebSocketManagerRepositor
             AuthenticationProvider authenticationProvider = getAuthenticationProviderByUrl(url);
             manager.setAuthenticationProvider(authenticationProvider != null ? authenticationProvider
                         : defaultAuthenticationProvider);
-            manager.setProtocolHandlerRepository(protocolHandlerRepository);
+          
             managers.put(url, manager);
             servletContext.setAttribute(ATTRIBUTE_PREFIX + url, manager);
             return manager;
@@ -73,28 +73,8 @@ public class WebSocketManagerRepositoryImpl implements WebSocketManagerRepositor
         this.defaultAuthenticationProvider = defaultAuthenticationProvider;
     }
 
-    /**
-     * @param autenticationProviders
-     *            the autenticationProviders to set
-     */
-    public void setAutenticationProviders(Map<String, AuthenticationProvider> autenticationProviders) {
-        this.autenticationProviders = autenticationProviders;
-    }
+    
 
-    /**
-     * @param protocolHandlerRepository
-     *            the protocolHandlerRepository to set
-     */
-    public void setProtocolHandlerRepository(ProtocolHandlerRepository protocolHandlerRepository) {
-        this.protocolHandlerRepository = protocolHandlerRepository;
-    }
-
-    /**
-     * @return the protocolHandlerRepository
-     */
-    @Override
-    public ProtocolHandlerRepository getProtocolHandlerRepository() {
-        return protocolHandlerRepository;
-    }
+    
 
 }

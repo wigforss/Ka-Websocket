@@ -44,7 +44,7 @@ public class WebsocketServletImpl extends WebSocketServlet {
         outboundCharBufferSize = configUtil.parseInitParamAsInt("outboundCharBufferSize");
        
         configUtil.validateMapping(webSocketServletConfig.isDynamicAddressing());
-        if(!webSocketServletConfig.isDynamicAddressing()) {
+        if (!webSocketServletConfig.isDynamicAddressing()) {
             webSocketServletConfig.getWebSocketManager(configUtil.getMaping());
            
         } 
@@ -59,14 +59,14 @@ public class WebsocketServletImpl extends WebSocketServlet {
         
             String url = configUtil.getMaping();
        
-            if(webSocketServletConfig.isDynamicAddressing()) {
+            if (webSocketServletConfig.isDynamicAddressing()) {
                 url = request.getRequestURI().substring(request.getContextPath().length());
             }
        
-            WebSocketManager manager =   webSocketServletConfig.getWebSocketManager(url);
+            WebSocketManager manager =  webSocketServletConfig.getWebSocketManager(url);
             String username = null;
             try {
-                 username = manager.authenticate(request);
+                 username = manager.authenticate(webSocketServletConfig.getAuthenticationProvider(), request);
             } catch (AuthenticationException e) {
                 LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
                 throw e;
@@ -76,7 +76,7 @@ public class WebsocketServletImpl extends WebSocketServlet {
             WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(request)
                                                     .url(url)
                                                     .username(username)
-                                                    .subProtocol(subProtocol)
+                                                    .protocol(subProtocol, webSocketServletConfig.getProtocolRepository())
                                                     .build();
             Tomcat7WebSocketClient client = new Tomcat7WebSocketClient(clientConfig);
    
@@ -119,7 +119,7 @@ public class WebsocketServletImpl extends WebSocketServlet {
     
     protected String selectSubProtocol(List<String> subProtocols) {     
         for (String clientProtocol : subProtocols) {
-            if(webSocketServletConfig.hasProtocol(clientProtocol, configUtil.getMaping())) {
+            if (webSocketServletConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
                 LOG.info("Requested protocol "+ clientProtocol + " found by server");
                 return clientProtocol;
             }

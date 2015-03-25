@@ -15,27 +15,27 @@ import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigException;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
-import org.kasource.web.websocket.config.xml.jaxb.WebsocketXml;
-import org.kasource.web.websocket.config.xml.jaxb.WebsocketXmlConfigRoot;
+import org.kasource.web.websocket.config.xml.jaxb.Websocket;
+import org.kasource.web.websocket.config.xml.jaxb.WebsocketConfig;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
 import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepositoryImpl;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
 
 public class XmlWebSocketConfig implements WebSocketConfig {
 
-    private WebsocketXmlConfigRoot config;
+    private WebsocketConfig config;
     private ClientIdGenerator idGenerator = new DefaultClientIdGenerator();
     private Set<String> originWhitelist = new HashSet<String>();
     private Map<String, WebSocketServletConfig> servletConfigs = new HashMap<String, WebSocketServletConfig>();
-    private ProtocolHandlerRepository protocolHandlerRepository;
+    private ProtocolRepository protocolRepository;
     private WebSocketManagerRepositoryImpl managerRepository;
     private WebSocketChannelFactory channelFactory;
     private WebSocketListenerRegister listenerRegister;
    
-    public XmlWebSocketConfig(WebsocketXmlConfigRoot config, ServletContext servletContext) {
+    public XmlWebSocketConfig(WebsocketConfig config, ServletContext servletContext) {
         this.config = config;
         initialize(servletContext);
     }
@@ -47,34 +47,40 @@ public class XmlWebSocketConfig implements WebSocketConfig {
         
         channelFactory = (WebSocketChannelFactory) servletContext.getAttribute(WebSocketChannelFactory.class.getName());
         XmlAuthentication authentication = null;
-        if(config.getAuthentication() != null) {
-            authentication = new XmlAuthentication(config.getAuthentication());
+        if (config.getAuthenticationProvider() != null) {
+            authentication = new XmlAuthentication(config.getAuthenticationProvider());
         }
        
-        if(config.getClientIdGenerator() != null) {
+        if (config.getClientIdGenerator() != null) {
             idGenerator = new XmlClientIdGenerator(config.getClientIdGenerator()).getClientIdGenerator();
         }
         
         
-        if(config.getOrginWhitelist() != null) {
-            originWhitelist.addAll(config.getOrginWhitelist().getOrigin());
+        if (config.getOriginWhitelist() != null) {
+            originWhitelist.addAll(config.getOriginWhitelist().getOrigin());
         }
+        
         managerRepository = new WebSocketManagerRepositoryImpl(servletContext);
-        if(authentication != null) {
+        
+        if (authentication != null) {
             managerRepository.setDefaultAuthenticationProvider(authentication.getAutenticationProvider());
-            managerRepository.setAutenticationProviders(authentication.getAuthenticationUrlMapping());
         }
-        managerRepository.setProtocolHandlerRepository(protocolHandlerRepository);
-        loadServletConfigs(idGenerator);
+        
+      
+        loadServletConfigs(idGenerator, authentication);
         listenerRegister = new WebSocketListenerRegisterImpl(servletContext);
     }
     
-    private void loadServletConfigs(ClientIdGenerator idGenerator) {
-        for(WebsocketXml websocket :config.getWebsocket()) {
-            XmlWebSocketServletConfig servletConfig = new XmlWebSocketServletConfig(websocket, managerRepository, originWhitelist);
-            if (!servletConfig.hasClientIdGenerator()) {
-                servletConfig.setClientIdGenerator(idGenerator);
-            }
+    private void loadServletConfigs(ClientIdGenerator idGenerator, XmlAuthentication authentication) {
+        for(Websocket websocket :config.getWebsocket()) {
+            WebSocketServletConfig servletConfig = new XmlWebSocketServletConfigBuilder(new XmlWebsocketServlet(websocket))
+                                                            .protocolRepository(protocolRepository)
+                                                            .managerRepository(managerRepository)
+                                                            .originWhitelist(originWhitelist)
+                                                            .build();
+                        
+                      
+            
             servletConfigs.put(servletConfig.getServletName(), servletConfig);
         }
     }
@@ -91,7 +97,7 @@ public class XmlWebSocketConfig implements WebSocketConfig {
         }
         
         try {
-            protocolHandlerRepository = new ProtocolHandlerRepositoryImpl(textProtocolHandlerConfig, binaryProtocolHandlerConfig); 
+            protocolRepository = new ProtocolRepositoryImpl(textProtocolHandlerConfig, binaryProtocolHandlerConfig); 
         } catch (Exception e) {
            throw new WebSocketConfigException("Could not load Protocol Handlers", e);
         }
@@ -104,8 +110,8 @@ public class XmlWebSocketConfig implements WebSocketConfig {
   
 
     @Override
-    public ProtocolHandlerRepository getProtocolHandlerRepository() {
-        return protocolHandlerRepository;
+    public ProtocolRepository getProtocolRepository() {
+        return protocolRepository;
     }
     
     @Override

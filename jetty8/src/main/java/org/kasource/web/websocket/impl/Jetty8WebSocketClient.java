@@ -3,6 +3,8 @@ package org.kasource.web.websocket.impl;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.eclipse.jetty.websocket.WebSocket;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
@@ -16,8 +18,10 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
     private ProtocolHandler<String> textProtocolHandler;
     private ProtocolHandler<byte[]> binaryProtocolHandler;
     
-    public Jetty8WebSocketClient( WebSocketClientConfig clientConfig) {
+    public Jetty8WebSocketClient(WebSocketClientConfig clientConfig) {
         this.clientConfig = clientConfig;
+        textProtocolHandler = clientConfig.getTextProtocolHandler();
+        binaryProtocolHandler = clientConfig.getBinaryProtocolHandler();
        
     }
     
@@ -90,8 +94,8 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
      * @return the connectionParameters
      */
     @Override
-    public Map<String, String[]> getConnectionParameters() {
-        return clientConfig.getConnectionParameters();
+    public HttpServletRequest getUpgradeRequest() {
+        return clientConfig.getRequest();
     }
 
 
@@ -124,14 +128,7 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
 
 
 
-    /**
-     * @param textProtocolHandler the textProtocolHandler to set
-     */
-    @Override
-    public void setTextProtocolHandler(ProtocolHandler<String> textProtocolHandler) {
-        this.textProtocolHandler = textProtocolHandler;
-    }
-
+    
 
 
     /**
@@ -144,13 +141,7 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
 
 
 
-    /**
-     * @param binaryProtocolHandler the binaryProtocolHandler to set
-     */
-    @Override
-    public void setBinaryProtocolHandler(ProtocolHandler<byte[]> binaryProtocolHandler) {
-        this.binaryProtocolHandler = binaryProtocolHandler;
-    }
+    
 
     @Override
     public void sendBinaryMessageToSocket(Object message) {

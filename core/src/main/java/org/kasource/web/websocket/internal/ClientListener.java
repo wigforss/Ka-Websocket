@@ -2,6 +2,7 @@ package org.kasource.web.websocket.internal;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 
@@ -19,14 +20,14 @@ public interface ClientListener {
      * 
      * @param client The connecting client
      **/
-    public void onConnect(WebSocketClient client);
+    public void onConnect(WebSocketClient client, ParameterBinder parameterBinder);
     
     /**
      * Called on client disconnect.
      * 
      * @param client The disconnecting client
      **/
-    public void onDisconnect(WebSocketClient client);
+    public void onDisconnect(WebSocketClient client, ParameterBinder parameterBinder);
     
     /**
      * Called after authentication
@@ -42,7 +43,7 @@ public interface ClientListener {
      * @param data      Message.
      * @param clientId  Id of the client who sent the message.
      **/
-    public void onMessage(WebSocketClient client, String message, ProtocolHandler<String> protocol);
+    public void onMessage(WebSocketClient client, String message, ProtocolHandler<String> protocol, ParameterBinder parameterBinder);
     
     /**
      * Called when a binary message has been received from a client.
@@ -50,5 +51,5 @@ public interface ClientListener {
      * @param is        Binary message as an InputStream.
      * @param clientId  Id of the client who sent the message.
      **/
-    public void onBinaryMessage(WebSocketClient client, byte[] message, ProtocolHandler<byte[]> protocol);
+    public void onBinaryMessage(WebSocketClient client, byte[] message, ProtocolHandler<byte[]> protocol, ParameterBinder parameterBinder);
 }

@@ -4,7 +4,7 @@ import org.kasource.web.websocket.event.WebSocketClientDisconnectedEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;
 import org.kasource.web.websocket.event.listeners.WebSocketClientDisconnectedListener;
 
-public class WebSocketClientDisconnectedHandler implements WebSocketEventListener{
+public class WebSocketClientDisconnectedHandler implements WebSocketEventListener {
    private WebSocketClientDisconnectedListener listener;
     
     public WebSocketClientDisconnectedHandler(WebSocketClientDisconnectedListener listener) {
@@ -13,7 +13,7 @@ public class WebSocketClientDisconnectedHandler implements WebSocketEventListene
 
     @Override
     public void onWebSocketEvent(WebSocketEvent event) {
-        if(event instanceof WebSocketClientDisconnectedEvent){
+        if (event instanceof WebSocketClientDisconnectedEvent){
             listener.onClientDisconnected((WebSocketClientDisconnectedEvent) event);
         }
         

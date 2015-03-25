@@ -1,6 +1,5 @@
 package org.kasource.web.websocket.protocol;
 
 
-public interface BinaryProtocolHandler extends ProtocolHandler<byte[]>{
-
+public interface BinaryProtocolHandler extends ProtocolHandler<byte[]> {
 }

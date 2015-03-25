@@ -10,14 +10,14 @@ import org.kasource.web.websocket.config.OriginWhiteListConfig;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.protocol.ProtocolHandlerRepository;
+import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.spring.channel.SpringWebSocketChannelFactory;
 import org.kasource.web.websocket.spring.config.KaWebSocketBean;
 import org.kasource.web.websocket.spring.config.SpringWebSocketConfigFactoryBean;
 import org.kasource.web.websocket.spring.config.SpringWebSocketConfigurer;
 import org.kasource.web.websocket.spring.manager.WebSocketManagerRepositoryFactoryBean;
-import org.kasource.web.websocket.spring.protocol.ProtocolHandlerRepositoryFactoryBean;
+import org.kasource.web.websocket.spring.protocol.ProtocolRepositoryFactoryBean;
 import org.kasource.web.websocket.spring.registration.SpringWebSocketListenerRegister;
 import org.kasource.web.websocket.spring.registration.WebSocketListenerPostBeanProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +49,8 @@ public class SpringKaWebSocket implements ServletContextAware {
     }
     
     @Bean(name = KaWebSocketBean.PROTOCOL_REPO_ID)
-    public ProtocolHandlerRepository getProtocolHandlerRepository() throws Exception {
-        ProtocolHandlerRepositoryFactoryBean factory = new ProtocolHandlerRepositoryFactoryBean();
+    public ProtocolRepository getProtocolRepository() throws Exception {
+        ProtocolRepositoryFactoryBean factory = new ProtocolRepositoryFactoryBean();
         factory.setApplicationContext(applicationContext);
         return factory.getObject();
     }
@@ -95,12 +95,12 @@ public class SpringKaWebSocket implements ServletContextAware {
     @Bean(name = KaWebSocketBean.CONFIG_ID)
     public WebSocketConfig getWebSocketConfig(WebSocketChannelFactory channelFactory,
                                               WebSocketManagerRepository managerRepository,
-                                              ProtocolHandlerRepository protocolHandlerRepository) throws Exception {
+                                              ProtocolRepository protocolHandlerRepository) throws Exception {
         SpringWebSocketConfigFactoryBean factory = new SpringWebSocketConfigFactoryBean();
         factory.setApplicationContext(applicationContext);
         factory.setChannelFactory(channelFactory);
         factory.setManagerRepository(managerRepository);
-        factory.setProtocolHandlerRepository(protocolHandlerRepository);
+        factory.setProtocolRepository(protocolHandlerRepository);
         try {
             ClientIdGenerator idGenerator = applicationContext.getBean(ClientIdGenerator.class);
             factory.setClientIdGenerator(idGenerator);
@@ -114,10 +114,10 @@ public class SpringKaWebSocket implements ServletContextAware {
     @Bean(name = "ServletConfig")
     @Scope("prototype")
     public WebSocketServletConfigImpl getWebSocketServletConfig(WebSocketManagerRepository managerRepository,
-                                                                ProtocolHandlerRepository protocolHandlerRepository) {
+                                                                ProtocolRepository protocolRepository) {
         WebSocketServletConfigImpl servletConfig = new WebSocketServletConfigImpl();
         servletConfig.setManagerRepository(managerRepository);
-        servletConfig.setProtocolRepository(protocolHandlerRepository);
+        servletConfig.setProtocolRepository(protocolRepository);
         try {
             OriginWhiteListConfig originWhiteListConfig = applicationContext.getBean(OriginWhiteListConfig.class);
             servletConfig.setOriginWhitelist(originWhiteListConfig.getOriginWhiteList());

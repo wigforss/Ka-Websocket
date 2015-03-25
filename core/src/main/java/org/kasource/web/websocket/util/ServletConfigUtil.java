@@ -34,7 +34,10 @@ public class ServletConfigUtil {
         return servletConfig == null ? null : servletConfig.getInitParameter(name);
     }
 
+    
     public WebSocketServletConfig getConfiguration() throws ServletException {
+        WebSocketServletConfig webSocketServletConfig = (WebSocketServletConfig) servletConfig.getServletContext().getAttribute("config-" + servletConfig.getServletName());
+        
         WebSocketConfig webSocketConfig = getAttributeByClass(WebSocketConfig.class);
         if (webSocketConfig == null || webSocketConfig.getServletConfig(servletConfig.getServletName()) == null) {
             String errorMessage = "Could not loacate websocket configuration as ServletContext attribute, make sure to configure "
@@ -48,7 +51,33 @@ public class ServletConfigUtil {
             LOG.error(errorMessage, ex);
             throw ex;
         }
-        return webSocketConfig.getServletConfig(servletConfig.getServletName());
+        return merge(webSocketServletConfig, webSocketConfig);
+    }
+    
+    /**
+     * Merge configurations
+     * 
+     * Settings are inherited from webSocketConfig, which can be overridden in its servlet config, which
+     * in turn can be overridden by the configuration looked up by attribute. 
+     * 
+     * @param fromAttribute   Configuration looked up by attribute
+     * @param webSocketConfig Root configuration
+     */
+    private WebSocketServletConfig merge(WebSocketServletConfig fromAttribute, WebSocketConfig webSocketConfig) {
+        WebSocketServletConfig fromConfig = webSocketConfig.getServletConfig(servletConfig.getServletName());
+        if (fromAttribute != null) {
+            if (fromConfig != null) {
+                 fromAttribute.merge(fromConfig);
+                 return fromAttribute;
+            } 
+            return fromAttribute;
+        } else {
+            return fromConfig;
+        } 
+    }
+    
+    private void merge(WebSocketServletConfig fromAttribute, WebSocketServletConfig fromConfig) {
+      
     }
 
     public void validateMapping(boolean useDynamicAddressing) throws ServletException {
