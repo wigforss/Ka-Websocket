@@ -5,14 +5,17 @@ import java.util.Queue;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.bootstrap.WebSocketConfigListener;
+import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.annotation.WebSocket;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
 import org.kasource.web.websocket.servlet.ServletRegistrator;
+import org.kasource.web.websocket.spring.config.KaWebSocketBean;
+import org.kasource.web.websocket.spring.config.loader.SpringWebSocketServletConfigBuilder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.context.ServletContextAware;
 
 
@@ -22,14 +25,16 @@ import org.springframework.web.context.ServletContextAware;
  * 
  * @author rikardwi
  **/
+@DependsOn(KaWebSocketBean.CONFIG_ID)
 public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, ServletContextAware, InitializingBean {
    
        private ServletContext servletContext;
        private WebSocketListenerRegister listenerRegister;
        private Queue<Object> beans = new LinkedList<Object>(); 
        private ServletRegistrator servletRegistrator;
-        
-        
+       private SpringWebSocketServletConfigBuilder configBuilder;
+     
+       
         @Override
         public Object postProcessAfterInitialization(Object object, String beanName) throws BeansException {
             if (object.getClass().isAnnotationPresent(WebSocket.class)) {
@@ -44,8 +49,7 @@ public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, Se
             return object;
         }
 
-      
-        
+  
         @Override
         public Object postProcessBeforeInitialization(Object object, String beanName) throws BeansException {       
             return object;
@@ -61,8 +65,7 @@ public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, Se
                     listenerRegister.registerListener(beans.poll());
                 }
             }
-            servletRegistrator = new ServletRegistrator(servletContext);
-          
+            servletRegistrator = new ServletRegistrator(servletContext, configBuilder);       
         }
 
         @Override
@@ -72,16 +75,19 @@ public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, Se
         }
 
 
-
         /**
          * @param listenerRegister the listenerRegister to set
          */
         public void setListenerRegister(WebSocketListenerRegister listenerRegister) {
             this.listenerRegister = listenerRegister;
         }
-        
-        
-        
-        
-        
+
+
+        /**
+         * @param configBuilder the configBuilder to set
+         */
+        public void setConfigBuilder(SpringWebSocketServletConfigBuilder configBuilder) {
+            this.configBuilder = configBuilder;
+        }
+             
 }

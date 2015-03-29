@@ -4,11 +4,11 @@ package org.kasource.web.websocket.guice.example.web;
 
 import java.io.IOException;
 
-import org.kasource.web.websocket.RecipientType;
 import org.kasource.web.websocket.annotations.OnWebSocketEvent;
 import org.kasource.web.websocket.annotations.WebSocketListener;
 import org.kasource.web.websocket.channel.NoSuchWebSocketClient;
 import org.kasource.web.websocket.channel.WebSocketChannel;
+import org.kasource.web.websocket.client.RecipientType;
 import org.kasource.web.websocket.event.WebSocketClientConnectionEvent;
 import org.kasource.web.websocket.event.WebSocketClientDisconnectedEvent;
 import org.kasource.web.websocket.event.WebSocketTextMessageEvent;

@@ -1,5 +1,7 @@
 package org.kasource.web.websocket.client.parameter;
 
+import java.util.Map;
+
 import org.kasource.commons.reflection.parameter.binder.AnnotationParameterBinder;
 import org.kasource.web.websocket.annotations.RequestParameter;
 import org.kasource.web.websocket.client.WebSocketClient;
@@ -7,19 +9,19 @@ import org.kasource.web.websocket.client.WebSocketClient;
 
 public class ClientRequestParameterBinder implements AnnotationParameterBinder<RequestParameter> {
 
-    private WebSocketClient webSocketClient;
+    private Map<String, String[]> parameters;
     
     public ClientRequestParameterBinder(WebSocketClient webSocketClient) {
-        this.webSocketClient = webSocketClient;
+        this.parameters = webSocketClient.getUpgradeRequest().getParameterMap();
     }
     
     
     @Override
     public Object bindValue(RequestParameter annotation) {
         
-        String value = webSocketClient.getUpgradeRequest().getParameter(annotation.value());
+        String[] value = parameters.get(annotation.value());
         if (value != null) {
-            return value;
+            return value[0];
         } else if (!annotation.defaultValue().isEmpty()) {
             return annotation.defaultValue();
         } else {

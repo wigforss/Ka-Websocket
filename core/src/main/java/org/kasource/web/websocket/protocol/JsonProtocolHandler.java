@@ -24,10 +24,5 @@ public class JsonProtocolHandler implements TextProtocolHandler {
          } 
     }
 
-    @Override
-    public String getProtocolName() {
-        return "json";
-    }
-    
-  
+     
 }

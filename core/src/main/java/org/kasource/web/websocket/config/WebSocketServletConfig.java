@@ -23,8 +23,6 @@ public interface WebSocketServletConfig {
     
     boolean isValidOrigin(String origin);
     
-    void merge(WebSocketServletConfig config);
-    
     String getServletName();
     
     ClientIdGenerator getClientIdGenerator();

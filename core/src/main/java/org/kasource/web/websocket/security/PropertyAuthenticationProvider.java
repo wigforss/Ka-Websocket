@@ -20,12 +20,12 @@ public class PropertyAuthenticationProvider extends AbstractAuthenticationProvid
        String username = getUsername(request);
        String password = getPassword(request);
        if(username == null) {
-           throw new AuthenticationException("No username found. Request needs to include "+(isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username);
+           throw new AuthenticationException("No username found. Request needs to include "+(isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username, request.getRemoteAddr());
        }
        
        String credentials = props.getProperty(username);
        if(credentials == null || !credentials.equals(password)) {
-           throw new AuthenticationException("Invalid username of password", username);
+           throw new AuthenticationException("Invalid username of password", username, request.getRemoteAddr());
        }
        return username;
     }

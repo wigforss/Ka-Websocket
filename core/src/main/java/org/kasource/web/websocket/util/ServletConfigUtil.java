@@ -4,7 +4,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import org.kasource.web.websocket.bootstrap.WebSocketConfigListener;
+import org.kasource.web.websocket.bootstrap.WebSocketBootstrap;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketServletConfig;
 import org.slf4j.Logger;
@@ -36,12 +36,11 @@ public class ServletConfigUtil {
 
     
     public WebSocketServletConfig getConfiguration() throws ServletException {
-        WebSocketServletConfig webSocketServletConfig = (WebSocketServletConfig) servletConfig.getServletContext().getAttribute("config-" + servletConfig.getServletName());
         
         WebSocketConfig webSocketConfig = getAttributeByClass(WebSocketConfig.class);
         if (webSocketConfig == null || webSocketConfig.getServletConfig(servletConfig.getServletName()) == null) {
             String errorMessage = "Could not loacate websocket configuration as ServletContext attribute, make sure to configure "
-                        + WebSocketConfigListener.class
+                        + WebSocketBootstrap.class
                         + " as listener in web.xml or use the Spring, Guice or CDI extension.";
             if (webSocketConfig != null) {
                 errorMessage = "Could not find a websocket configuration for servlet: "
@@ -51,34 +50,10 @@ public class ServletConfigUtil {
             LOG.error(errorMessage, ex);
             throw ex;
         }
-        return merge(webSocketServletConfig, webSocketConfig);
+        return webSocketConfig.getServletConfig(servletConfig.getServletName());
     }
     
-    /**
-     * Merge configurations
-     * 
-     * Settings are inherited from webSocketConfig, which can be overridden in its servlet config, which
-     * in turn can be overridden by the configuration looked up by attribute. 
-     * 
-     * @param fromAttribute   Configuration looked up by attribute
-     * @param webSocketConfig Root configuration
-     */
-    private WebSocketServletConfig merge(WebSocketServletConfig fromAttribute, WebSocketConfig webSocketConfig) {
-        WebSocketServletConfig fromConfig = webSocketConfig.getServletConfig(servletConfig.getServletName());
-        if (fromAttribute != null) {
-            if (fromConfig != null) {
-                 fromAttribute.merge(fromConfig);
-                 return fromAttribute;
-            } 
-            return fromAttribute;
-        } else {
-            return fromConfig;
-        } 
-    }
     
-    private void merge(WebSocketServletConfig fromAttribute, WebSocketServletConfig fromConfig) {
-      
-    }
 
     public void validateMapping(boolean useDynamicAddressing) throws ServletException {
         String mapping = getMaping();

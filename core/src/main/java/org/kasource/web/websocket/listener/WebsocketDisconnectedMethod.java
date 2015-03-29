@@ -2,7 +2,6 @@ package org.kasource.web.websocket.listener;
 
 import java.lang.reflect.Method;
 
-import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.annotations.Broadcast;
 import org.kasource.web.websocket.event.WebSocketClientDisconnectedEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;

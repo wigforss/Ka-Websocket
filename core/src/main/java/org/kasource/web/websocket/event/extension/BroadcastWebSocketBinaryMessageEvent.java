@@ -28,7 +28,7 @@ public class BroadcastWebSocketBinaryMessageEvent extends WebSocketEvent {
     /**
      * Constructor.
      * 
-     * @param websocket The event that contains the web socket which will broadcast the message.
+     * @param websocketXmlConfig The event that contains the web socket which will broadcast the message.
      * @param message   The message to broadcast.
      **/
     public BroadcastWebSocketBinaryMessageEvent(WebSocketEvent event, byte[] message) {

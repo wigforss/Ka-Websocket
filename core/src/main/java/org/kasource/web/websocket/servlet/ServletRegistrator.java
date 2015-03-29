@@ -4,18 +4,21 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
-import org.kasource.web.websocket.config.AnnotatedWebSocketServletConfigBuilder;
+import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigException;
-import org.kasource.web.websocket.config.WebSocketServletConfig;
+import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
 import org.kasource.web.websocket.config.annotation.WebSocket;
+import org.kasource.web.websocket.config.loader.WebSocketServletAnnotationConfigurationBuilder;
+
 
 public class ServletRegistrator {
     
     private ServletContext servletContext;
-   
+    private WebSocketServletAnnotationConfigurationBuilder configurationBuilder;
     
-    public ServletRegistrator(ServletContext servletContext) {
+    public ServletRegistrator(ServletContext servletContext, WebSocketServletAnnotationConfigurationBuilder configurationBuilder) {
         this.servletContext = servletContext;
+        this.configurationBuilder = configurationBuilder;
     }
     
     public void addServlet(Class<?> webocketPojo) { 
@@ -25,12 +28,23 @@ public class ServletRegistrator {
         }
         String url = websocket.value();
         String name = "ka-websocket-" + url.replace("/", "_").replace("*", "-");
-        AnnotatedWebSocketServletConfigBuilder builder = new AnnotatedWebSocketServletConfigBuilder();
-        WebSocketServletConfig config =  builder.configure(webocketPojo);
-        servletContext.setAttribute("config-" + name, config);
+       
+        WebSocketServletConfigImpl servletConfig =  configurationBuilder.configure(webocketPojo);
+        servletConfig.setServletName(name);
+        WebSocketConfig config = (WebSocketConfig) servletContext.getAttribute(WebSocketConfig.class.getName());
+        config.registerServlet(servletConfig);
         
-        ServletRegistration reg = servletContext.addServlet(name, resolve());
-        reg.addMapping(url);
+        
+        ServletRegistration.Dynamic registration = servletContext.addServlet(name, resolve());
+        
+
+        registration.setLoadOnStartup(1);
+        registration.addMapping(url);
+        registration.setAsyncSupported(true);
+      
+        
+      //  ServletRegistration reg = servletContext.addServlet(name, resolve());
+      //  reg.addMapping(url);
         
     }
     

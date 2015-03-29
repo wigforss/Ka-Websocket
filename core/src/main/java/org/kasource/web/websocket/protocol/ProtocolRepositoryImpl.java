@@ -19,8 +19,12 @@ public class ProtocolRepositoryImpl implements ProtocolRepository {
     public ProtocolRepositoryImpl(ProtocolHandlerConfig<String> textProtocolConfig,
                 ProtocolHandlerConfig<byte[]> binaryProtocolConfig) {
         try {
-            setTextProtocolHandlerConfig(textProtocolConfig);
-            setBinaryProtocolHandlerConfig(binaryProtocolConfig);
+            if (textProtocolConfig != null) {
+                setTextProtocolHandlerConfig(textProtocolConfig);
+            }
+            if (binaryProtocolConfig != null) {
+                setBinaryProtocolHandlerConfig(binaryProtocolConfig);
+            }
         } catch (Exception e) {
             throw new WebSocketConfigException("Could not initialize ProtocolHandlerRepository", e);
         }
@@ -102,6 +106,15 @@ public class ProtocolRepositoryImpl implements ProtocolRepository {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean isEmpty() {
+       
+        return defaultTextProtocol == null 
+                    && defaultBinaryProtocol == null 
+                    && binaryProtocols.isEmpty() 
+                    && textProtocols.isEmpty();
     }
 
     

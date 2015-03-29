@@ -14,7 +14,7 @@ public class XmlProtocolHandler implements TextProtocolHandler {
 
     private static Map<Class<?>, JAXBContext> contexts = new ConcurrentHashMap<Class<?>, JAXBContext>();
     
-    private JAXBContext getContext(Class<?> type) throws JAXBException {
+    private synchronized JAXBContext getContext(Class<?> type) throws JAXBException {
         JAXBContext context = contexts.get(type);
         if (context == null) {
             
@@ -32,7 +32,10 @@ public class XmlProtocolHandler implements TextProtocolHandler {
     @Override
     public <T> T toObject(String message, Class<T> ofType) throws ConversionException {
         try {
-            JAXBContext context = getContext(ofType);
+            JAXBContext context = contexts.get(ofType);
+            if (context == null) {
+                context = getContext(ofType);
+            }
         
             ByteArrayInputStream in = new ByteArrayInputStream(message.getBytes());
             return (T) context.createUnmarshaller().unmarshal(in);
@@ -53,9 +56,5 @@ public class XmlProtocolHandler implements TextProtocolHandler {
          }
     }
 
-    @Override
-    public String getProtocolName() {
-        return "xml";
-    }
 
 }

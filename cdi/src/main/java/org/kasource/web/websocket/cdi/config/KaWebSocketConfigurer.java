@@ -143,7 +143,7 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
         
         config.setChannelFactory(channelFactory);
         config.setManagerRepository(managerRepository);
-        config.setProtocolHandlerRepository(protocolHandlerRepository);
+        config.setProtocolRepository(protocolHandlerRepository);
         config.setListenerRegister(listenerRegister);
         return config;
     }

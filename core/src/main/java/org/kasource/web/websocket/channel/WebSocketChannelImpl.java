@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kasource.commons.reflection.parameter.ParameterBinder;
-import org.kasource.web.websocket.RecipientType;
+import org.kasource.web.websocket.client.RecipientType;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.event.WebSocketAuthenticationFailedEvent;
 import org.kasource.web.websocket.event.WebSocketAuthenticationSuccessEvent;

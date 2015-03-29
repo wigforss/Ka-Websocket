@@ -24,9 +24,4 @@ public class Base64ProtocolHandler implements TextProtocolHandler {
         }
     }
 
-    @Override
-    public String getProtocolName() {
-        return "base46";
-    }
-
 }

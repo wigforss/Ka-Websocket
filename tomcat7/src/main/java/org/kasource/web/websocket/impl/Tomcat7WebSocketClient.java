@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -155,10 +156,27 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
 
     @Override
     public void sendBinaryMessageToSocket(Object message) {
-        if(binaryProtocolHandler == null) {
-            throw new IllegalStateException("No binary handler configured for client");
+        if (binaryProtocolHandler == null) {
+            if (message instanceof byte[]) {
+                sendMessageToSocket((byte[]) message);
+            } else if (message instanceof InputStream) {
+                try {
+                    sendMessageToSocket(IOUtils.toByteArray((InputStream) message));
+                } catch(IOException e) {
+                    LOG.debug("Could not send message to socket " + clientConfig.getUsername() + " with id " + clientConfig.getClientId(), e);
+                }
+            } else if (message instanceof Reader) {
+                try {
+                    sendMessageToSocket(IOUtils.toByteArray((Reader) message));
+                } catch(IOException e) {
+                    LOG.debug("Could not send message to socket " + clientConfig.getUsername() + " with id " + clientConfig.getClientId(), e);
+                }
+            } else {
+                sendMessageToSocket(message.toString().getBytes(Charset.forName("UTF-8")));
+            }
+        } else {
+            sendMessageToSocket(binaryProtocolHandler.toMessage(message));
         }
-        sendMessageToSocket(binaryProtocolHandler.toMessage(message));
         
     }
 
@@ -166,10 +184,11 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
 
     @Override
     public void sendTextMessageToSocket(Object message) {
-        if(textProtocolHandler == null) {
-            throw new IllegalStateException("No text handler configured for client");
+        if (textProtocolHandler == null) {
+            sendMessageToSocket(message.toString());
+        } else {
+            sendMessageToSocket(textProtocolHandler.toMessage(message));
         }
-        sendMessageToSocket(textProtocolHandler.toMessage(message));
         
     }
 

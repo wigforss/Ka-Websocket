@@ -115,7 +115,7 @@ public class KaWebSocketModule  extends AbstractModule {
         WebSocketConfigImpl config = new WebSocketConfigImpl();
         config.setChannelFactory(channelFactory);
         config.setManagerRepository(managerRepository);
-        config.setProtocolHandlerRepository(protocolHandlerRepository);
+        config.setProtocolRepository(protocolHandlerRepository);
         config.setListenerRegister(listenerRegister);
         try {
             ClientIdGenerator idGeneraror = injector.getInstance(ClientIdGenerator.class);

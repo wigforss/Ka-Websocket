@@ -1,10 +1,12 @@
 package org.kasource.web.websocket.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
@@ -32,6 +34,12 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
     public Object createWebSocket(UpgradeRequest request, UpgradeResponse response) {
         HttpServletRequest httpRequest = getHttpRequest(request);
         if (!verifyOrigin(request.getOrigin())) {
+            response.setSuccess(false);
+            try {
+                response.sendForbidden("Invalid origin " + request.getOrigin().toString());
+            } catch (IOException e) {
+               response.setStatusCode(HttpStatus.FORBIDDEN_403);
+            }
             return null;
         }
         
@@ -49,7 +57,12 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
         try {
              username = manager.authenticate(webSocketServletConfig.getAuthenticationProvider(), httpRequest);
         } catch (AuthenticationException e) {
-            LOG.error("Unauthorized access for " + httpRequest.getRemoteHost(), e);
+            LOG.warn("Unauthorized access for " + httpRequest.getRemoteHost(), e);
+            try {
+                response.sendForbidden("Unauthorized access");
+            } catch (IOException ioe) {
+               response.setStatusCode(HttpStatus.FORBIDDEN_403);
+            }
             return null;
         }
     
@@ -64,7 +77,9 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
     
     private boolean verifyOrigin(String origin) {
         boolean validOrigin = webSocketServletConfig.isValidOrigin(origin);
-        LOG.warn("Invalid origin: " + origin +" in connection attempt");
+        if (!validOrigin) {
+            LOG.warn("Invalid origin: " + origin +" in connection attempt");
+        }
         return validOrigin;
         
     }
@@ -84,13 +99,18 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
         
         try {
             ServletUpgradeRequest servletRequest = (ServletUpgradeRequest) request;
-            Field field = ServletUpgradeRequest.class.getDeclaredField("req");
-            field.setAccessible(true);
-            return (HttpServletRequest) field.get(servletRequest);
+            Field[] fields = ServletUpgradeRequest.class.getDeclaredFields();
+            for (Field field : fields) {     
+                if (HttpServletRequest.class.isAssignableFrom(field.getType())) {
+                    field.setAccessible(true);
+                    return (HttpServletRequest) field.get(servletRequest);
+                }
+            }
+            throw new IllegalStateException("Could not find field for HttpServletRequest");
         } catch (ClassCastException e) {
             throw new IllegalStateException("Could not cast to ServletUpgradeRequest", e);
         } catch (Exception e) {
-            throw new IllegalStateException("Could not get HTTP request from field named req", e);
+            throw new IllegalStateException("Could not get HTTP request from field", e);
         }
     }
 

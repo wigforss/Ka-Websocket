@@ -16,7 +16,6 @@ public class WebSocketXmlNamespaceHandler extends NamespaceHandlerSupport  {
     @Override
     public void init() {
         registerBeanDefinitionParser("websocket", new ConfigurerBeanDefinitionParser()); 
-        registerBeanDefinitionParser("servlet", new ServletBeanDefinitionParser());
         registerBeanDefinitionParser("authentication", new AuthenticationBeanDefinitionParser()); 
         registerBeanDefinitionParser("textProtocolHandlers", new ProtocolsBeanDefinitionParser()); 
         registerBeanDefinitionParser("binaryProtocolHandlers", new ProtocolsBeanDefinitionParser()); 

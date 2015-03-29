@@ -2,8 +2,8 @@ package org.kasource.web.websocket.listener.extension;
 
 import org.kasource.web.websocket.event.WebSocketEvent;
 import org.kasource.web.websocket.event.WebSocketTextMessageEvent;
-import org.kasource.web.websocket.protocol.XmlProtocolHandler;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
+import org.kasource.web.websocket.protocol.XmlProtocolHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

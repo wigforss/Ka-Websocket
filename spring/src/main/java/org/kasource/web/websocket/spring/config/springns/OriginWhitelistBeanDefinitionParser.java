@@ -28,8 +28,7 @@ public class OriginWhitelistBeanDefinitionParser  extends AbstractSingleBeanDefi
      **/
     @SuppressWarnings("unchecked")
     @Override
-    protected void doParse(Element element, ParserContext pc,
-            BeanDefinitionBuilder bean) {
+    protected void doParse(Element element, ParserContext pc, BeanDefinitionBuilder bean) {
         element.setAttribute(ID_ATTRIBUTE, KaWebSocketBean.ORIGIN_WHITELIST_ID);
         List<String> originWhiteList = new ArrayList<String>();
         List<Element> originElements = WebSocketXmlNamespaceHandler.getChildElementsByName(element, "origin");

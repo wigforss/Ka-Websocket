@@ -1,8 +1,8 @@
 package org.kasource.web.websocket.event.extension;
 
 
-import org.kasource.web.websocket.RecipientType;
 import org.kasource.web.websocket.channel.WebSocketChannel;
+import org.kasource.web.websocket.client.RecipientType;
 import org.kasource.web.websocket.event.WebSocketClientEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;
 

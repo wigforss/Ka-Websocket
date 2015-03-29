@@ -1,18 +1,24 @@
 package org.kasource.web.websocket.impl;
 
 import java.io.IOException;
-import java.util.Map;
+import java.io.InputStream;
+import java.io.Reader;
+import java.nio.charset.Charset;
+
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessage, WebSocket.OnTextMessage, WebSocketClient {
-
+    private static final Logger LOG = LoggerFactory.getLogger(Jetty8WebSocketClient.class);
     private WebSocketClientConfig clientConfig;
     private Connection connection;
     private ProtocolHandler<String> textProtocolHandler;
@@ -146,9 +152,26 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
     @Override
     public void sendBinaryMessageToSocket(Object message) {
         if (binaryProtocolHandler == null) {
-            throw new IllegalStateException("No binary handler configured for client");
+            if (message instanceof byte[]) {
+                sendMessageToSocket((byte[]) message);
+            } else if (message instanceof InputStream) {
+                try {
+                    sendMessageToSocket(IOUtils.toByteArray((InputStream) message));
+                } catch(IOException e) {
+                    LOG.debug("Could not send message to socket " + clientConfig.getUsername() + " with id " + clientConfig.getClientId(), e);
+                }
+            } else if (message instanceof Reader) {
+                try {
+                    sendMessageToSocket(IOUtils.toByteArray((Reader) message));
+                } catch(IOException e) {
+                    LOG.debug("Could not send message to socket " + clientConfig.getUsername() + " with id " + clientConfig.getClientId(), e);
+                }
+            } else {
+                sendMessageToSocket(message.toString().getBytes(Charset.forName("UTF-8")));
+            }
+        } else {
+            sendMessageToSocket(binaryProtocolHandler.toMessage(message));
         }
-        sendMessageToSocket(binaryProtocolHandler.toMessage(message));
         
     }
 
@@ -157,9 +180,10 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
     @Override
     public void sendTextMessageToSocket(Object message) {
         if (textProtocolHandler == null) {
-            throw new IllegalStateException("No text handler configured for client");
+            sendMessageToSocket(message.toString());
+        } else {
+            sendMessageToSocket(textProtocolHandler.toMessage(message));
         }
-        sendMessageToSocket(textProtocolHandler.toMessage(message));
         
     }
 

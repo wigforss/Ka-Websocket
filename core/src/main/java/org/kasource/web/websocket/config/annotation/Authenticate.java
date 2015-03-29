@@ -24,23 +24,6 @@ public @interface Authenticate {
      **/
     Class<? extends AuthenticationProvider> value();
     
-    /**
-     * Read credentials from headers (true) or request parameters (false).
-     * 
-     * Default false.
-     **/
-    boolean credentialsFromHeader() default false;
-    
-    /**
-     * Header name of request parameter name to read user name from.
-     **/
-    String usernameKey() default "username";
-   
-    /**
-     * Header name of request parameter name to read password from.
-     **/
-    String passwordKey() default "password";
-    
     
     /**
      * Looks up the authentication provider via a bean name using a Bean Resolver. 

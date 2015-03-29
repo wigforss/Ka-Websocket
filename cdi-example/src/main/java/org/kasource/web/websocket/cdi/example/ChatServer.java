@@ -9,8 +9,8 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import org.kasource.web.websocket.RecipientType;
 import org.kasource.web.websocket.channel.NoSuchWebSocketClient;
+import org.kasource.web.websocket.client.RecipientType;
 import org.kasource.web.websocket.event.WebSocketClientConnectionEvent;
 import org.kasource.web.websocket.event.WebSocketClientDisconnectedEvent;
 import org.kasource.web.websocket.event.WebSocketTextMessageEvent;

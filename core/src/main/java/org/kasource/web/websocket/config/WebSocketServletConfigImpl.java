@@ -140,27 +140,7 @@ public class WebSocketServletConfigImpl implements WebSocketServletConfig {
         this.authenticationProvider = authenticationProvider;
     }
 
-    @Override
-    public void merge(WebSocketServletConfig config) {
-        if (authenticationProvider == null) {
-            authenticationProvider = config.getAuthenticationProvider();
-        }
-        if (originWhitelist == null || originWhitelist.isEmpty()) {
-            originWhitelist = config.getOriginWhitelist();
-        }
-        if (clientIdGenerator instanceof DefaultClientIdGenerator) {
-            if (config.getClientIdGenerator() != null) {
-                clientIdGenerator = config.getClientIdGenerator();
-            }
-        }
-        
-        if (protocolRepository == null) {
-            protocolRepository = config.getProtocolRepository();
-        }
-        
-        
-    }
-
+    
     /**
      * @return the clientIdGenerator
      */

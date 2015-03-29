@@ -13,8 +13,8 @@ public class PassthroughAutenticationProvider extends AbstractAuthenticationProv
     public String authenticate(HttpServletRequest request) throws AuthenticationException {
         String username = getUsername(request);
        
-        if(username == null) {
-            throw new AuthenticationException("No username found. Request needs to include " + (isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username);
+        if (username == null) {
+            throw new AuthenticationException("No username found. Request needs to include " + (isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username, request.getRemoteAddr());
         }
         return username;
     }

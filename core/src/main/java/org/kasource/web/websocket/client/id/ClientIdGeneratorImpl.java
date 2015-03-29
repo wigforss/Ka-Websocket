@@ -18,12 +18,15 @@ public class ClientIdGeneratorImpl extends AbstractClientIdGenerator {
     public String getId(HttpServletRequest request,
                         WebSocketManager manager) {
         String clientId = getIdValue(request);
+       
         if (manager.hasClient(clientId)) {
             clientId = clientId + "-" + getUuid();
         }
         if (clientId == null) {
             clientId = getUuid();
         }
+        
+       
         
         return clientId;
     }

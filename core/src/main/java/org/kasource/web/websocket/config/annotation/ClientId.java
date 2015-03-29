@@ -18,20 +18,7 @@ public @interface ClientId {
      **/
     Class<? extends ClientIdGenerator> value();
     
-    /**
-     * Read user name for the upgrade HTTP request header (true) or from a request parameter (false).
-     * 
-     * Default false.
-     **/
-    boolean usernameFromHeader() default false;
-    
-    /**
-     * Name of the request header or request parameter that holds the user name.
-     * 
-     * Default is username
-     **/
-    String usernameKey() default "username";
-    
+   
     /**
      * Looks up the ID generator via a bean name using a Bean Resolver. 
      * 

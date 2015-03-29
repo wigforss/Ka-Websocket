@@ -8,12 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.kasource.web.websocket.RecipientType;
 import org.kasource.web.websocket.channel.NoSuchWebSocketClient;
+import org.kasource.web.websocket.client.RecipientType;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.internal.ClientListener;
-import org.kasource.web.websocket.protocol.ProtocolHandler;
-import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.security.AuthenticationException;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 import org.slf4j.Logger;

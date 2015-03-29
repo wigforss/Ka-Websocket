@@ -5,10 +5,9 @@ import java.lang.reflect.Method;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.annotations.OnWebSocketEvent;
-import org.kasource.web.websocket.annotations.OnMessage;
 import org.kasource.web.websocket.annotations.OnClientConnected;
 import org.kasource.web.websocket.annotations.OnClientDisconnected;
+import org.kasource.web.websocket.annotations.OnMessage;
 import org.kasource.web.websocket.annotations.WebSocketEventAnnotation;
 import org.kasource.web.websocket.annotations.WebSocketListener;
 import org.kasource.web.websocket.channel.WebSocketChannelFactory;
@@ -21,7 +20,6 @@ import org.kasource.web.websocket.listener.WebSocketBinaryMessageHandler;
 import org.kasource.web.websocket.listener.WebSocketClientConnectedHandler;
 import org.kasource.web.websocket.listener.WebSocketClientDisconnectedHandler;
 import org.kasource.web.websocket.listener.WebSocketEventListener;
-import org.kasource.web.websocket.listener.WebSocketEventMethod;
 import org.kasource.web.websocket.listener.WebSocketMessageMethod;
 import org.kasource.web.websocket.listener.WebSocketTextMessageHandler;
 import org.kasource.web.websocket.listener.WebsocketConnectedMethod;
@@ -60,7 +58,7 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
         WebSocketListener listenerAnnotation = listener.getClass().getAnnotation(WebSocketListener.class);
         String url = null;
         if (listenerAnnotation == null) {
-            // Find out of the WebSocketListenerRegistration is implemented
+            // Find out if the WebSocketListenerRegistration is implemented
             if (listener instanceof WebSocketListenerRegistration) {
                 url = ((WebSocketListenerRegistration) listener).getWebSocketChannelName();
             } else if (listener.getClass().isAnnotationPresent(WebSocket.class)) {
@@ -120,9 +118,8 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
                     url = methodListerAnnotation.value();
                 }
                 
-                if (method.isAnnotationPresent(OnWebSocketEvent.class)) {
-                    registerListener(url, new WebSocketEventMethod(listener, method));
-                } else if (method.isAnnotationPresent(OnMessage.class)) { 
+                
+                if (method.isAnnotationPresent(OnMessage.class)) { 
                     registerListener(url, new WebSocketMessageMethod(listener, method));
                 } else if (method.isAnnotationPresent(OnClientConnected.class)) {
                     registerListener(url, new WebsocketConnectedMethod(listener, method));

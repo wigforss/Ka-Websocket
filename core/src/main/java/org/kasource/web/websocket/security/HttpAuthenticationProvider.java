@@ -9,10 +9,10 @@ public class HttpAuthenticationProvider implements AuthenticationProvider {
     @Override
     public String authenticate(HttpServletRequest request) throws AuthenticationException {
         Principal principal = request.getUserPrincipal();
-        if(principal != null) {
+        if (principal != null) {
             return principal.getName();
         }
-        throw new AuthenticationException("User not authenticateded", "Anonymous");
+        throw new AuthenticationException("User not authenticateded", "Anonymous", request.getRemoteAddr());
     }
 
 }

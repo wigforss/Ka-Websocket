@@ -1,21 +1,14 @@
 package org.kasource.web.websocket.config;
 
 
-import java.util.Set;
-
 import org.kasource.web.websocket.channel.WebSocketChannelFactory;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 
 
 public interface WebSocketConfig {
- 
-    public Set<String> getOriginWhitelist();
     
     public WebSocketServletConfig getServletConfig(String servletName);
-    
-    public ProtocolRepository getProtocolRepository();
     
     public WebSocketManagerRepository getManagerRepository();
     
@@ -23,5 +16,5 @@ public interface WebSocketConfig {
     
     public WebSocketListenerRegister getListenerRegister();
     
-    public void registerServlet(WebSocketServletConfigImpl servlet);
+    public void registerServlet(WebSocketServletConfigImpl servletConfig);
 }

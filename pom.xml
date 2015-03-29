@@ -67,11 +67,15 @@
     	<module>core</module>
     	<module>jetty8</module>
     	<module>jetty9</module>
+    	<module>jetty93</module>
     	<module>tomcat7</module>
-    	<module>tomcat8</module>
+    	<!--  <module>tomcat8</module> -->
     	<module>resin</module>
+    	<module>example</module>
     	<module>spring</module>
     	<module>spring-example</module>
+    	<module>dropwizard</module>
+    	<module>dropwizard-example</module>
     	<module>guice</module>
     	<module>guice-example</module>
     	<module>cdi</module>

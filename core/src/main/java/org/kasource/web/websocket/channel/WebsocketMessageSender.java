@@ -2,7 +2,7 @@ package org.kasource.web.websocket.channel;
 
 import java.io.IOException;
 
-import org.kasource.web.websocket.RecipientType;
+import org.kasource.web.websocket.client.RecipientType;
 
 
 

@@ -7,51 +7,55 @@ import java.util.Set;
 
 import org.kasource.web.websocket.channel.WebSocketChannelFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
+import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
 import org.kasource.web.websocket.manager.WebSocketManagerRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
+import org.kasource.web.websocket.security.AuthenticationProvider;
+import org.kasource.web.websocket.security.PassthroughAutenticationProvider;
 
 public class WebSocketConfigImpl implements WebSocketConfig {
    
     
-    private Set<String> originWhitelist = new HashSet<String>();
-    
-    private ProtocolRepository protocolRepository;
-    
-    private WebSocketManagerRepository managerRepository;
-    
+    private Set<String> originWhitelist = new HashSet<String>();  
+    private ProtocolRepository protocolRepository;   
+    private WebSocketManagerRepository managerRepository;  
     private WebSocketChannelFactory channelFactory;
-
     private Map<String, WebSocketServletConfig> servletConfigs = new HashMap<String, WebSocketServletConfig>();
-   
-    private WebSocketListenerRegister listenerRegister;
+    private WebSocketListenerRegister listenerRegister; 
+    private ClientIdGenerator clientIdGenerator = new DefaultClientIdGenerator();  
+    private AuthenticationProvider authenticationProvider;
     
-    private ClientIdGenerator clientIdGenerator;
-    
-    public void registerServlet(WebSocketServletConfigImpl servlet) {
-       
-        if (getOriginWhitelist() != null) {
-            servlet.setOriginWhitelist(getOriginWhitelist());
-        } 
+    public void registerServlet(WebSocketServletConfigImpl servletConfig) {
+       //Override empty or default values
         
-        getServletConfigs().put(servlet.getServletName(), servlet);
+        if (servletConfig.getAuthenticationProvider() == null) {
+            servletConfig.setAuthenticationProvider(authenticationProvider);
+        }
+        if (servletConfig.getClientIdGenerator() == null || servletConfig.getClientIdGenerator() instanceof DefaultClientIdGenerator) {
+            servletConfig.setClientIdGenerator(clientIdGenerator);
+        }
+        if (servletConfig.getProtocolRepository().isEmpty() && protocolRepository != null) {
+            servletConfig.setProtocolRepository(protocolRepository);
+        }
+        if (servletConfig.getOriginWhitelist() == null) {
+            servletConfig.setOriginWhitelist(originWhitelist);
+        }
+        servletConfig.setManagerRepository(managerRepository);
+        
+        getServletConfigs().put(servletConfig.getServletName(), servletConfig);
     }
 
     /**
      * @param clientIdGenerator the clientIdGenerator to set
      */
     public void setClientIdGenerator(ClientIdGenerator clientIdGenerator) {
-        this.clientIdGenerator = clientIdGenerator;
+        if (clientIdGenerator != null) {
+            this.clientIdGenerator = clientIdGenerator;
+        }
     }
     
-    /**
-     * @return the orginWhitelist
-     */
-    @Override
-    public Set<String> getOriginWhitelist(){
-        return originWhitelist;
-    }
-
+    
     /**
      * @param orginWhitelist the orginWhitelist to set
      */
@@ -59,27 +63,15 @@ public class WebSocketConfigImpl implements WebSocketConfig {
         this.originWhitelist = orginWhitelist;
     }
 
-    
-
-    
-
-    /**
-     * @return the protocolHandlerRepository
-     */
-    @Override
-    public ProtocolRepository getProtocolRepository() {
-        return protocolRepository;
-    }
 
     /**
      * @param protocolRepository the protocolHandlerRepository to set
      */
-    public void setProtocolHandlerRepository(ProtocolRepository protocolRepository) {
+    public void setProtocolRepository(ProtocolRepository protocolRepository) {
         this.protocolRepository = protocolRepository;
     }
 
  
-
     /**
      * @return the channelFactory
      */
@@ -147,13 +139,12 @@ public class WebSocketConfigImpl implements WebSocketConfig {
         this.listenerRegister = listenerRegister;
     }
 
+
     /**
-     * @return the clientIdGenerator
+     * @param authenticationProvider the authenticationProvider to set
      */
-    protected ClientIdGenerator getClientIdGenerator() {
-        return clientIdGenerator;
+    public void setAuthenticationProvider(AuthenticationProvider authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
     }
 
-    
-  
 }

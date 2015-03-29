@@ -1,7 +1,5 @@
 package org.kasource.web.websocket.client;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.kasource.web.websocket.protocol.ProtocolHandler;

@@ -14,4 +14,6 @@ public interface ProtocolRepository {
     
     public ProtocolHandler<byte[]> getDefaultBinaryProtocol();
     
+    public boolean isEmpty();
+    
 }

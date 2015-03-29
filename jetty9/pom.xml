@@ -9,11 +9,13 @@
 	<groupId>org.kasource.websocket</groupId>
 	<artifactId>ka-websocket-jetty9</artifactId>
 	<packaging>jar</packaging>
-	<name>Ka WebSocket Jetty 9</name>
-	<description>Ka Web Socket for Jetty 9</description>
+	<name>Ka WebSocket Jetty 9.0.x</name>
+	<description>Ka Web Socket for Jetty 9.0.4 - 9.0.7</description>
 	<url>http://maven.apache.org</url>
 	
-	
+	<properties>
+		<jetty.version>[9.0.4.v20130625, 9.0.7.v20131107]</jetty.version>
+	</properties>
 	<build>
 		<plugins>
 			
@@ -46,10 +48,7 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 			</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
+		
 	    <dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -62,15 +61,15 @@
 		 <dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-servlet</artifactId>
-			<version>9.0.7.v20131107</version>
-			 <scope>provided</scope>
+			<version>${jetty.version}</version>
 		</dependency> 
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-server</artifactId>
-			<version>9.0.7.v20131107</version>
-			<scope>provided</scope>
-		</dependency>  
+			<version>${jetty.version}</version>
+		</dependency> 
+		
 	</dependencies>
+
 
 </project>

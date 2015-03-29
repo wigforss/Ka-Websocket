@@ -78,7 +78,7 @@ public class WebSocketMessageMethod implements WebSocketEventListener {
                 return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
             }
         } catch(ConversionException e){
-            throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType + " as " + messageEvent.getProtocolHandler().getProtocolName());
+            throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType);
         } catch (Exception e) {
             throw new IllegalStateException("Could not invoke " + method, e);
         }        
@@ -113,7 +113,7 @@ public class WebSocketMessageMethod implements WebSocketEventListener {
                 return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
             }
         } catch(ConversionException e){
-            throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType + " as " + messageEvent.getProtocolHandler().getProtocolName());
+            throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType);
         } catch (Exception e) {
             throw new IllegalStateException("Could not invoke " + method, e);
         } 

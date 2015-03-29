@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.kasource.web.websocket.channel.WebsocketMessageSender;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.internal.ClientListener;
-import org.kasource.web.websocket.protocol.ProtocolHandler;
-import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.security.AuthenticationException;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
