@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://kasource.org/schema/spring-websocket"           
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+	targetNamespace="http://kasource.org/schema/spring-websocket"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans" />
+	
+	<xsd:element name="websocket">
+		<xsd:annotation>
+			<xsd:documentation>
+				This element enables the web socket framework. 
+				@EnableKaWebsocket can be used instead of this element.
+			</xsd:documentation>
+		</xsd:annotation>
+			<xsd:complexType>
+				<xsd:attribute name="clientIdGeneratorRef" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Implementation of org.kasource.web.websocket.client.id.ClientIdGenerator to use, the default implementation hands out IDs by UUID.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:complexType>
+	</xsd:element>
+	
+	
+	<xsd:element name="originWhitelist">
+		<xsd:annotation>
+			<xsd:documentation>
+				Web Origins to allow, see https://tools.ietf.org/html/rfc6454. Adding this element will
+				enforce origin check for all connections, but can be overridden by each web socket end
+				point individually.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="origin" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="authentication">
+		<xsd:annotation>
+			<xsd:documentation>
+				Authentication provider to use, if not set all connection is allowed, and reports the
+				username to be Anonymous.
+			</xsd:documentation>
+		</xsd:annotation>	
+		<xsd:complexType>		
+			<xsd:attribute name="ref" type="xsd:string" use="required">
+				<xsd:annotation>
+					<xsd:documentation>
+						Reference to a bean implementing org.kasource.web.websocket.security.AuthenticationProvider
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	
+	<xsd:element name="textProtocolHandlers">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defined binary protocol handlers (implementing org.kasource.web.websocket.protocol.BinaryProtocolHandler) to be used.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="protocolHandler"/>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="binaryProtocolHandlers">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defined binary protocol handlers (implementing org.kasource.web.websocket.protocol.BinaryProtocolHandler) to be used.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="protocolHandler"/>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	
+   	<xsd:complexType name="protocolHandler" abstract="true">
+   		<xsd:sequence>
+   			<xsd:element ref="protocol" minOccurs="0" maxOccurs="unbounded"/>
+   		</xsd:sequence>
+   		<xsd:attribute name="defaultProtocolRef" type="xsd:string" use="optional">
+   			<xsd:annotation>
+   				<xsd:documentation>
+    			The default protocol handler to be applied on all requests unless a specific protocol is 
+    			requested. If the this is not set messages are simply sent as String or byte[].
+   				</xsd:documentation>
+   			</xsd:annotation>
+   		</xsd:attribute>
+	</xsd:complexType>
+	
+	
+	<xsd:element name="protocol">
+		<xsd:complexType>
+			<xsd:attribute name="name" type="xsd:string" use="required">
+				<xsd:annotation>
+					<xsd:documentation>
+						Name of the protocol, for example a MIME type like application/json
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="ref" type="xsd:string" use="required">
+				<xsd:annotation>
+					<xsd:documentation>
+						Reference to a protocol handler implementation like a bean of type org.kasource.web.websocket.protocol.JsonProtocolHandler.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>		
+</xsd:schema>
