@@ -12,7 +12,7 @@
         http://www.springframework.org/schema/util 
         http://www.springframework.org/schema/util/spring-util-3.0.xsd
         http://kasource.org/schema/spring-websocket
-        https://raw.githubusercontent.com/wigforss/Ka-Websocket/master/spring/src/main/resources/org/kasource/schema/spring/websocket/spring-websocket.xsd">
+        http://wigforss.github.io/Ka-Websocket/schema/0.4/spring/spring-websocket.xsd">
    
  	<context:component-scan base-package="org.kasource.web.websocket.spring.example"/>
     

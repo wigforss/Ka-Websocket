@@ -19,11 +19,11 @@ public class WebSocketClientRegistration {
     public WebSocketClientRegistration(WebSocketClient client) {
         this.client = client;
         parameterBinder = new ParameterBinder(new ListBuilder<AnnotationParameterBinder<? extends Annotation>>()
-                    .add(new ClientRequestParameterBinder(client))
-                    .add(new ClientHeaderBinder(client))
+                    .add(new ClientRequestParameterBinder(client.getUpgradeRequest()))
+                    .add(new ClientHeaderBinder(client.getUpgradeRequest()))
                     .add(new SystemPropertyParameterBinder())
                     .add(new EnvironmentParameterBinder())
-                    .add(new ClientIpBinder(client))
+                    .add(new ClientIpBinder(client.getUpgradeRequest()))
                     .build());
     }
 

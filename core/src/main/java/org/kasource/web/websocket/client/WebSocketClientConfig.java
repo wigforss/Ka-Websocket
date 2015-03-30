@@ -12,7 +12,7 @@ public class WebSocketClientConfig {
     private final String url;
     private final String username; 
     private final String clientId; 
-    private final HttpServletRequest request; 
+    private final UpgradeRequestData request; 
     private final String subProtocol;
     private final ProtocolHandler<String> textProtocolHandler;
     private final ProtocolHandler<byte[]> binaryProtocolHandler;
@@ -33,12 +33,12 @@ public class WebSocketClientConfig {
         private String url;
         private String username; 
         private String clientId; 
-        private HttpServletRequest request; 
+        private UpgradeRequestData request; 
         private String subProtocol;
         private ProtocolHandler<String> textProtocolHandler;
         private ProtocolHandler<byte[]> binaryProtocolHandler;
         
-        Builder(WebSocketManager manager, String clientId, HttpServletRequest request) {
+        Builder(WebSocketManager manager, String clientId, UpgradeRequestData request) {
             this.manager = manager;
             this.clientId = clientId;
             this.request = request;
@@ -125,7 +125,7 @@ public class WebSocketClientConfig {
     /**
      * @return the connectionParameters
      */
-    public HttpServletRequest getRequest() {
+    public UpgradeRequestData getRequest() {
         return request;
     }
 

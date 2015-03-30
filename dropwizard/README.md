@@ -13,6 +13,7 @@ Add the following dependencies to your project
 			<groupId>org.kasource.websocket</groupId>
 			<artifactId>ka-websocket-jetty9</artifactId>
 			<version>0.4</version>
+			<scope>runtime</scope>
 		</dependency>
  
  If you are running DropWizard 0.8.0 or later you need a jetty dependency for a newer version:
@@ -70,7 +71,6 @@ Note that authentication is optional.
             environment.jersey().register(new PingResource()); 
             webSocketInitializer.onRun();
             webSocketInitializer.addWebocket(new ChatServer());
-            environment.servlets().setSessionHandler(new SessionHandler());
             environment.jersey().register(new BasicAuthProvider<User>(authenticator, "My Realm"));
       
     }

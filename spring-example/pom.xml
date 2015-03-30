@@ -69,7 +69,7 @@
                     </connectors>
                 </configuration>
             </plugin> --> 
-            <plugin>
+         <!--    <plugin>
             	<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>9.0.7.v20131107</version>
@@ -89,7 +89,7 @@
                         </connector>
                     </connectors>
                 </configuration>
-            </plugin>
+            </plugin> -->
                 <plugin>
                     <groupId>org.apache.tomcat.maven</groupId>
                     <artifactId>tomcat7-maven-plugin</artifactId>
@@ -114,8 +114,9 @@
         <!-- Compile -->
         <dependency>
 			<groupId>org.kasource.websocket</groupId>
-			<artifactId>ka-websocket-jetty9</artifactId>
+			<artifactId>ka-websocket-tomcat7</artifactId>
 			<version>${project.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.kasource.websocket</groupId>

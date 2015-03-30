@@ -1,20 +1,20 @@
 package org.kasource.web.websocket.client.parameter;
 
 import org.kasource.commons.reflection.parameter.binder.AnnotationParameterBinder;
-import org.kasource.web.websocket.client.WebSocketClient;
+import org.kasource.web.websocket.client.UpgradeRequestData;
 import org.kasource.web.websocket.config.annotation.ClientId;
 
 public class ClientIpBinder implements AnnotationParameterBinder<ClientId>{
 
-    private String ipAddress;
+    private UpgradeRequestData upgradeRequestData;
     
-    public ClientIpBinder(WebSocketClient webSocketClient) {
-        ipAddress = webSocketClient.getUpgradeRequest().getRemoteAddr();
+    public ClientIpBinder(UpgradeRequestData upgradeRequestData) {
+        this.upgradeRequestData = upgradeRequestData;
     }
     
     @Override
     public Object bindValue(ClientId annotation) {
-        return ipAddress;
+        return upgradeRequestData.getIpAddress();
     }
 
     @Override

@@ -3,7 +3,7 @@
 	xmlns="http://kasource.org/schema/websocket" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://kasource.org/schema/websocket 
-    					https://raw.githubusercontent.com/wigforss/Ka-Websocket/master/core/src/main/resources/org/kasource/schema/websocket/websocket-config.xsd">
+    					http://wigforss.github.io/Ka-Websocket/schema/0.4/core/websocket-config.xsd">
     
     <websocket servletName="chat" dynamicAddressing="true"/>
     <originWhitelist>

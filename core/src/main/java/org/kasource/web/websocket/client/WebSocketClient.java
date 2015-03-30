@@ -1,7 +1,5 @@
 package org.kasource.web.websocket.client;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 
 /**
@@ -38,7 +36,7 @@ public interface WebSocketClient {
     /**
      * @return the Upgrdade (connection) request
      */
-    public HttpServletRequest getUpgradeRequest();
+    public UpgradeRequestData getUpgradeRequest();
     
     public ProtocolHandler<String> getTextProtocolHandler();
     

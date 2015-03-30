@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.websocket.WebSocket;
+import org.kasource.web.websocket.client.UpgradeRequestData;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
@@ -100,7 +98,7 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
      * @return the connectionParameters
      */
     @Override
-    public HttpServletRequest getUpgradeRequest() {
+    public UpgradeRequestData getUpgradeRequest() {
         return clientConfig.getRequest();
     }
 

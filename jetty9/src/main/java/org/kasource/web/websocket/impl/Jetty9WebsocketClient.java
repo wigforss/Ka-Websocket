@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.websocket.api.Session;
@@ -14,6 +13,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.kasource.web.websocket.client.UpgradeRequestData;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
@@ -124,7 +124,7 @@ public class Jetty9WebsocketClient implements WebSocketClient {
     }
 
     @Override
-    public HttpServletRequest getUpgradeRequest() {
+    public UpgradeRequestData getUpgradeRequest() {
         return clientConfig.getRequest();
     }
 

@@ -7,13 +7,11 @@ import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.io.IOUtils;
+import org.kasource.web.websocket.client.UpgradeRequestData;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
@@ -52,7 +50,7 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
     @Override
     protected void onTextData(Reader r) throws IOException {
         
-        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(r));
+        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toString(r));
     }
 
 
@@ -113,7 +111,7 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
      * @return the connectionParameters
      */
     @Override
-    public HttpServletRequest getUpgradeRequest() {
+    public UpgradeRequestData getUpgradeRequest() {
         return clientConfig.getRequest();
     }
 
