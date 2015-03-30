@@ -16,6 +16,7 @@ import org.kasource.web.websocket.config.WebSocketConfigImpl;
 import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
 import org.kasource.web.websocket.guice.channel.GuiceWebSocketChannelFactory;
 import org.kasource.web.websocket.guice.config.GuiceKaWebSocketConfigurer;
+import org.kasource.web.websocket.guice.config.loader.GuiceWebSocketServletConfigBuilder;
 import org.kasource.web.websocket.guice.extension.InjectionListenerRegister;
 import org.kasource.web.websocket.guice.extension.InjectionTypeListener;
 import org.kasource.web.websocket.guice.registration.WebSocketListenerInjectionListener;
@@ -25,6 +26,7 @@ import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
+import org.kasource.web.websocket.servlet.ServletRegistrator;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
@@ -87,12 +89,7 @@ public class KaWebSocketModule  extends AbstractModule {
     @Provides @Singleton
     WebSocketManagerRepository getWebSocketManagerRepository(Injector injector, ProtocolRepository protocolHandlerRepository) {
         ServletContext servletContext = injector.getInstance(ServletContext.class);
-        AuthenticationConfig authConfig = null;
-        try {
-            authConfig = injector.getInstance(AuthenticationConfig.class);
-        }catch (Exception e) {
-            // Ingore
-        }
+       
         
         WebSocketManagerRepositoryImpl managerRepo = new WebSocketManagerRepositoryImpl();
         managerRepo.setServletContext(servletContext);
@@ -130,17 +127,22 @@ public class KaWebSocketModule  extends AbstractModule {
         } catch (Exception e) {
             
         }
+        AuthenticationConfig authConfig = null;
+        try {
+            authConfig = injector.getInstance(AuthenticationConfig.class);
+        }catch (Exception e) {
+            // Ingore
+        }
+        if (authConfig != null) {
+            config.setAuthenticationProvider(authConfig.getAuthenticationProvider());
+        }
         return config;
     }
     
-    @Provides
-    public WebSocketServletConfigImpl getWebSocketServletConfig(WebSocketManagerRepository managerRepository,
-                ProtocolRepository protocolHandlerRepository, Injector injector) {
-        WebSocketServletConfigImpl servletConfig = new WebSocketServletConfigImpl();
-        servletConfig.setManagerRepository(managerRepository);
-        servletConfig.setProtocolRepository(protocolHandlerRepository);
-        
-        return servletConfig;
-    }
     
+    @Provides @Singleton
+    ServletRegistrator getServletRegistrator(Injector injector, GuiceWebSocketServletConfigBuilder configurationBuilder) {
+        ServletContext servletContext = injector.getInstance(ServletContext.class);
+        return new ServletRegistrator(servletContext, configurationBuilder);
+    }
 }

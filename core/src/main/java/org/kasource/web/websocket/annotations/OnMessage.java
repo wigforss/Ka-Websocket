@@ -11,14 +11,13 @@ import java.lang.annotation.Target;
  * Parameters are bound in the following order
  * <ul>
  * <li>Any one parameter annotated with @Payload</li>
- * <li>Any String parameter annotated with @RequestParameter, @Header, @SystemProperty or @Environment
+ * <li>Any String parameter annotated with @Username, @ClientId, @ClientIp, @RequestParameter, @Header, @SystemProperty or @Environment
  * <li>Parameter of type WebSocketTextMessageEvent (if text message)</li>
  * <li>Parameter of type WebSocketBinaryMessageEvent (if binary message)</li>
  * <li>Parameter of type String - message (if text message)</li>
  * <li>Parameter of type byte[] - message (if binary message)</li>
  * <li>Parameter of type WebSocketChannel</li>
  * <li>Parameter of type WebSocketClient</li>
- * <li>Parameter of type String - user name</li>
  * </ul>
  * <p/>
  * If a text or binary protocol is used an automatic conversion will be performed to the type of the method parameter

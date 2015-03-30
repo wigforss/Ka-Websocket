@@ -36,7 +36,7 @@ public class SendWebSocketTextMessageEvent extends WebSocketEvent {
     public SendWebSocketTextMessageEvent(WebSocketClientEvent event, String message, RecipientType recipientType) {
         this(event.getSource(), 
              message, 
-             recipientType == RecipientType.CLIENT_ID ? event.getClientId() : event.getUsername(), 
+             recipientType == RecipientType.CLIENT_ID ? event.getClient().getId() : event.getClient().getUsername(), 
              recipientType);
         
     }

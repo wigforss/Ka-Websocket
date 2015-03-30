@@ -16,11 +16,11 @@
   limitations under the License.
 -->
 <tomcat-users>
-<!--
-  <role rolename="tomcat"/>
-  <role rolename="role1"/>
-  <user username="tomcat" password="tomcat" roles="tomcat"/>
-  <user username="both" password="tomcat" roles="tomcat,role1"/>
-  <user username="role1" password="tomcat" roles="role1"/>
--->
+
+  <role rolename="admin"/>
+  <role rolename="user"/>
+  <user username="admin" password="badmin" roles="admin"/>
+  <user username="both" password="both" roles="admin,user"/>
+  <user username="user" password="user" roles="user"/>
+
 </tomcat-users>

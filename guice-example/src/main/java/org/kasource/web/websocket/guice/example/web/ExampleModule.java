@@ -47,41 +47,19 @@ public class ExampleModule extends AbstractModule {
        return new ClientIdGeneratorImpl();
    }
    
-   @Provides @Named("chatServlet")
-   WebSocketServletConfigImpl getChatServlet(WebSocketServletConfigImpl servletConfig) {
-       servletConfig.setServletName("chat");
-       servletConfig.setDynamicAddressing(false);
-      
-       return servletConfig;
-   }
+  
    
    @Provides @Singleton
    OriginWhiteListConfig getOriginWhiteListConfig() {
        OriginWhiteListConfig list = new OriginWhiteListConfig();
        Set<String> origins = new HashSet<String>();
        origins.add("http://localhost:8080");
+       origins.add("localhost:8080");
        list.setOriginWhiteList(origins);
        return list;
    }
    
   
    
-   @Provides @Singleton
-   public TextProtocolHandlerConfigImpl getTextProtocolHandlerConfig(@Named("jsonHandler") TextProtocolHandler textProtocolHandler) {
-       TextProtocolHandlerConfigImpl config = new TextProtocolHandlerConfigImpl();
-       Map<String, ProtocolHandler<String>> defaultProtocolUrlMap = new HashMap<String, ProtocolHandler<String>>();
-       defaultProtocolUrlMap.put("/chat", textProtocolHandler);
-       config.setDefaultProtocolUrlMap(defaultProtocolUrlMap);
-       return config;
-   }
-   
-   @Provides @Singleton
-   AuthenticationConfig getAuthenticationConfig(AuthenticationProvider authenticationProvider) {
-       AuthenticationConfig auth = new AuthenticationConfig();
-       Map<String, AuthenticationProvider> authenticationUrlMapping = new HashMap<String, AuthenticationProvider>();
-       authenticationUrlMapping.put("/chat", authenticationProvider);
-       auth.setAuthenticationUrlMapping(authenticationUrlMapping);
-       return auth;
-   }
    
 }

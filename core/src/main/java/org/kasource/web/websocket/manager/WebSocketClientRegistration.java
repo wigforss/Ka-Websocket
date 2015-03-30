@@ -9,8 +9,10 @@ import org.kasource.commons.reflection.parameter.binder.EnvironmentParameterBind
 import org.kasource.commons.reflection.parameter.binder.SystemPropertyParameterBinder;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.parameter.ClientHeaderBinder;
+import org.kasource.web.websocket.client.parameter.ClientIdBinder;
 import org.kasource.web.websocket.client.parameter.ClientIpBinder;
 import org.kasource.web.websocket.client.parameter.ClientRequestParameterBinder;
+import org.kasource.web.websocket.client.parameter.UsernameBinder;
 
 public class WebSocketClientRegistration {
     private final WebSocketClient client;
@@ -24,6 +26,8 @@ public class WebSocketClientRegistration {
                     .add(new SystemPropertyParameterBinder())
                     .add(new EnvironmentParameterBinder())
                     .add(new ClientIpBinder(client.getUpgradeRequest()))
+                    .add(new UsernameBinder(client))
+                    .add(new ClientIdBinder(client))
                     .build());
     }
 

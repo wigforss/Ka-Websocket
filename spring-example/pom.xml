@@ -12,7 +12,9 @@
 	<packaging>war</packaging>
 	<name>Ka WebSocket Spring Example</name>
     
-    
+    <properties>
+        <spring.version>4.1.6.RELEASE</spring.version>
+    </properties>
     
 	<build>
 		<plugins>
@@ -112,12 +114,7 @@
 	</reporting>
 	<dependencies>
         <!-- Compile -->
-        <dependency>
-			<groupId>org.kasource.websocket</groupId>
-			<artifactId>ka-websocket-tomcat7</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
+        
 		<dependency>
 			<groupId>org.kasource.websocket</groupId>
 			<artifactId>ka-websocket-spring</artifactId>
@@ -170,6 +167,12 @@
 			</dependency>
             
         <!-- Runtime -->
+        <dependency>
+			<groupId>org.kasource.websocket</groupId>
+			<artifactId>ka-websocket-tomcat7</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
         <dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>

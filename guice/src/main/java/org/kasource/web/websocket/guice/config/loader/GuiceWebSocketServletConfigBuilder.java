@@ -1,4 +1,4 @@
-package org.kasource.web.websocket.spring.config.loader;
+package org.kasource.web.websocket.guice.config.loader;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,15 +22,22 @@ import org.kasource.web.websocket.config.annotation.TextProtocol;
 import org.kasource.web.websocket.config.annotation.TextProtocols;
 import org.kasource.web.websocket.config.annotation.WebSocket;
 import org.kasource.web.websocket.config.loader.WebSocketServletAnnotationConfigurationBuilder;
+import org.kasource.web.websocket.protocol.BinaryProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
+import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.security.AuthenticationProvider;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
-public class SpringWebSocketServletConfigBuilder implements WebSocketServletAnnotationConfigurationBuilder, ApplicationContextAware {
-    private ApplicationContext applicationContext;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Singleton;
+import com.google.inject.name.Names;
+
+@Singleton
+public class GuiceWebSocketServletConfigBuilder implements WebSocketServletAnnotationConfigurationBuilder {
+    @Inject
+    private Injector injector;
     
     public WebSocketServletConfigImpl configure(Class<?> webocketPojo) {
         WebSocketServletConfigImpl config = new WebSocketServletConfigImpl();
@@ -62,9 +69,11 @@ public class SpringWebSocketServletConfigBuilder implements WebSocketServletAnno
             String beanName = auth.bean();
      
             if (beanName.isEmpty()) {
-                provider = applicationContext.getBean(auth.value());
+                Key<? extends AuthenticationProvider> bindKey = Key.get(auth.value());
+                provider = injector.getInstance(bindKey);
             } else {
-                provider = applicationContext.getBean(beanName, auth.value());
+                Key<? extends AuthenticationProvider> bindKey = Key.get(auth.value(), Names.named(beanName));
+                provider = injector.getInstance(bindKey);
             }
             return provider;
         }
@@ -80,9 +89,11 @@ public class SpringWebSocketServletConfigBuilder implements WebSocketServletAnno
         if (defaultTextProtocol != null) {
             String beanName = defaultTextProtocol.bean();
             if (beanName.isEmpty()) {
-                protocolHandlerConfigImpl.setDefaultProtocol(applicationContext.getBean(defaultTextProtocol.value()));
+                Key<? extends TextProtocolHandler> bindKey = Key.get(defaultTextProtocol.value());     
+                protocolHandlerConfigImpl.setDefaultProtocol(injector.getInstance(bindKey));
             } else {
-                protocolHandlerConfigImpl.setDefaultProtocol(applicationContext.getBean(beanName, defaultTextProtocol.value()));
+                Key<? extends TextProtocolHandler> bindKey = Key.get(defaultTextProtocol.value(), Names.named(beanName));
+                protocolHandlerConfigImpl.setDefaultProtocol(injector.getInstance(bindKey));
             }
         }
         Map<String, ProtocolHandler<String>> textProtocolMap = new HashMap<String, ProtocolHandler<String>>();
@@ -91,9 +102,11 @@ public class SpringWebSocketServletConfigBuilder implements WebSocketServletAnno
             for (TextProtocol textProtocol : textProtocols.value()) {
                 String beanName = textProtocol.bean();
                 if (beanName.isEmpty()) {
-                    textProtocolMap.put(textProtocol.protocol(), applicationContext.getBean(textProtocol.handler()));
+                    Key<? extends TextProtocolHandler> bindKey = Key.get(textProtocol.handler()); 
+                    textProtocolMap.put(textProtocol.protocol(), injector.getInstance(bindKey));
                 } else {
-                    textProtocolMap.put(textProtocol.protocol(), applicationContext.getBean(beanName, textProtocol.handler()));
+                    Key<? extends TextProtocolHandler> bindKey = Key.get(textProtocol.handler(), Names.named(beanName));       
+                    textProtocolMap.put(textProtocol.protocol(), injector.getInstance(bindKey));
                 }
                     
                 
@@ -111,9 +124,11 @@ public class SpringWebSocketServletConfigBuilder implements WebSocketServletAnno
         if (defaultBinaryProtocol != null) {
             String beanName = defaultBinaryProtocol.bean();
             if (beanName.isEmpty()) {
-                protocolHandlerConfigImpl.setDefaultProtocol(applicationContext.getBean(defaultBinaryProtocol.value()));
+                Key<? extends BinaryProtocolHandler> bindKey = Key.get(defaultBinaryProtocol.value());        
+                protocolHandlerConfigImpl.setDefaultProtocol(injector.getInstance(bindKey));
             } else {
-                protocolHandlerConfigImpl.setDefaultProtocol(applicationContext.getBean(beanName, defaultBinaryProtocol.value()));
+                Key<? extends BinaryProtocolHandler> bindKey = Key.get(defaultBinaryProtocol.value(), Names.named(beanName));                      
+                protocolHandlerConfigImpl.setDefaultProtocol(injector.getInstance(bindKey));
             }
         }
         Map<String, ProtocolHandler<byte[]>> binaryProtocolMap = new HashMap<String, ProtocolHandler<byte[]>>();
@@ -122,9 +137,11 @@ public class SpringWebSocketServletConfigBuilder implements WebSocketServletAnno
             for (BinaryProtocol binaryProtocol : binaryProtocols.value()) {
                 String beanName = binaryProtocol.bean();
                 if (beanName.isEmpty()) {
-                    binaryProtocolMap.put(binaryProtocol.protocol(), applicationContext.getBean(binaryProtocol.handler()));
+                    Key<? extends BinaryProtocolHandler> bindKey = Key.get(binaryProtocol.handler());                                      
+                    binaryProtocolMap.put(binaryProtocol.protocol(), injector.getInstance(bindKey));
                 } else {
-                    binaryProtocolMap.put(binaryProtocol.protocol(), applicationContext.getBean(beanName, binaryProtocol.handler()));
+                    Key<? extends BinaryProtocolHandler> bindKey = Key.get(binaryProtocol.handler(), Names.named(beanName));                                      
+                    binaryProtocolMap.put(binaryProtocol.protocol(), injector.getInstance(bindKey));
                 }
                
             }
@@ -150,17 +167,15 @@ public class SpringWebSocketServletConfigBuilder implements WebSocketServletAnno
             String beanName = generateId.bean();
             
             if (beanName.isEmpty()) {
-                clientIdGenerator = applicationContext.getBean(generateId.value());
+                Key<? extends ClientIdGenerator> bindKey = Key.get(generateId.value());                                                   
+                clientIdGenerator = injector.getInstance(bindKey);
             } else {
-                clientIdGenerator = applicationContext.getBean(beanName, generateId.value());
+                Key<? extends ClientIdGenerator> bindKey = Key.get(generateId.value(), Names.named(beanName));                                                   
+                clientIdGenerator = injector.getInstance(bindKey);
             }          
         }
         config.setClientIdGenerator(clientIdGenerator);
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-        
-    }
+   
 }

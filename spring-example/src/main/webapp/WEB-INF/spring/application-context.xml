@@ -20,6 +20,8 @@
     
     <!--  <websocket:websocket/> -->
    
-   	<bean class="org.kasource.web.websocket.security.PassthroughAutenticationProvider"/>
+   	<bean class="org.kasource.web.websocket.security.HttpAuthenticationProvider"/>
+   	
+   	<bean class="org.kasource.web.websocket.client.id.HttpPrincipalClientIdGenerator"/>
     
 </beans>

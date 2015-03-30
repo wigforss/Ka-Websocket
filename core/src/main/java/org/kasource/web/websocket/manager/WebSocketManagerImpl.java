@@ -172,7 +172,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
         clients.put(client.getId(), clientReg);
         addClientForUser(clientReg);
         if (!webSocketClientListeners.isEmpty()) {
-            for(ClientListener listener: webSocketClientListeners) {
+            for (ClientListener listener: webSocketClientListeners) {
                 listener.onConnect(client, clientReg.getParameterBinder());
             }
         }

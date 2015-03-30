@@ -108,8 +108,6 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
         WebSocketManagerRepositoryImpl managerRepo = new WebSocketManagerRepositoryImpl();
        
         managerRepo.setServletContext(servletContext);
-        Set<AuthenticationConfig> authConfigSet = getBeansOfType(AuthenticationConfig.class);
-       
         
         return managerRepo;
     }
@@ -140,6 +138,12 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
                 config.setOriginWhitelist(originWhiteListConfig.getOriginWhiteList());
             }
         }
+        Set<AuthenticationConfig> authConfigSet = getBeansOfType(AuthenticationConfig.class);
+        if(!authConfigSet.isEmpty()) {
+            AuthenticationConfig authConfig = authConfigSet.iterator().next();
+            config.setAuthenticationProvider(authConfig.getAuthenticationProvider());
+        }
+        
         
         config.setChannelFactory(channelFactory);
         config.setManagerRepository(managerRepository);

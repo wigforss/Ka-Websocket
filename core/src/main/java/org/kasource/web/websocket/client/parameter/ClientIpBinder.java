@@ -2,9 +2,9 @@ package org.kasource.web.websocket.client.parameter;
 
 import org.kasource.commons.reflection.parameter.binder.AnnotationParameterBinder;
 import org.kasource.web.websocket.client.UpgradeRequestData;
-import org.kasource.web.websocket.config.annotation.ClientId;
+import org.kasource.web.websocket.config.annotation.GenerateId;
 
-public class ClientIpBinder implements AnnotationParameterBinder<ClientId>{
+public class ClientIpBinder implements AnnotationParameterBinder<GenerateId>{
 
     private UpgradeRequestData upgradeRequestData;
     
@@ -13,7 +13,7 @@ public class ClientIpBinder implements AnnotationParameterBinder<ClientId>{
     }
     
     @Override
-    public Object bindValue(ClientId annotation) {
+    public Object bindValue(GenerateId annotation) {
         return upgradeRequestData.getIpAddress();
     }
 

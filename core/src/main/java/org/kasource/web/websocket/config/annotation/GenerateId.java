@@ -9,7 +9,7 @@ import org.kasource.web.websocket.client.id.ClientIdGenerator;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ClientId {
+public @interface GenerateId {
     
     /**
      * Replaces the default client ID generator with this implementation.

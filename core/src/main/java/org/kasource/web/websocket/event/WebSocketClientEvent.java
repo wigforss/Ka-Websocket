@@ -9,7 +9,7 @@ import org.kasource.web.websocket.client.WebSocketClient;
  * 
  * @author rikardwi
  **/
-public abstract class WebSocketClientEvent extends WebSocketUserEvent {
+public abstract class WebSocketClientEvent extends WebSocketEvent {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,18 +26,13 @@ public abstract class WebSocketClientEvent extends WebSocketUserEvent {
      * @param username  Username of the client
      **/
     public WebSocketClientEvent(WebSocketChannel websocket, WebSocketClient client, ParameterBinder parameterBinder) {
-        super(websocket, client.getUsername() == null ? DEFAULT_USER : client.getUsername());
+        super(websocket);
         this.client = client;
         this.parameterBinder = parameterBinder;
     }
     
     
-    /**
-     * @return the clientId
-     */
-    public String getClientId() {
-        return client.getId();
-    }
+    
 
     /**
      * @return the client

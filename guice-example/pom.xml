@@ -76,11 +76,12 @@
 	   <version>${project.version}</version>
     </dependency>    
     <dependency>
-	   <groupId>org.apache.tomcat</groupId>
-	   <artifactId>tomcat-catalina</artifactId>
-	   <version>7.0.30</version>
-        <scope>provided</scope>
-    </dependency> 
+		<groupId>org.kasource.websocket</groupId>
+		<artifactId>ka-websocket-tomcat7</artifactId>
+		<version>${project.version}</version>
+		<scope>runtime</scope>
+	</dependency>
+    
  	<dependency>
 		<groupId>com.google.inject</groupId>
 		<artifactId>guice</artifactId>
@@ -93,12 +94,7 @@
          <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
     </dependency>
-    <dependency>
-       <groupId>org.glassfish.grizzly</groupId>
-       <artifactId>grizzly-websockets-server</artifactId>
-       <version>2.2.9</version>
-        <scope>provided</scope>
-    </dependency>
+    
 	</dependencies>
 
 </project>

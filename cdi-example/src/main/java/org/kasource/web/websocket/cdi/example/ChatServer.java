@@ -32,16 +32,16 @@ public class ChatServer {
     }
     
     public void onClientConnect(@Observes @Chat WebSocketClientConnectionEvent event) throws NoSuchWebSocketClient, IOException {
-        sendEvent.fire(new SendWebSocketTextMessageEvent(event, "Welcome " + event.getClientId(), RecipientType.CLIENT_ID));
-        broadcastEvent.fire(new BroadcastWebSocketTextMessageEvent(event, event.getClientId() + " left the conversation."));
+        sendEvent.fire(new SendWebSocketTextMessageEvent(event, "Welcome " + event.getClient().getId(), RecipientType.CLIENT_ID));
+        broadcastEvent.fire(new BroadcastWebSocketTextMessageEvent(event, event.getClient().getId() + " left the conversation."));
     }
     
     public void onClientDisconnect(@Observes @Chat WebSocketClientDisconnectedEvent event) {
-        broadcastEvent.fire(new BroadcastWebSocketTextMessageEvent(event, event.getClientId() + " left the conversation."));
+        broadcastEvent.fire(new BroadcastWebSocketTextMessageEvent(event, event.getClient().getId() + " left the conversation."));
     }
     
     public void onMessage(@Observes @Chat WebSocketTextMessageEvent event) {
-        broadcastEvent.fire(new BroadcastWebSocketTextMessageEvent(event, event.getClientId() + " says: " + event.getMessage()));
+        broadcastEvent.fire(new BroadcastWebSocketTextMessageEvent(event, event.getClient().getId() + " says: " + event.getMessage()));
     }
     
     

@@ -15,7 +15,7 @@ import org.kasource.web.websocket.config.annotation.AllowedOrigin;
 import org.kasource.web.websocket.config.annotation.Authenticate;
 import org.kasource.web.websocket.config.annotation.BinaryProtocol;
 import org.kasource.web.websocket.config.annotation.BinaryProtocols;
-import org.kasource.web.websocket.config.annotation.ClientId;
+import org.kasource.web.websocket.config.annotation.GenerateId;
 import org.kasource.web.websocket.config.annotation.DefaultBinaryProtocol;
 import org.kasource.web.websocket.config.annotation.DefaultTextProtocol;
 import org.kasource.web.websocket.config.annotation.TextProtocol;
@@ -108,10 +108,10 @@ public class AnnotatedWebSocketServletConfigBuilder extends AbstractwebSocketSer
 
     private void setClientIdGenerator(Class<?> webocketPojo, WebSocketServletConfigImpl config) {
       
-        ClientId clientId = webocketPojo.getAnnotation(ClientId.class);
+        GenerateId generateId = webocketPojo.getAnnotation(GenerateId.class);
         Class<? extends ClientIdGenerator> idGeneratorClass = null;
-        if (clientId != null) {
-            idGeneratorClass = clientId.value();
+        if (generateId != null) {
+            idGeneratorClass = generateId.value();
         }
         config.setClientIdGenerator(super.getClientIdGenerator(idGeneratorClass));
     }

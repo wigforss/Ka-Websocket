@@ -63,7 +63,7 @@ public class WebSocketMessageMethod implements WebSocketEventListener {
     private Object invokeTextMessageMethod(WebSocketTextMessageEvent messageEvent) {
        
             try {
-                return method.invoke(listener,messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+                return method.invoke(listener,messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient()));
             } catch (Exception e) {
                 throw new IllegalStateException("Could not invoke " + method, e);
             } 
@@ -73,9 +73,9 @@ public class WebSocketMessageMethod implements WebSocketEventListener {
     private Object invokeTextMessageMethodConverted(WebSocketTextObjectMessageEvent messageEvent) {
         try {
             if (payloadType != null) {
-                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessageAsObject(payloadType), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessageAsObject(payloadType), messageEvent.getSource(), messageEvent.getClient()));
             } else {
-                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient()));
             }
         } catch(ConversionException e){
             throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType);
@@ -98,7 +98,7 @@ public class WebSocketMessageMethod implements WebSocketEventListener {
        
         try {
             byte[] data =  messageEvent.getMessage();
-            return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, Arrays.asList(data).toArray(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+            return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, Arrays.asList(data).toArray(), messageEvent.getSource(), messageEvent.getClient()));
         } catch (Exception e) {
             throw new IllegalStateException("Could not invoke " + method, e);
         } 
@@ -108,9 +108,9 @@ public class WebSocketMessageMethod implements WebSocketEventListener {
     private Object invokeBinaryMessageMethodConverted(WebSocketBinaryObjectMessageEvent messageEvent) {
         try {
             if (payloadType != null) {
-                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessageAsObject(payloadType), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessageAsObject(payloadType), messageEvent.getSource(), messageEvent.getClient()));
             } else {
-                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient(), messageEvent.getUsername()));
+                return method.invoke(listener, messageEvent.getParameterBinder().bindParameters(method, messageEvent, messageEvent.getMessage(), messageEvent.getSource(), messageEvent.getClient()));
             }
         } catch(ConversionException e){
             throw new IllegalStateException("Could not convert " + messageEvent.getMessage() + " to " + payloadType);

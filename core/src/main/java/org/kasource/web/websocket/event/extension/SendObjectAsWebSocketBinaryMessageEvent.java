@@ -42,7 +42,7 @@ public class SendObjectAsWebSocketBinaryMessageEvent extends WebSocketEvent {
         this(event.getSource(), 
              message, 
              event.getProtocolHandler(), 
-             recipientType == RecipientType.CLIENT_ID ? event.getClientId() : event.getUsername(), 
+             recipientType == RecipientType.CLIENT_ID ? event.getClient().getId() : event.getClient().getUsername(), 
              recipientType); 
        
     }

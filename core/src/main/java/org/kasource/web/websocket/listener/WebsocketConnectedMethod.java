@@ -47,7 +47,7 @@ public class WebsocketConnectedMethod implements WebSocketEventListener {
     }
     
     private Object invokeMethod(WebSocketClientConnectionEvent event) throws Exception {
-       return  method.invoke(listener, event.getParameterBinder().bindParameters(method, event, event.getUsername(), event.getSource(), event.getClient()));
+       return  method.invoke(listener, event.getParameterBinder().bindParameters(method, event, event.getSource(), event.getClient()));
     }
 
 }
