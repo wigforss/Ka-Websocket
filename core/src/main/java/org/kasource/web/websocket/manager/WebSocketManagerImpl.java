@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kasource.web.websocket.channel.NoSuchWebSocketClient;
-import org.kasource.web.websocket.client.RecipientType;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.internal.ClientListener;
 import org.kasource.web.websocket.security.AuthenticationException;
@@ -33,117 +32,6 @@ public class WebSocketManagerImpl implements WebSocketManager {
  
     private AuthenticationProvider authenticationProvider;
 
-    
-    
-    /**
-     * Broadcast a text message to all clients.
-     * 
-     * @param message message to send.
-     **/
-    @Override
-    public void broadcast(String message) {
-        
-        for (WebSocketClientRegistration clientReg : clients.values()) {
-            try {
-                clientReg.getClient().sendMessageToSocket(message);   
-            } catch (Exception e) {
-                LOG.debug("Could not broadcast to " +  clientReg.getClient().getUsername() + " with id " +  clientReg.getClient().getId(), e);
-            }
-        }
-        
-    }
-
-    /**
-     * Broadcast a binary message to all clients.
-     * 
-     * @param message message to send.
-     **/
-    @Override
-    public void broadcastBinary(byte[] message) {
-        for (WebSocketClientRegistration clientReg : clients.values()) {
-            try {
-                clientReg.getClient().sendMessageToSocket(message);
-            } catch (Exception e) {
-                LOG.debug("Could not broadcast to " + clientReg.getClient().getUsername() + " with id " + clientReg.getClient().getId(), e);
-            }
-        }
-        
-    }
-
-    /**
-     * Sends a text message to a specific client
-     * 
-     * @param clientId ID of the recipient
-     * @param message to send.
-     **/
-    @Override
-    public void sendMessage(String message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient {
-       if (recipientType == RecipientType.USERNAME) {
-           sendMessageToUser(recipient, message);
-       } else {
-           WebSocketClientRegistration clientReg = clients.get(recipient);
-        if (clientReg == null) {
-            throw new NoSuchWebSocketClient("No client found with ID " + recipient);
-        }
-        clientReg.getClient().sendMessageToSocket(message);
-       }
-    }
-    
-    /**
-     * Sends a text message to a specific user
-     * 
-     * @param clientId ID of the recipient
-     * @param message to send.
-     **/
-    private void sendMessageToUser(String username, String message) throws IOException, NoSuchWebSocketClient {      
-        Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
-        if (clientsForUser == null || clientsForUser.isEmpty()) {
-            throw new NoSuchWebSocketClient("No client found for user " + username);
-        }
-        for (WebSocketClientRegistration clientReg : clientsForUser) {
-            clientReg.getClient().sendMessageToSocket(message);
-        }
-        
-        
-    }
-
-    /**
-     * Sends a binary message to a specific client
-     * 
-     * @param clientId ID of the recipient
-     * @param message to send.
-     **/
-    @Override
-    public void sendBinaryMessage(byte[] message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient {
-        if (recipientType == RecipientType.USERNAME) {
-            sendBinaryMessageToUser(recipient, message);
-        } else {
-            WebSocketClientRegistration clientReg = clients.get(recipient);
-            if(clientReg == null) {
-                throw new NoSuchWebSocketClient("No client found with ID " + recipient);
-            }
-            clientReg.getClient().sendMessageToSocket(message);
-        }
-    }
-    
-    /**
-     * Sends a binary message to a specific client
-     * 
-     * @param clientId ID of the recipient
-     * @param message to send.
-     **/
-    private void sendBinaryMessageToUser(String username, byte[] message) throws IOException, NoSuchWebSocketClient {
-        Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
-        if(clientsForUser == null || clientsForUser.isEmpty()) {
-            throw new NoSuchWebSocketClient("No client found for user " + username);
-        }
-        for(WebSocketClientRegistration clientReg : clientsForUser) {
-            clientReg.getClient().sendMessageToSocket(message);
-        }
-        
-    }
-    
-    
 
     /**
      * Add event listener.
@@ -153,10 +41,7 @@ public class WebSocketManagerImpl implements WebSocketManager {
     public void addClientListener(ClientListener listener) {
         this.webSocketClientListeners.add(listener);
     }
-    
-   
 
-   
 
     /**
      * Add the supplied client to the register and notifies listeners about this new client.
@@ -331,29 +216,8 @@ public class WebSocketManagerImpl implements WebSocketManager {
     }
 
     @Override
-    public void sendMessage(Object message, String recipient, RecipientType recipientType) throws IOException,
+    public void sendMessageToUser(Object message, String username) throws IOException,
                 NoSuchWebSocketClient {
-        if (recipientType == RecipientType.USERNAME) {
-            sendMessageAsObjectToUser(recipient, message);
-        } else {
-            WebSocketClientRegistration clientReg = clients.get(recipient);
-            if (clientReg == null) {
-                throw new NoSuchWebSocketClient("No client found with ID " + recipient);
-            }
-            clientReg.getClient().sendTextMessageToSocket(message);         
-        }
-       
-        
-    }
-
-    
-    /**
-     * Sends a text message to a specific user
-     * 
-     * @param clientId ID of the recipient
-     * @param message to send.
-     **/
-    private void sendMessageAsObjectToUser(String username, Object message) throws IOException, NoSuchWebSocketClient {      
         Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
         if (clientsForUser == null || clientsForUser.isEmpty()) {
             throw new NoSuchWebSocketClient("No client found for user " + username);
@@ -361,27 +225,23 @@ public class WebSocketManagerImpl implements WebSocketManager {
         for (WebSocketClientRegistration clientReg : clientsForUser) {
             clientReg.getClient().sendTextMessageToSocket(message);
         }
-        
-        
     }
 
+    @Override
+    public void sendMessageToClient(Object message, String clientId) throws IOException,
+            NoSuchWebSocketClient {
+        WebSocketClientRegistration clientReg = clients.get(clientId);
+        if (clientReg == null) {
+            throw new NoSuchWebSocketClient("No client found with ID " + clientId);
+        }
+        clientReg.getClient().sendTextMessageToSocket(message);     
+    }
+    
+   
     
     @Override
-    public void sendBinaryMessage(Object message, String recipient, RecipientType recipientType) throws IOException,
+    public void sendBinaryMessageToUser(Object message, String username) throws IOException,
                 NoSuchWebSocketClient {
-        if (recipientType == RecipientType.USERNAME) {
-            sendBinaryAsObjectMessageToUser(recipient, message);
-        } else {
-            WebSocketClientRegistration clientReg = clients.get(recipient);
-            if(clientReg == null) {
-                throw new NoSuchWebSocketClient("No client found with ID " + recipient);
-            }
-            clientReg.getClient().sendBinaryMessageToSocket(message);         
-        }
-        
-    }
-     
-    private void sendBinaryAsObjectMessageToUser(String username, Object message) throws IOException, NoSuchWebSocketClient {
         Set<WebSocketClientRegistration> clientsForUser = clientsByUser.get(username);
         if (clientsForUser == null || clientsForUser.isEmpty()) {
             throw new NoSuchWebSocketClient("No client found for user " + username);
@@ -391,6 +251,19 @@ public class WebSocketManagerImpl implements WebSocketManager {
         }
         
     }
+    
+    @Override
+    public void sendBinaryMessageToClient(Object message, String clientId) throws IOException,
+                NoSuchWebSocketClient {
+       
+        WebSocketClientRegistration clientReg = clients.get(clientId);
+        if(clientReg == null) {
+            throw new NoSuchWebSocketClient("No client found with ID " + clientId);
+        }
+        clientReg.getClient().sendBinaryMessageToSocket(message);                 
+    }
+     
+    
    
 
 }

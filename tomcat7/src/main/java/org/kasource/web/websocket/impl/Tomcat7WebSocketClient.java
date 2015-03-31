@@ -70,8 +70,8 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
    
     
 
-    @Override
-    public void sendMessageToSocket(String message)  {
+    
+    private void sendMessageToSocket(String message)  {
         try {
             getWsOutbound().writeTextMessage(CharBuffer.wrap(message));
         } catch (IOException e) {
@@ -82,8 +82,8 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
 
 
 
-    @Override
-    public void sendMessageToSocket(byte[] message) {
+    
+    private void sendMessageToSocket(byte[] message) {
         try {
             getWsOutbound().writeBinaryMessage(ByteBuffer.wrap(message));
         } catch (IOException e) {

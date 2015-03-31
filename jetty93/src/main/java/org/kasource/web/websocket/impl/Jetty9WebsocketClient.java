@@ -61,8 +61,8 @@ public class Jetty9WebsocketClient implements WebSocketClient {
         }
     }
     
-    @Override
-    public void sendMessageToSocket(String message) {
+    
+    private void sendMessageToSocket(String message) {
         try {
             session.getRemote().sendString(message);
         } catch (IOException e) {
@@ -71,8 +71,8 @@ public class Jetty9WebsocketClient implements WebSocketClient {
         
     }
 
-    @Override
-    public void sendMessageToSocket(byte[] message) {
+    
+    private void sendMessageToSocket(byte[] message) {
         try {
             session.getRemote().sendBytes(ByteBuffer.wrap(message));
         } catch (IOException e) {

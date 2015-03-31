@@ -1,4 +1,4 @@
-package org.kasource.web.websocket.event.listeners;
+package org.kasource.web.websocket.listener;
 
 import java.util.EventListener;
 

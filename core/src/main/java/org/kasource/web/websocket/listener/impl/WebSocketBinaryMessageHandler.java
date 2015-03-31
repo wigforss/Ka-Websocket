@@ -1,8 +1,9 @@
-package org.kasource.web.websocket.listener;
+package org.kasource.web.websocket.listener.impl;
 
 import org.kasource.web.websocket.event.WebSocketBinaryMessageEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;
-import org.kasource.web.websocket.event.listeners.WebSocketBinaryMessageListener;
+import org.kasource.web.websocket.listener.WebSocketBinaryMessageListener;
+import org.kasource.web.websocket.listener.WebSocketEventListener;
 
 public class WebSocketBinaryMessageHandler implements WebSocketEventListener{
    private WebSocketBinaryMessageListener listener;

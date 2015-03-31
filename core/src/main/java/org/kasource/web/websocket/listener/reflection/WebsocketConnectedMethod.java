@@ -1,27 +1,27 @@
-package org.kasource.web.websocket.listener;
+package org.kasource.web.websocket.listener.reflection;
 
 import java.lang.reflect.Method;
 
 import org.kasource.web.websocket.annotations.Broadcast;
-import org.kasource.web.websocket.event.WebSocketClientDisconnectedEvent;
+import org.kasource.web.websocket.event.WebSocketClientConnectionEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;
+import org.kasource.web.websocket.listener.WebSocketEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WebsocketDisconnectedMethod implements WebSocketEventListener {
-    private static final Logger LOG = LoggerFactory.getLogger(WebsocketDisconnectedMethod.class);
+public class WebsocketConnectedMethod implements WebSocketEventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(WebsocketConnectedMethod.class);
     private Object listener;
     private Method method;
     private boolean broadcastResponse;
 
     
-    public WebsocketDisconnectedMethod(Object listener, Method method) {
+    public WebsocketConnectedMethod(Object listener, Method method) {
         if (method.isAccessible()) {
             throw new IllegalArgumentException("WebSocket Connection Listener method must be public");
         }
-        
-        
        
+        
         this.method = method;
         this.listener = listener;
         
@@ -30,14 +30,14 @@ public class WebsocketDisconnectedMethod implements WebSocketEventListener {
     
     @Override
     public void onWebSocketEvent(WebSocketEvent event) {
-       if (event instanceof WebSocketClientDisconnectedEvent) {
+       if (event instanceof WebSocketClientConnectionEvent) {
            try {
-               Object response = invokeMethod((WebSocketClientDisconnectedEvent) event);
+               Object response = invokeMethod((WebSocketClientConnectionEvent) event);
                if (response != null) {
                    if (broadcastResponse) {
                        event.getSource().broadcast(response);
                    } else {
-                       ((WebSocketClientDisconnectedEvent) event).getClient().sendTextMessageToSocket(response);
+                       ((WebSocketClientConnectionEvent) event).getClient().sendTextMessageToSocket(response);
                    }
                }
            } catch (Exception e) {
@@ -47,10 +47,8 @@ public class WebsocketDisconnectedMethod implements WebSocketEventListener {
         
     }
     
-    private Object invokeMethod(WebSocketClientDisconnectedEvent event) throws Exception {
-       
-        return method.invoke(listener, event.getParameterBinder().bindParameters(method, event, event.getSource(), event.getClient()));
-        
+    private Object invokeMethod(WebSocketClientConnectionEvent event) throws Exception {
+       return  method.invoke(listener, event.getParameterBinder().bindParameters(method, event, event.getSource(), event.getClient()));
     }
 
 }

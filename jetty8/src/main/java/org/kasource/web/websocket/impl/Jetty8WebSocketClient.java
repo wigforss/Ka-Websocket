@@ -62,8 +62,8 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
         return connection;
     }
 
-    @Override
-    public void sendMessageToSocket(String message) {
+    
+    private void sendMessageToSocket(String message) {
         try {
             getConnection().sendMessage(message);
         } catch (IOException e) {
@@ -72,8 +72,8 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
         
     }
 
-    @Override
-    public void sendMessageToSocket(byte[] message) {
+    
+    private void sendMessageToSocket(byte[] message) {
         try {
             getConnection().sendMessage(message, 0, message.length);
         } catch (IOException e) {

@@ -13,8 +13,6 @@ import org.kasource.web.websocket.security.AuthenticationProvider;
 /**
  * Web Socket Manager.
  * 
- * This interface is implemented by vendor specific WebSocketServlet implementations, in order
- * to get message and client event notifications.
  * 
  * @author rikardwi
  **/

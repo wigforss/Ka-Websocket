@@ -25,6 +25,7 @@ import org.kasource.web.websocket.protocol.JsonProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.protocol.XmlProtocolHandler;
+
 /**
  * Web Socket Channel Implementation.
  * 
@@ -69,50 +70,8 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
         manager.addClientListener(this);
     }
     
-    /**
-     * Broadcasts a text message to all clients.
-     * 
-     * @param message Message to send.
-     **/
-    @Override
-    public void broadcast(String message) {
-        if (sender != null) {
-            sender.broadcast(message);
-        }
-        
-    }
-    
-    @Override
-    public void broadcastJsonMessage(Object message) {
-        broadcast(json.toMessage(message));     
-    }
-    
-    @Override
-    public void broadcastXmlMessage(Object message) {
-        broadcast(jaxb.toMessage(message));     
-    }
-    
-    @Override
-    public void broadcastObject(Object message, ProtocolHandler<String> protocolHandler) {
-        broadcast(protocolHandler.toMessage(message));     
-    }
+   
 
-    /**
-     * @param message
-     * @see org.kasource.web.websocket.channel.spring.websocket.WebsocketMessageSender#broadcastBinary(byte[])
-     */
-    @Override
-    public void broadcastBinary(byte[] message) {
-        if(sender != null) {
-            sender.broadcastBinary(message);
-        }
-        
-    }
-    
-    @Override
-    public void broadcastBinaryObject(Object message, ProtocolHandler<byte[]> protocolHandler) {
-        broadcastBinary(protocolHandler.toMessage(message));
-    }
 
     /**
      * Send a message to the web socket client with clientId.
@@ -124,31 +83,22 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      * @see org.kasource.web.websocket.channel.spring.websocket.WebsocketMessageSender#sendMessage(java.lang.String, java.lang.String)
      */
     @Override
-    public void sendMessage(String message, String recipient, RecipientType recipientType) throws IOException {
+    public void sendMessageToClient(Object message, String clientId) throws IOException {
         if(sender != null) {
-            sender.sendMessage(message, recipient, recipientType);
+            sender.sendMessageToClient(message, clientId);
         }
         
     }
     
     @Override
-    public void sendMessageAsJson(Object message, String recipient, RecipientType recipientType) throws IOException {
-        sendMessage(json.toMessage(message), recipient, recipientType);
-    }
-        
-    
-    @Override
-    public void sendMessageAsXml(Object message, String recipient, RecipientType recipientType) throws IOException {
-        sendMessage(jaxb.toMessage(message), recipient, recipientType);
-    }
-    
-    @Override
-    public void sendMessage(Object message, ProtocolHandler<String> protocolHandler, String recipient, RecipientType recipientType) throws IOException {
+    public void sendMessageToUser(Object message, String username) throws IOException {
         if(sender != null) {
-            sender.sendMessage(protocolHandler.toMessage(message), recipient, recipientType);
+            sender.sendMessageToUser(message, username);
         }
         
     }
+    
+
     
  
 
@@ -161,17 +111,17 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
      * @throws IOException If the message could not be sent.
      */
     @Override
-    public void sendBinaryMessage(byte[] message, String recipient, RecipientType recipientType) throws IOException {
+    public void sendBinaryMessageToClient(Object message, String clientId) throws IOException {
         if(sender != null) {
-            sender.sendBinaryMessage(message, recipient, recipientType);
+            sender.sendBinaryMessageToClient(message, clientId);
         }
         
     }
     
     @Override
-    public void sendBinaryMessage(Object message, ProtocolHandler<byte[]> protocolHandler, String recipient, RecipientType recipientType) throws IOException {
+    public void sendBinaryMessageToUser(Object message, String username) throws IOException {
         if(sender != null) {
-            sender.sendBinaryMessage(protocolHandler.toMessage(message), recipient, recipientType);
+            sender.sendBinaryMessageToUser(message, username);
         }
         
     }
@@ -291,23 +241,7 @@ public class WebSocketChannelImpl implements WebSocketChannel, ClientListener {
         
     }
 
-    @Override
-    public void sendMessage(Object message, String recipient, RecipientType recipientType) throws IOException,
-                NoSuchWebSocketClient {
-        if(sender != null) {
-            sender.sendMessage(message, recipient, recipientType);
-        }
-        
-    }
-
-    @Override
-    public void sendBinaryMessage(Object message, String recipient, RecipientType recipientType) throws IOException,
-                NoSuchWebSocketClient {
-        if(sender != null) {
-            sender.sendBinaryMessage(message, recipient, recipientType);
-        }
-        
-    }
+  
 
     
 }

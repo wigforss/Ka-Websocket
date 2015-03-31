@@ -97,8 +97,8 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
 
 
 
-    @Override
-    public void sendMessageToSocket(String message) {
+    
+    private void sendMessageToSocket(String message) {
         try {
             sendMessage(message);
         } catch (IOException e) {
@@ -108,8 +108,8 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
 
 
 
-    @Override
-    public void sendMessageToSocket(byte[] message) {
+    
+    private void sendMessageToSocket(byte[] message) {
         try {
             sendBinaryMessage(message);
         } catch (IOException e) {

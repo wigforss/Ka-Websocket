@@ -1,13 +1,9 @@
 package org.kasource.web.websocket.manager;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
-
-import org.kasource.web.websocket.protocol.ProtocolRepository;
-import org.kasource.web.websocket.security.AuthenticationProvider;
 
 /**
  * Standard implementation of WebSocketManagerRepository.
@@ -16,10 +12,8 @@ import org.kasource.web.websocket.security.AuthenticationProvider;
  **/
 public class WebSocketManagerRepositoryImpl implements WebSocketManagerRepository {
     private Map<String, WebSocketManager> managers = new ConcurrentHashMap<String, WebSocketManager>();
-    private Map<String, AuthenticationProvider> autenticationProviders = new HashMap<String, AuthenticationProvider>();
     private ServletContext servletContext;
-    private AuthenticationProvider defaultAuthenticationProvider;
-    private ProtocolRepository protocolRepository;
+ 
 
     public WebSocketManagerRepositoryImpl(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -33,9 +27,6 @@ public class WebSocketManagerRepositoryImpl implements WebSocketManagerRepositor
     public WebSocketManager getWebSocketManager(String url) {
         if (!managers.containsKey(url)) {
             WebSocketManagerImpl manager = new WebSocketManagerImpl();
-            AuthenticationProvider authenticationProvider = getAuthenticationProviderByUrl(url);
-            manager.setAuthenticationProvider(authenticationProvider != null ? authenticationProvider
-                        : defaultAuthenticationProvider);
           
             managers.put(url, manager);
             servletContext.setAttribute(ATTRIBUTE_PREFIX + url, manager);
@@ -44,18 +35,7 @@ public class WebSocketManagerRepositoryImpl implements WebSocketManagerRepositor
         return managers.get(url);
     }
 
-    private AuthenticationProvider getAuthenticationProviderByUrl(String url) {
-        for (String key : autenticationProviders.keySet()) {
-            String urlPattern = key;
-            if (key.contains("*")) {
-                urlPattern = key.replace("*", ".*");
-            }
-            if (url.matches(urlPattern)) {
-                return autenticationProviders.get(key);
-            }
-        }
-        return null;
-    }
+
 
     /**
      * @param servletContext
@@ -65,13 +45,7 @@ public class WebSocketManagerRepositoryImpl implements WebSocketManagerRepositor
         this.servletContext = servletContext;
     }
 
-    /**
-     * @param defaultAuthenticationProvider
-     *            the defaultAuthenticationProvider to set
-     */
-    public void setDefaultAuthenticationProvider(AuthenticationProvider defaultAuthenticationProvider) {
-        this.defaultAuthenticationProvider = defaultAuthenticationProvider;
-    }
+   
 
     
 

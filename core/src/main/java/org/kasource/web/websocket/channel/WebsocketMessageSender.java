@@ -2,8 +2,6 @@ package org.kasource.web.websocket.channel;
 
 import java.io.IOException;
 
-import org.kasource.web.websocket.client.RecipientType;
-
 
 
 /**
@@ -15,17 +13,12 @@ import org.kasource.web.websocket.client.RecipientType;
  **/
 public interface WebsocketMessageSender  {
 
-    /**
-     * Broadcasts a text message to all clients.
-     * 
-     * @param message Message to send.
-     **/
-    public void broadcast(String message);
+    
     
     /**
      * Broadcasts a text message to all clients.
      * 
-     * @param message Message to send.
+     * @param message Message Object to send, if no text protocol handler is used the toString() method will be used
      **/
     public void broadcast(Object message);
     
@@ -33,11 +26,11 @@ public interface WebsocketMessageSender  {
     /**
      * Broadcasts a binary message to all clients.
      * 
-     * @param message Message to send.
+     * @param message Message to send, if no no binary protocol handler is used its expected to be byte[], InputStream or Reader.
      **/
-    public void broadcastBinary(byte[] message);
-    
     public void broadcastBinary(Object message);
+    
+  
     
     /**
      * Sends a text message to a specific client.
@@ -49,10 +42,10 @@ public interface WebsocketMessageSender  {
      * @throws IOException if message could not be sent.
      * @throws NoSuchWebSocketClient if there is no connected client with the supplied clientId.
      **/
-    public void sendMessage(String message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient; 
+    public void sendMessageToUser(Object message, String username) throws IOException, NoSuchWebSocketClient; 
     
     
-    public void sendMessage(Object message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient;
+    public void sendMessageToClient(Object message, String clientId) throws IOException, NoSuchWebSocketClient;
     
     /**
      * Sends a binary message to a specific client.
@@ -64,9 +57,9 @@ public interface WebsocketMessageSender  {
      * @throws IOException if message could not be sent.
      * @throws NoSuchWebSocketClient if there is no connected client with the supplied clientId.
      **/
-    public void sendBinaryMessage(byte[] message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient; 
+    public void sendBinaryMessageToUser(Object message, String username) throws IOException, NoSuchWebSocketClient; 
     
-    public void sendBinaryMessage(Object message, String recipient, RecipientType recipientType) throws IOException, NoSuchWebSocketClient; 
+    public void sendBinaryMessageToClient(Object message, String clientId) throws IOException, NoSuchWebSocketClient; 
    
     
 }

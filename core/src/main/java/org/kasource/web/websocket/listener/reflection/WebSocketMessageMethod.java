@@ -1,4 +1,4 @@
-package org.kasource.web.websocket.listener;
+package org.kasource.web.websocket.listener.reflection;
 
 
 
@@ -13,6 +13,7 @@ import org.kasource.web.websocket.event.WebSocketBinaryObjectMessageEvent;
 import org.kasource.web.websocket.event.WebSocketEvent;
 import org.kasource.web.websocket.event.WebSocketTextMessageEvent;
 import org.kasource.web.websocket.event.WebSocketTextObjectMessageEvent;
+import org.kasource.web.websocket.listener.WebSocketEventListener;
 import org.kasource.web.websocket.protocol.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

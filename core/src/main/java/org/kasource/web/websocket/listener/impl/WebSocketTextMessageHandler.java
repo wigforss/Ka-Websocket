@@ -1,8 +1,9 @@
-package org.kasource.web.websocket.listener;
+package org.kasource.web.websocket.listener.impl;
 
 import org.kasource.web.websocket.event.WebSocketEvent;
 import org.kasource.web.websocket.event.WebSocketTextMessageEvent;
-import org.kasource.web.websocket.event.listeners.WebSocketTextMessageListener;
+import org.kasource.web.websocket.listener.WebSocketEventListener;
+import org.kasource.web.websocket.listener.WebSocketTextMessageListener;
 
 public class WebSocketTextMessageHandler implements WebSocketEventListener {
    private WebSocketTextMessageListener listener;
