@@ -3,7 +3,7 @@ package org.kasource.web.websocket.guice.channel;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactoryImpl;
+import org.kasource.web.websocket.channel.server.ServerChannelFactoryImpl;
 import org.kasource.web.websocket.config.WebSocketConfigException;
 
 import com.google.inject.Injector;
@@ -15,7 +15,7 @@ import com.google.inject.Singleton;
  * @author rikardwi
  **/
 @Singleton
-public class GuiceWebSocketChannelFactory extends WebSocketChannelFactoryImpl {
+public class GuiceWebSocketChannelFactory extends ServerChannelFactoryImpl {
     
     @Inject
     public GuiceWebSocketChannelFactory(Injector injector) {

@@ -31,14 +31,14 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
     
     @Override
     public void onMessage(String data) {
-        clientConfig.getManager().onWebSocketMessage(this, data);
+        clientConfig.getManager().onMessage(this, data);
     }
 
     @Override
     public void onMessage(byte[] data, int offset, int length) {
         byte[] message = new byte[length];
         System.arraycopy(message, 0, data, offset, length);
-        clientConfig.getManager().onWebSocketMessage(this, message);
+        clientConfig.getManager().onMessage(this, message);
        
         
     }

@@ -68,19 +68,12 @@ public interface WebSocketListenerRegister {
      * For a listener object to qualify its class needs to either be annotated correctly or implement
      * the correct interfaces.
      * <p/>
-     * When using annotations the class can be annotated with @WebSocketListener, which will provide
+     * When using annotations the class can be annotated with @Websocket or @WebSocketListener, which will provide
      * a default for all methods or annotate a method with @WebSocketListener. 
      * <p/>
      * Any method in the listener class
-     * that is annotated with @OnWebSocketEvent, which also has @WebSocketListener annotation on class or
-     * method level, will be eligible for registration. The method can also be annotated with an extension
-     * annotation such as @OnWebSocketTextMessage and @OnWebSocketBinaryMessage instead of @OnWebSocketEvent.
-     * <p/>
-     * Extensions can be created to provide its own annotations and event conversion strategy, these
-     * annotations need to be annotated with the Meta annotation @WebSocketListenerAnnotation and provide its 
-     * implementation in the value field.
-     * <p/>
-     * Two such extensions are provided in this project: @OnWebSocketTextMessage and @OnWebSocketBinaryMessage.
+     * that is annotated with @OnMessage, @OnClientConnected or @OnClientDisconnected which also has @WebSocketListener annotation on class or
+     * method level, will be eligible for registration. 
      * <p/>
      * Using interface configuration the listener should implement WebSocketListenerRegistration together
      * with WebSocketEventListener and/or WebSocketBinaryMessageListener and/or WebSocketTextMessageListener

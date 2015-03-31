@@ -6,17 +6,17 @@ import javax.servlet.ServletRegistration;
 
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigException;
-import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
+import org.kasource.web.websocket.config.ClientConfigImpl;
 import org.kasource.web.websocket.config.annotation.WebSocket;
-import org.kasource.web.websocket.config.loader.WebSocketServletAnnotationConfigurationBuilder;
+import org.kasource.web.websocket.config.loader.ClientAnnotationConfigurationBuilder;
 
 
 public class ServletRegistrator {
     
     private ServletContext servletContext;
-    private WebSocketServletAnnotationConfigurationBuilder configurationBuilder;
+    private ClientAnnotationConfigurationBuilder configurationBuilder;
     
-    public ServletRegistrator(ServletContext servletContext, WebSocketServletAnnotationConfigurationBuilder configurationBuilder) {
+    public ServletRegistrator(ServletContext servletContext, ClientAnnotationConfigurationBuilder configurationBuilder) {
         this.servletContext = servletContext;
         this.configurationBuilder = configurationBuilder;
     }
@@ -29,10 +29,10 @@ public class ServletRegistrator {
         String url = websocket.value();
         String name = "ka-websocket-" + url.replace("/", "_").replace("*", "-");
        
-        WebSocketServletConfigImpl servletConfig =  configurationBuilder.configure(webocketPojo);
+        ClientConfigImpl servletConfig =  configurationBuilder.configure(webocketPojo);
         servletConfig.setServletName(name);
         WebSocketConfig config = (WebSocketConfig) servletContext.getAttribute(WebSocketConfig.class.getName());
-        config.registerServlet(servletConfig);
+        config.registerClientConfig(servletConfig);
         
         
         ServletRegistration.Dynamic registration = servletContext.addServlet(name, resolve());

@@ -5,7 +5,7 @@ import org.kasource.web.websocket.spring.bootstrap.SpringWebSocketBootstrap;
 import org.kasource.web.websocket.spring.config.KaWebSocketBean;
 import org.kasource.web.websocket.spring.config.loader.SpringWebSocketServletConfigBuilder;
 import org.kasource.web.websocket.spring.config.springns.support.ProtocolRepositoryFactoryBean;
-import org.kasource.web.websocket.spring.config.springns.support.SpringWebSocketChannelFactory;
+import org.kasource.web.websocket.spring.config.springns.support.SpringServerChannelFactory;
 import org.kasource.web.websocket.spring.config.springns.support.SpringWebSocketConfigFactoryBean;
 import org.kasource.web.websocket.spring.config.springns.support.SpringWebSocketListenerRegister;
 import org.kasource.web.websocket.spring.config.springns.support.WebSocketManagerRepositoryFactoryBean;
@@ -130,7 +130,7 @@ public class ConfigurerBeanDefinitionParser extends AbstractSingleBeanDefinition
     
     private void createChannelFactory(ParserContext pc) {
         BeanDefinitionBuilder builder = BeanDefinitionBuilder
-                    .rootBeanDefinition(SpringWebSocketChannelFactory.class);
+                    .rootBeanDefinition(SpringServerChannelFactory.class);
         builder.setLazyInit(false);
         pc.registerBeanComponent(new BeanComponentDefinition(builder
             .getBeanDefinition(), KaWebSocketBean.CHANNEL_FACTORY_ID));

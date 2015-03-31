@@ -4,7 +4,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class SpringWebSocketBootstrap implements ServletContextAware, ServletCon
 
     
     private ServletContext servletContext;
-    private WebSocketChannelFactory channelFactory;
+    private ServerChannelFactory serverChannelFactory;
     private WebSocketConfig webSocketConfig;
     
     public SpringWebSocketBootstrap(WebSocketConfig webSocketConfig) {
@@ -38,7 +38,7 @@ public class SpringWebSocketBootstrap implements ServletContextAware, ServletCon
 
     @Override
     public void attributeAdded(ServletContextAttributeEvent event) {
-        channelFactory.addWebSocketManagerFromAttribute(event.getName(), event.getValue());
+        serverChannelFactory.addClientChannelFromAttribute(event.getName(), event.getValue());
         
     }
 
@@ -58,8 +58,8 @@ public class SpringWebSocketBootstrap implements ServletContextAware, ServletCon
      * @param channelFactory the channelFactory to set
      */
     @Required
-    public void setChannelFactory(WebSocketChannelFactory channelFactory) {
-        this.channelFactory = channelFactory;
+    public void setChannelFactory(ServerChannelFactory channelFactory) {
+        this.serverChannelFactory = channelFactory;
     }   
 
    

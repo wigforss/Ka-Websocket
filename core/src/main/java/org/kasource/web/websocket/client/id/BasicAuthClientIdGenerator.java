@@ -5,14 +5,14 @@ import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
-import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.channel.client.ClientChannel;
 
 
 
 public class BasicAuthClientIdGenerator extends AbstractClientIdGenerator implements ClientIdGenerator {
     private static final String BASIC_AUTH_PREFIX = "Basic ";
     @Override
-    public String getId(HttpServletRequest request, WebSocketManager manager) {
+    public String getId(HttpServletRequest request, ClientChannel manager) {
         String clientId = getUsername(request);
         if (clientId == null) {
             return getUuid();

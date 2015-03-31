@@ -41,7 +41,7 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
     @Override
     protected void onBinaryData(InputStream is) throws IOException {
         
-        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(is));
+        clientConfig.getManager().onMessage(this, IOUtils.toByteArray(is));
 
     }
 
@@ -50,7 +50,7 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
     @Override
     protected void onTextData(Reader r) throws IOException {
         
-        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toString(r));
+        clientConfig.getManager().onMessage(this, IOUtils.toString(r));
     }
 
 

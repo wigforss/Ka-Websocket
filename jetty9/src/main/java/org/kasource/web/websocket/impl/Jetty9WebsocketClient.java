@@ -50,13 +50,13 @@ public class Jetty9WebsocketClient implements WebSocketClient {
  
     @OnWebSocketMessage
     public void onTextMessage(String msg) {
-        clientConfig.getManager().onWebSocketMessage(this, msg);
+        clientConfig.getManager().onMessage(this, msg);
     }
 
     @OnWebSocketMessage
     public void onBinaryMessage(InputStream is) {
         try {
-            clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(is));
+            clientConfig.getManager().onMessage(this, IOUtils.toByteArray(is));
         } catch (IOException e) {
             LOG.debug("Could not receive message to socket to " + clientConfig.getUsername() + " with id " + clientConfig.getClientId(), e);
         }

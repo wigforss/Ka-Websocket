@@ -4,8 +4,10 @@ package org.kasource.web.websocket.spring.config.annotation;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
-import org.kasource.web.websocket.channel.WebSocketChannelFactoryImpl;
+import org.kasource.web.websocket.channel.client.ClientChannelRepository;
+import org.kasource.web.websocket.channel.client.ClientChannelRepositoryImpl;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
+import org.kasource.web.websocket.channel.server.ServerChannelFactoryImpl;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
 import org.kasource.web.websocket.config.AuthenticationConfig;
@@ -13,8 +15,6 @@ import org.kasource.web.websocket.config.OriginWhiteListConfig;
 import org.kasource.web.websocket.config.ProtocolHandlerConfig;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
@@ -44,7 +44,7 @@ public class SpringKaWebSocket implements ServletContextAware {
     @Autowired
     @Bean(name = KaWebSocketBean.BOOTSTRAP_ID)
     public SpringWebSocketBootstrap getConfigurer(WebSocketConfig config, 
-                                                  WebSocketChannelFactory channelFactory) {
+                                                  ServerChannelFactory channelFactory) {
         SpringWebSocketBootstrap configurer = new SpringWebSocketBootstrap(config);
         configurer.setServletContext(servletContext);
         configurer.setChannelFactory(channelFactory);
@@ -71,15 +71,15 @@ public class SpringKaWebSocket implements ServletContextAware {
     }
     
     @Bean(name = KaWebSocketBean.MANAGER_REPO_ID)
-    public WebSocketManagerRepository getWebSocketManagerRepository() throws Exception {
-        return new WebSocketManagerRepositoryImpl(servletContext);
+    public ClientChannelRepository getWebSocketManagerRepository() throws Exception {
+        return new ClientChannelRepositoryImpl(servletContext);
         
     }
     
  
     @Bean(name = KaWebSocketBean.CHANNEL_FACTORY_ID)
-    public WebSocketChannelFactory getWebSocketChannelFactory() throws Exception { 
-        WebSocketChannelFactoryImpl channelFactory = new WebSocketChannelFactoryImpl();
+    public ServerChannelFactory getWebSocketChannelFactory() throws Exception { 
+        ServerChannelFactoryImpl channelFactory = new ServerChannelFactoryImpl();
         channelFactory.initialize(servletContext);
         return channelFactory;
     }
@@ -112,9 +112,9 @@ public class SpringKaWebSocket implements ServletContextAware {
     
     @Autowired
     @Bean(name = KaWebSocketBean.CONFIG_ID)
-    public WebSocketConfig getWebSocketConfig(WebSocketChannelFactory channelFactory,
+    public WebSocketConfig getWebSocketConfig(ServerChannelFactory channelFactory,
                                               WebSocketListenerRegister listenerRegister,
-                                              WebSocketManagerRepository managerRepository,
+                                              ClientChannelRepository clientChannelRepository,
                                               ProtocolRepository protocolRepository) throws Exception {
         ClientIdGenerator clientIdGenerator = new DefaultClientIdGenerator();
         try {
@@ -140,8 +140,8 @@ public class SpringKaWebSocket implements ServletContextAware {
         
         config.setClientIdGenerator(clientIdGenerator);
         config.setListenerRegister(listenerRegister);
-        config.setChannelFactory(channelFactory);
-        config.setManagerRepository(managerRepository);
+        config.setServerChannelFactory(channelFactory);
+        config.setManagerRepository(clientChannelRepository);
         config.setProtocolRepository(protocolRepository);
         if (clientIdGenerator != null) {
             config.setClientIdGenerator(clientIdGenerator);

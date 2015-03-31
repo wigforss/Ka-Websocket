@@ -8,20 +8,20 @@ import org.kasource.web.websocket.annotations.OnClientConnected;
 import org.kasource.web.websocket.annotations.OnClientDisconnected;
 import org.kasource.web.websocket.annotations.OnMessage;
 import org.kasource.web.websocket.annotations.WebSocketListener;
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.config.annotation.WebSocket;
-import org.kasource.web.websocket.listener.WebSocketBinaryMessageListener;
-import org.kasource.web.websocket.listener.WebSocketClientConnectionListener;
-import org.kasource.web.websocket.listener.WebSocketClientDisconnectedListener;
+import org.kasource.web.websocket.listener.BinaryMessageListener;
+import org.kasource.web.websocket.listener.ClientConnectionListener;
+import org.kasource.web.websocket.listener.ClientDisconnectedListener;
 import org.kasource.web.websocket.listener.WebSocketEventListener;
-import org.kasource.web.websocket.listener.WebSocketTextMessageListener;
-import org.kasource.web.websocket.listener.impl.WebSocketBinaryMessageHandler;
-import org.kasource.web.websocket.listener.impl.WebSocketClientConnectedHandler;
-import org.kasource.web.websocket.listener.impl.WebSocketClientDisconnectedHandler;
-import org.kasource.web.websocket.listener.impl.WebSocketTextMessageHandler;
-import org.kasource.web.websocket.listener.reflection.WebSocketMessageMethod;
-import org.kasource.web.websocket.listener.reflection.WebsocketConnectedMethod;
-import org.kasource.web.websocket.listener.reflection.WebsocketDisconnectedMethod;
+import org.kasource.web.websocket.listener.TextMessageListener;
+import org.kasource.web.websocket.listener.impl.BinaryMessageHandler;
+import org.kasource.web.websocket.listener.impl.ClientConnectedHandler;
+import org.kasource.web.websocket.listener.impl.ClientDisconnectedHandler;
+import org.kasource.web.websocket.listener.impl.TextMessageHandler;
+import org.kasource.web.websocket.listener.reflection.MessageMethod;
+import org.kasource.web.websocket.listener.reflection.ConnectedMethod;
+import org.kasource.web.websocket.listener.reflection.DisconnectedMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +35,11 @@ import org.slf4j.LoggerFactory;
 public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister {
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketListenerRegisterImpl.class); 
     
-    private WebSocketChannelFactory webSocketFactory;
+    private ServerChannelFactory webSocketFactory;
     
     public WebSocketListenerRegisterImpl(ServletContext servletContext) {
         
-        this.webSocketFactory = (WebSocketChannelFactory) servletContext.getAttribute(WebSocketChannelFactory.class.getName());;
+        this.webSocketFactory = (ServerChannelFactory) servletContext.getAttribute(ServerChannelFactory.class.getName());;
     }
     
     /**
@@ -57,7 +57,7 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
         if (listenerAnnotation == null) {
             // Find out if the WebSocketListenerRegistration is implemented
             if (listener instanceof WebSocketListenerRegistration) {
-                url = ((WebSocketListenerRegistration) listener).getWebSocketChannelName();
+                url = ((WebSocketListenerRegistration) listener).getWebSocketUrl();
             } else if (listener.getClass().isAnnotationPresent(WebSocket.class)) {
                 url = listener.getClass().getAnnotation(WebSocket.class).value();
             }
@@ -82,17 +82,17 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
         if (WebSocketEventListener.class.isAssignableFrom(listener.getClass()))  {
             webSocketFactory.listenTo(url, (WebSocketEventListener) listener);   
         }
-        if (WebSocketBinaryMessageListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(url, new WebSocketBinaryMessageHandler((WebSocketBinaryMessageListener) listener));   
+        if (BinaryMessageListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new BinaryMessageHandler((BinaryMessageListener) listener));   
         }
-        if (WebSocketTextMessageListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(url, new WebSocketTextMessageHandler((WebSocketTextMessageListener) listener));   
+        if (TextMessageListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new TextMessageHandler((TextMessageListener) listener));   
         }
-        if (WebSocketClientConnectionListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(url, new WebSocketClientConnectedHandler((WebSocketClientConnectionListener) listener));   
+        if (ClientConnectionListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new ClientConnectedHandler((ClientConnectionListener) listener));   
         }
-        if (WebSocketClientDisconnectedListener.class.isAssignableFrom(listener.getClass())) {
-            webSocketFactory.listenTo(url, new WebSocketClientDisconnectedHandler((WebSocketClientDisconnectedListener) listener));   
+        if (ClientDisconnectedListener.class.isAssignableFrom(listener.getClass())) {
+            webSocketFactory.listenTo(url, new ClientDisconnectedHandler((ClientDisconnectedListener) listener));   
         }
         registerAnnotatedMethods(listener, url);
     }
@@ -117,11 +117,11 @@ public class WebSocketListenerRegisterImpl implements WebSocketListenerRegister 
                 
                 
                 if (method.isAnnotationPresent(OnMessage.class)) { 
-                    registerListener(url, new WebSocketMessageMethod(listener, method));
+                    registerListener(url, new MessageMethod(listener, method));
                 } else if (method.isAnnotationPresent(OnClientConnected.class)) {
-                    registerListener(url, new WebsocketConnectedMethod(listener, method));
+                    registerListener(url, new ConnectedMethod(listener, method));
                 } else if (method.isAnnotationPresent(OnClientDisconnected.class)) {
-                    registerListener(url, new WebsocketDisconnectedMethod(listener, method));               
+                    registerListener(url, new DisconnectedMethod(listener, method));               
                 } 
             }
         }

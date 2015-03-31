@@ -9,8 +9,8 @@ import javax.servlet.ServletContextAttributeListener;
 
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.annotation.WebSocket;
-import org.kasource.web.websocket.config.loader.AnnotatedWebSocketServletConfigBuilder;
-import org.kasource.web.websocket.config.loader.WebSocketServletAnnotationConfigurationBuilder;
+import org.kasource.web.websocket.config.loader.AnnotatedClientConfigBuilder;
+import org.kasource.web.websocket.config.loader.ClientAnnotationConfigurationBuilder;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.servlet.ServletRegistrator;
 
@@ -26,9 +26,9 @@ public class WebSocketRegistry implements ServletContextAttributeListener {
     private ServletRegistrator servletRegistrator;
     private volatile boolean isInitialized = false;
     private Queue<Object> waitingWebSocketRegistrations = new LinkedList<Object>();
-    private WebSocketServletAnnotationConfigurationBuilder configBuilder = new AnnotatedWebSocketServletConfigBuilder();
+    private ClientAnnotationConfigurationBuilder configBuilder = new AnnotatedClientConfigBuilder();
     
-    public WebSocketRegistry(WebSocketServletAnnotationConfigurationBuilder configBuilder) {
+    public WebSocketRegistry(ClientAnnotationConfigurationBuilder configBuilder) {
        this.configBuilder = configBuilder;
     }
     

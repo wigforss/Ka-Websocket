@@ -8,32 +8,32 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import org.kasource.commons.reflection.util.ClassUtils;
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.client.ClientChannelRepositoryImpl;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.client.id.AbstractClientIdGenerator;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.config.BinaryProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
+import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.config.xml.AuthenticationProviderXmlConfig;
 import org.kasource.web.websocket.config.xml.OriginWhitelistXmlConfig;
 import org.kasource.web.websocket.config.xml.ProtocolHandlerXmlConfig;
 import org.kasource.web.websocket.config.xml.ProtocolXmlConfig;
 import org.kasource.web.websocket.config.xml.WebsocketConfigXmlConfig;
 import org.kasource.web.websocket.config.xml.WebsocketXmlConfig;
-import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
 import org.kasource.web.websocket.protocol.BinaryProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
 import org.kasource.web.websocket.security.AbstractAuthenticationProvider;
 import org.kasource.web.websocket.security.AuthenticationProvider;
-import org.kasource.web.websocket.config.xml.AuthenticationProviderXmlConfig;
 
-public class WebSocketXmlConfigBuilder extends AbstractwebSocketServletConfigBuilder {
+public class WebSocketXmlConfigBuilder extends AbstractClientConfigBuilder {
     public WebSocketConfigImpl configure(WebsocketConfigXmlConfig xmlConfig, ServletContext servletContext) {
         WebSocketConfigImpl config = new WebSocketConfigImpl();
-        config.setChannelFactory((WebSocketChannelFactory) servletContext.getAttribute(WebSocketChannelFactory.class.getName()));
-        config.setManagerRepository(new WebSocketManagerRepositoryImpl(servletContext));
+        config.setServerChannelFactory((ServerChannelFactory) servletContext.getAttribute(ServerChannelFactory.class.getName()));
+        config.setManagerRepository(new ClientChannelRepositoryImpl(servletContext));
         config.setListenerRegister(new WebSocketListenerRegisterImpl(servletContext));
         TextProtocolHandlerConfigImpl textProtocols = getTextProtocolsFromXml(xmlConfig.getTextProtocolHandler());
         BinaryProtocolHandlerConfigImpl binaryProtocols = getBinaryProtocolsFromXml(xmlConfig.getBinaryProtocolHandler());
@@ -46,14 +46,14 @@ public class WebSocketXmlConfigBuilder extends AbstractwebSocketServletConfigBui
         config.setProtocolRepository(protocolRepository);
         
         for (WebsocketXmlConfig websocketXmlConfig: xmlConfig.getWebsocket()) {
-            config.registerServlet(loadServletConfig(websocketXmlConfig));
+            config.registerClientConfig(loadServletConfig(websocketXmlConfig));
         }
         
         return config;
     }
     
-    private WebSocketServletConfigImpl loadServletConfig(WebsocketXmlConfig websocketXmlConfig) {
-        WebSocketServletConfigImpl config = new WebSocketServletConfigImpl();
+    private ClientConfigImpl loadServletConfig(WebsocketXmlConfig websocketXmlConfig) {
+        ClientConfigImpl config = new ClientConfigImpl();
         config.setServletName(websocketXmlConfig.getServletName());
         config.setClientIdGenerator(getClientIdGeneratorFromXml(websocketXmlConfig.getClientIdGenerator()));
         config.setAuthenticationProvider(getAuthenticationProviderFromXml(websocketXmlConfig.getAuthenticationProvider()));

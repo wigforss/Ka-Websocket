@@ -13,7 +13,7 @@ import org.kasource.web.webocket.dropwizard.config.WebSocketConfiguration;
 import org.kasource.web.webocket.dropwizard.util.ConfigLoader;
 import org.kasource.web.websocket.bootstrap.WebSocketBootstrap;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.loader.WebSocketServletAnnotationConfigurationBuilder;
+import org.kasource.web.websocket.config.loader.ClientAnnotationConfigurationBuilder;
 
 /**
  * Initializes Ka Websocket framework and allows registration of @WebSocket annotated POJOs.
@@ -43,7 +43,7 @@ public class WebSocketInitializer<T extends Configuration> {
         private Environment environment;
         private Authenticator<BasicCredentials, ?> basicAuthenticator;
         private Authenticator<String, ?> oAuthAuthenticator;
-        private WebSocketServletAnnotationConfigurationBuilder configBuilder;
+        private ClientAnnotationConfigurationBuilder configBuilder;
         private WebSocketRegistry registry;
         
         public Builder(T configuration, 
@@ -85,7 +85,7 @@ public class WebSocketInitializer<T extends Configuration> {
          * 
          * @return This builder to allow chaining.
          **/
-        public Builder<T> configBuilder(WebSocketServletAnnotationConfigurationBuilder configBuilder) {
+        public Builder<T> configBuilder(ClientAnnotationConfigurationBuilder configBuilder) {
             this.configBuilder = configBuilder;
             return this;
         }

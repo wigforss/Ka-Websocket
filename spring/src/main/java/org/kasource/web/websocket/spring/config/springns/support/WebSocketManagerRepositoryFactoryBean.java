@@ -4,12 +4,12 @@ package org.kasource.web.websocket.spring.config.springns.support;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
+import org.kasource.web.websocket.channel.client.ClientChannelRepository;
+import org.kasource.web.websocket.channel.client.ClientChannelRepositoryImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.web.context.ServletContextAware;
 
-public class WebSocketManagerRepositoryFactoryBean  implements  FactoryBean<WebSocketManagerRepository>, ServletContextAware { 
+public class WebSocketManagerRepositoryFactoryBean  implements  FactoryBean<ClientChannelRepository>, ServletContextAware { 
     
    
     private ServletContext servletContext;
@@ -23,9 +23,9 @@ public class WebSocketManagerRepositoryFactoryBean  implements  FactoryBean<WebS
     }
 
     @Override
-    public WebSocketManagerRepository getObject() throws Exception {
+    public ClientChannelRepository getObject() throws Exception {
         
-        WebSocketManagerRepositoryImpl managerRepo = new WebSocketManagerRepositoryImpl();
+        ClientChannelRepositoryImpl managerRepo = new ClientChannelRepositoryImpl();
         managerRepo.setServletContext(servletContext);
         
         return managerRepo;
@@ -33,7 +33,7 @@ public class WebSocketManagerRepositoryFactoryBean  implements  FactoryBean<WebS
 
     @Override
     public Class<?> getObjectType() {
-        return WebSocketManagerRepository.class;
+        return ClientChannelRepository.class;
     }
 
     @Override

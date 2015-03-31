@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketServlet;
+import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
-import org.kasource.web.websocket.config.WebSocketServletConfig;
-import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.config.ClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
@@ -25,18 +25,18 @@ public class WebSocketServletImpl extends WebSocketServlet {
     
     private ServletConfigUtil configUtil; 
  
-    private WebSocketServletConfig webSocketServletConfig;
+    private ClientConfig clientConfig;
     
     
     @Override
     public void init() throws ServletException {
         super.init();
         configUtil = new ServletConfigUtil(getServletConfig());
-        webSocketServletConfig = configUtil.getConfiguration();
+        clientConfig = configUtil.getConfiguration();
            
-        configUtil.validateMapping(webSocketServletConfig.isDynamicAddressing());
-        if (!webSocketServletConfig.isDynamicAddressing()) {
-            webSocketServletConfig.getWebSocketManager(configUtil.getMaping());
+        configUtil.validateMapping(clientConfig.isDynamicAddressing());
+        if (!clientConfig.isDynamicAddressing()) {
+            clientConfig.getClientChannelFor(configUtil.getMaping());
         }
         LOG.info("Initialization completed.");
     }
@@ -45,7 +45,7 @@ public class WebSocketServletImpl extends WebSocketServlet {
     
     @Override
     public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
-        ProtocolRepository protocolRepository = webSocketServletConfig.getProtocolRepository();
+        ProtocolRepository protocolRepository = clientConfig.getProtocolRepository();
         
         // Only accept protocols configured
         if (protocol != null && !protocolRepository.hasProtocol(protocol)) {
@@ -53,15 +53,15 @@ public class WebSocketServletImpl extends WebSocketServlet {
         }
         
         String url = configUtil.getMaping();
-        if (webSocketServletConfig.isDynamicAddressing()) {
+        if (clientConfig.isDynamicAddressing()) {
             url = request.getRequestURI().substring(request.getContextPath().length());
         }
         
-        WebSocketManager manager =  webSocketServletConfig.getWebSocketManager(url);
+        ClientChannel clientChannel =  clientConfig.getClientChannelFor(url);
         
         String username = null;
         try {
-             username = manager.authenticate(webSocketServletConfig.getAuthenticationProvider(), request);
+             username = clientChannel.authenticate(clientConfig.getAuthenticationProvider(), request);
         } catch (AuthenticationException e) {
             LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
             throw e;
@@ -69,14 +69,14 @@ public class WebSocketServletImpl extends WebSocketServlet {
         
        
         
-        WebSocketClientConfig clientConfig =  webSocketServletConfig.getClientBuilder(manager).get(request)
+        WebSocketClientConfig clientConfiguration =  clientConfig.getClientBuilder(clientChannel).get(request)
                                                     .url(url)
                                                     .username(username)
                                                     .protocol(protocol, protocolRepository)
                                                     .build();
          
-        Jetty8WebSocketClient client = new Jetty8WebSocketClient(clientConfig);
-        LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + clientConfig.getClientId() + " on " + url);
+        Jetty8WebSocketClient client = new Jetty8WebSocketClient(clientConfiguration);
+        LOG.info("Client connecion created for " + request.getRemoteHost() + " with username " + username + " and ID " + clientConfiguration.getClientId() + " on " + url);
         return client;
     }
 
@@ -96,8 +96,10 @@ public class WebSocketServletImpl extends WebSocketServlet {
      */
     @Override
     public boolean checkOrigin(HttpServletRequest request, String origin) {
-        boolean validOrigin = webSocketServletConfig.isValidOrigin(origin);;
-        LOG.warn("Invalid origin: " + origin +" in connection attempt");
+        boolean validOrigin = clientConfig.isValidOrigin(origin);
+        if (!validOrigin) {
+            LOG.warn("Invalid origin: " + origin +" in connection attempt");
+        }
         return validOrigin;
     }
 

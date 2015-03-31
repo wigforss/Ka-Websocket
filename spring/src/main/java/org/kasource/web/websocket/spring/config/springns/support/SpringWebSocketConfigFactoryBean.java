@@ -1,14 +1,14 @@
 package org.kasource.web.websocket.spring.config.springns.support;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
 import org.kasource.web.websocket.config.AuthenticationConfig;
 import org.kasource.web.websocket.config.OriginWhiteListConfig;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
-import org.kasource.web.websocket.manager.WebSocketManagerRepository;
+import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.channel.client.ClientChannelRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.spring.config.KaWebSocketBean;
@@ -22,8 +22,8 @@ public class SpringWebSocketConfigFactoryBean  implements FactoryBean<WebSocketC
   
     
     private ProtocolRepository protocolRepository; 
-    private WebSocketManagerRepository managerRepository;
-    private WebSocketChannelFactory channelFactory;
+    private ClientChannelRepository managerRepository;
+    private ServerChannelFactory channelFactory;
     private WebSocketListenerRegister listenerRegister;
     private ApplicationContext applicationContext;
     private ClientIdGenerator clientIdGenerator = new DefaultClientIdGenerator();
@@ -47,7 +47,7 @@ public class SpringWebSocketConfigFactoryBean  implements FactoryBean<WebSocketC
      
         config.setClientIdGenerator(clientIdGenerator);
         config.setListenerRegister(listenerRegister);
-        config.setChannelFactory(channelFactory);
+        config.setServerChannelFactory(channelFactory);
         config.setManagerRepository(managerRepository);
         config.setProtocolRepository(protocolRepository);
         if (originList != null && originList.getOriginWhiteList() != null) {
@@ -89,7 +89,7 @@ public class SpringWebSocketConfigFactoryBean  implements FactoryBean<WebSocketC
      * @param managerRepository the managerRepository to set
      */
     @Required
-    public void setManagerRepository(WebSocketManagerRepository managerRepository) {
+    public void setManagerRepository(ClientChannelRepository managerRepository) {
         this.managerRepository = managerRepository;
     }
 
@@ -97,7 +97,7 @@ public class SpringWebSocketConfigFactoryBean  implements FactoryBean<WebSocketC
      * @param channelFactory the channelFactory to set
      */
     @Required
-    public void setChannelFactory(WebSocketChannelFactory channelFactory) {
+    public void setChannelFactory(ServerChannelFactory channelFactory) {
         this.channelFactory = channelFactory;
     }
 

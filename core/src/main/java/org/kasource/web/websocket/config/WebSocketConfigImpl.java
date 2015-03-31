@@ -5,28 +5,27 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.client.ClientChannelRepository;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.client.id.DefaultClientIdGenerator;
-import org.kasource.web.websocket.manager.WebSocketManagerRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.security.AuthenticationProvider;
-import org.kasource.web.websocket.security.PassthroughAutenticationProvider;
 
 public class WebSocketConfigImpl implements WebSocketConfig {
    
     
     private Set<String> originWhitelist = new HashSet<String>();  
     private ProtocolRepository protocolRepository;   
-    private WebSocketManagerRepository managerRepository;  
-    private WebSocketChannelFactory channelFactory;
-    private Map<String, WebSocketServletConfig> servletConfigs = new HashMap<String, WebSocketServletConfig>();
+    private ClientChannelRepository clientChannelRepository;  
+    private ServerChannelFactory serverChannelFactory;
+    private Map<String, ClientConfig> clientConfigs = new HashMap<String, ClientConfig>();
     private WebSocketListenerRegister listenerRegister; 
     private ClientIdGenerator clientIdGenerator = new DefaultClientIdGenerator();  
     private AuthenticationProvider authenticationProvider;
     
-    public void registerServlet(WebSocketServletConfigImpl servletConfig) {
+    public void registerClientConfig(ClientConfigImpl servletConfig) {
        //Override empty or default values
         
         if (servletConfig.getAuthenticationProvider() == null) {
@@ -41,9 +40,9 @@ public class WebSocketConfigImpl implements WebSocketConfig {
         if (servletConfig.getOriginWhitelist() == null) {
             servletConfig.setOriginWhitelist(originWhitelist);
         }
-        servletConfig.setManagerRepository(managerRepository);
+        servletConfig.setManagerRepository(clientChannelRepository);
         
-        getServletConfigs().put(servletConfig.getServletName(), servletConfig);
+        getClientConfigs().put(servletConfig.getServletName(), servletConfig);
     }
 
     /**
@@ -76,52 +75,52 @@ public class WebSocketConfigImpl implements WebSocketConfig {
      * @return the channelFactory
      */
     @Override
-    public WebSocketChannelFactory getChannelFactory() {
-        return channelFactory;
+    public ServerChannelFactory getServerChannelFactory() {
+        return serverChannelFactory;
     }
 
     /**
      * @param channelFactory the channelFactory to set
      */
-    public void setChannelFactory(WebSocketChannelFactory channelFactory) {
-        this.channelFactory = channelFactory;
+    public void setServerChannelFactory(ServerChannelFactory serverChannelFactory) {
+        this.serverChannelFactory = serverChannelFactory;
     }
 
     /**
-     * @return the managerRepository
+     * @return the clientChannelRepository
      */
     @Override
-    public WebSocketManagerRepository getManagerRepository() {
-        return managerRepository;
+    public ClientChannelRepository getClientChannelRepository() {
+        return clientChannelRepository;
     }
 
     /**
-     * @param managerRepository the managerRepository to set
+     * @param clientClientChannelRepository the clientChannelRepository to set
      */
-    public void setManagerRepository(WebSocketManagerRepository managerRepository) {
-        this.managerRepository = managerRepository;
+    public void setManagerRepository(ClientChannelRepository clientChannelRepository) {
+        this.clientChannelRepository = clientChannelRepository;
     }
 
     /**
      * @return the servletConfig
      */
     @Override
-    public WebSocketServletConfig getServletConfig(String servletName) {
-        return servletConfigs.get(servletName);
+    public ClientConfig getClientConfig(String servletName) {
+        return clientConfigs.get(servletName);
     }
 
     /**
      * @return the servletConfigs
      */
-    public Map<String, WebSocketServletConfig> getServletConfigs() {
-        return servletConfigs;
+    public Map<String, ClientConfig> getClientConfigs() {
+        return clientConfigs;
     }
 
     /**
      * @param servletConfigs the servletConfigs to set
      */
-    public void setServletConfigs(Map<String, WebSocketServletConfig> servletConfigs) {
-        this.servletConfigs = servletConfigs;
+    public void setClientConfigs(Map<String, ClientConfig> clientConfigs) {
+        this.clientConfigs = clientConfigs;
     }
 
     /**

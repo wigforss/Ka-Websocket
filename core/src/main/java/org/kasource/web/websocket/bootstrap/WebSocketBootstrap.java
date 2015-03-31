@@ -6,7 +6,7 @@ import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactoryImpl;
+import org.kasource.web.websocket.channel.server.ServerChannelFactoryImpl;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
 import org.kasource.web.websocket.config.loader.DefaultWebSocketConfigLoader;
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  **/
 public class WebSocketBootstrap implements ServletContextListener, ServletContextAttributeListener {
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketBootstrap.class);
-    private WebSocketChannelFactoryImpl factory;
+    private ServerChannelFactoryImpl factory;
     private WebSocketConfigImpl configuration;
    
     public WebSocketBootstrap() {
@@ -42,7 +42,7 @@ public class WebSocketBootstrap implements ServletContextListener, ServletContex
     @Override
     public void attributeAdded(ServletContextAttributeEvent attributeEvent) {
         if (factory != null) {
-            factory.addWebSocketManagerFromAttribute(attributeEvent.getName(), attributeEvent.getValue());
+            factory.addClientChannelFromAttribute(attributeEvent.getName(), attributeEvent.getValue());
         }
     }
 
@@ -63,7 +63,7 @@ public class WebSocketBootstrap implements ServletContextListener, ServletContex
     public void contextInitialized(ServletContextEvent event) {
         try {
            
-            factory = new WebSocketChannelFactoryImpl();
+            factory = new ServerChannelFactoryImpl();
             factory.initialize(event.getServletContext());
             loadAndpublishConfig(event.getServletContext());
 

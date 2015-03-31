@@ -1,20 +1,20 @@
 package org.kasource.web.websocket.config;
 
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
-import org.kasource.web.websocket.manager.WebSocketManagerRepository;
+import org.kasource.web.websocket.channel.client.ClientChannelRepository;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 
 
 public interface WebSocketConfig {
     
-    public WebSocketServletConfig getServletConfig(String servletName);
+    public ClientConfig getClientConfig(String servletName);
     
-    public WebSocketManagerRepository getManagerRepository();
+    public ClientChannelRepository getClientChannelRepository();
     
-    public WebSocketChannelFactory getChannelFactory();
+    public ServerChannelFactory getServerChannelFactory();
     
     public WebSocketListenerRegister getListenerRegister();
     
-    public void registerServlet(WebSocketServletConfigImpl servletConfig);
+    public void registerClientConfig(ClientConfigImpl clientConfig);
 }

@@ -10,7 +10,6 @@ import org.kasource.web.websocket.annotations.OnClientConnected;
 import org.kasource.web.websocket.annotations.OnClientDisconnected;
 import org.kasource.web.websocket.annotations.OnMessage;
 import org.kasource.web.websocket.annotations.Username;
-import org.kasource.web.websocket.channel.NoSuchWebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.id.ClientIdGeneratorImpl;
 import org.kasource.web.websocket.config.annotation.Authenticate;
@@ -37,7 +36,7 @@ public class ChatServer {
     
     @OnClientConnected
     @Broadcast
-    public String onClientConnect(WebSocketClient client, @ClientId String clientId, @Username String username) throws NoSuchWebSocketClient, IOException {
+    public String onClientConnect(WebSocketClient client, @ClientId String clientId, @Username String username)  {
         client.sendTextMessageToSocket("Welcome " + username);
         return clientId + " joined the conversation.";
     }

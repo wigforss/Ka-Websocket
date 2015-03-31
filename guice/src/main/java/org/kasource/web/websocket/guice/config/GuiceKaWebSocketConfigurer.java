@@ -4,9 +4,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.config.WebSocketConfig;
-import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
+import org.kasource.web.websocket.config.ClientConfigImpl;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -16,7 +16,7 @@ import com.google.inject.Singleton;
 @Singleton
 public class GuiceKaWebSocketConfigurer implements ServletContextAttributeListener {
     private Injector injector;
-    private WebSocketChannelFactory channelFactory;
+    private ServerChannelFactory channelFactory;
     private WebSocketConfig config;
     private ServletContext servletContext;
     
@@ -25,7 +25,7 @@ public class GuiceKaWebSocketConfigurer implements ServletContextAttributeListen
     }
 
     @Inject
-    public void initialize(Injector injector, WebSocketConfig config, WebSocketChannelFactory channelFactory) {
+    public void initialize(Injector injector, WebSocketConfig config, ServerChannelFactory channelFactory) {
         this.injector = injector;
         this.servletContext = injector.getInstance(ServletContext.class);
         this.channelFactory = channelFactory;
@@ -45,10 +45,10 @@ public class GuiceKaWebSocketConfigurer implements ServletContextAttributeListen
     
     private void registerServletConfigs() {
         for (Key<?> bindingKey : injector.getBindings().keySet()) {
-            if (WebSocketServletConfigImpl.class.isAssignableFrom(bindingKey.getTypeLiteral().getRawType())) {
-                WebSocketServletConfigImpl servletConfig = (WebSocketServletConfigImpl) injector.getInstance(bindingKey);
+            if (ClientConfigImpl.class.isAssignableFrom(bindingKey.getTypeLiteral().getRawType())) {
+                ClientConfigImpl servletConfig = (ClientConfigImpl) injector.getInstance(bindingKey);
                 if(servletConfig.getServletName() != null) {
-                    config.registerServlet(servletConfig);
+                    config.registerClientConfig(servletConfig);
                 }
             }
             
@@ -59,7 +59,7 @@ public class GuiceKaWebSocketConfigurer implements ServletContextAttributeListen
     
     @Override
     public void attributeAdded(ServletContextAttributeEvent event) {
-        channelFactory.addWebSocketManagerFromAttribute(event.getName(), event.getValue());
+        channelFactory.addClientChannelFromAttribute(event.getName(), event.getValue());
         
     }
 

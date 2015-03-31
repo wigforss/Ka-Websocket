@@ -2,7 +2,7 @@ package org.kasource.web.websocket.event;
 
 import java.util.EventObject;
 
-import org.kasource.web.websocket.channel.WebSocketChannel;
+import org.kasource.web.websocket.channel.server.ServerChannel;
 
 /**
  * Base event for all web socket events.
@@ -19,7 +19,7 @@ public abstract class WebSocketEvent extends EventObject {
      *  
      * @param websocket The web socket that caused the to be emitted.
      **/
-    public WebSocketEvent(WebSocketChannel websocket) {
+    public WebSocketEvent(ServerChannel websocket) {
         super(websocket);
     }
     
@@ -29,8 +29,8 @@ public abstract class WebSocketEvent extends EventObject {
      * @return web socket that's the source
      **/
     @Override
-    public WebSocketChannel getSource() {
-        return (WebSocketChannel) super.getSource();
+    public ServerChannel getSource() {
+        return (ServerChannel) super.getSource();
     }
 
    

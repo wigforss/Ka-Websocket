@@ -3,7 +3,7 @@ package org.kasource.web.websocket.client.id;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.channel.client.ClientChannel;
 
 public interface ClientIdGenerator {
 
@@ -19,6 +19,6 @@ public interface ClientIdGenerator {
      * @return A unique client ID for the manager supplied.
      **/
     public String getId(HttpServletRequest request, 
-                        WebSocketManager manager);
+                        ClientChannel manager);
 
 }

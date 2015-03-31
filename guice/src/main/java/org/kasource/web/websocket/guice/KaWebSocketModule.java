@@ -4,7 +4,9 @@ package org.kasource.web.websocket.guice;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.client.ClientChannelRepository;
+import org.kasource.web.websocket.channel.client.ClientChannelRepositoryImpl;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.config.AuthenticationConfig;
 import org.kasource.web.websocket.config.BinaryProtocolHandlerConfigImpl;
@@ -13,15 +15,13 @@ import org.kasource.web.websocket.config.ProtocolHandlerConfig;
 import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
+import org.kasource.web.websocket.config.ClientConfigImpl;
 import org.kasource.web.websocket.guice.channel.GuiceWebSocketChannelFactory;
 import org.kasource.web.websocket.guice.config.GuiceKaWebSocketConfigurer;
 import org.kasource.web.websocket.guice.config.loader.GuiceWebSocketServletConfigBuilder;
 import org.kasource.web.websocket.guice.extension.InjectionListenerRegister;
 import org.kasource.web.websocket.guice.extension.InjectionTypeListener;
 import org.kasource.web.websocket.guice.registration.WebSocketListenerInjectionListener;
-import org.kasource.web.websocket.manager.WebSocketManagerRepository;
-import org.kasource.web.websocket.manager.WebSocketManagerRepositoryImpl;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
@@ -45,7 +45,7 @@ public class KaWebSocketModule  extends AbstractModule {
         configurer = new GuiceKaWebSocketConfigurer();
         
         InjectionTypeListener typeListener = new InjectionTypeListener(getInjectionListenerRegister(listener));
-        bind(WebSocketChannelFactory.class).to(GuiceWebSocketChannelFactory.class);
+        bind(ServerChannelFactory.class).to(GuiceWebSocketChannelFactory.class);
         bindListener(Matchers.any(), typeListener); 
        
         requestInjection(listener);
@@ -87,31 +87,31 @@ public class KaWebSocketModule  extends AbstractModule {
     }
     
     @Provides @Singleton
-    WebSocketManagerRepository getWebSocketManagerRepository(Injector injector, ProtocolRepository protocolHandlerRepository) {
+    ClientChannelRepository getWebSocketManagerRepository(Injector injector, ProtocolRepository protocolHandlerRepository) {
         ServletContext servletContext = injector.getInstance(ServletContext.class);
        
         
-        WebSocketManagerRepositoryImpl managerRepo = new WebSocketManagerRepositoryImpl();
+        ClientChannelRepositoryImpl managerRepo = new ClientChannelRepositoryImpl();
         managerRepo.setServletContext(servletContext);
        
         return managerRepo;
     }
     
     @Provides @Singleton
-    WebSocketListenerRegister getWebSocketListenerRegister(Injector injector, WebSocketChannelFactory channelFactory) {
+    WebSocketListenerRegister getWebSocketListenerRegister(Injector injector, ServerChannelFactory channelFactory) {
         ServletContext servletContext = injector.getInstance(ServletContext.class);
         return new WebSocketListenerRegisterImpl(servletContext);
     }
     
     @Provides @Singleton 
-    WebSocketConfig getWebSocketConfig(WebSocketChannelFactory channelFactory,
-                WebSocketManagerRepository managerRepository,
+    WebSocketConfig getWebSocketConfig(ServerChannelFactory channelFactory,
+                ClientChannelRepository clientChannelRepository,
                 ProtocolRepository protocolHandlerRepository,
                 WebSocketListenerRegister listenerRegister,
                 Injector injector) {
         WebSocketConfigImpl config = new WebSocketConfigImpl();
-        config.setChannelFactory(channelFactory);
-        config.setManagerRepository(managerRepository);
+        config.setServerChannelFactory(channelFactory);
+        config.setManagerRepository(clientChannelRepository);
         config.setProtocolRepository(protocolHandlerRepository);
         config.setListenerRegister(listenerRegister);
         try {

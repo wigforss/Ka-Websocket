@@ -10,9 +10,9 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
-import org.kasource.web.websocket.config.WebSocketServletConfig;
-import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.config.ClientConfig;
 import org.kasource.web.websocket.security.AuthenticationException;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
@@ -20,13 +20,13 @@ import org.slf4j.LoggerFactory;
 
 public class Jetty9WebsocketCreator implements WebSocketCreator {
     private static final Logger LOG = LoggerFactory.getLogger(Jetty9WebsocketCreator.class);
-    private WebSocketServletConfig webSocketServletConfig;
+    private ClientConfig clientConfig;
     private ServletConfigUtil configUtil; 
     
     public Jetty9WebsocketCreator(ServletConfigUtil configUtil, 
-                                  WebSocketServletConfig webSocketServletConfig) {
+                                  ClientConfig clientConfig) {
         this.configUtil = configUtil;
-        this.webSocketServletConfig = webSocketServletConfig;
+        this.clientConfig = clientConfig;
     }
     
     @Override
@@ -47,14 +47,14 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
               
         String url = configUtil.getMaping();
         
-        if (webSocketServletConfig.isDynamicAddressing()) {
+        if (clientConfig.isDynamicAddressing()) {
             url = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
         }
         
-        WebSocketManager manager = webSocketServletConfig.getWebSocketManager(url);
+        ClientChannel manager = clientConfig.getClientChannelFor(url);
         String username = null;
         try {
-             username = manager.authenticate(webSocketServletConfig.getAuthenticationProvider(), httpRequest);
+             username = manager.authenticate(clientConfig.getAuthenticationProvider(), httpRequest);
         } catch (AuthenticationException e) {
             LOG.warn("Unauthorized access for " + httpRequest.getRemoteHost(), e);
             try {
@@ -65,17 +65,17 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
             return null;
         }
     
-        WebSocketClientConfig clientConfig = webSocketServletConfig.getClientBuilder(manager).get(httpRequest)
+        WebSocketClientConfig clientConfiguration = clientConfig.getClientBuilder(manager).get(httpRequest)
                                                         .url(url)
                                                         .username(username)
-                                                        .protocol(subProtocol, webSocketServletConfig.getProtocolRepository())
+                                                        .protocol(subProtocol, clientConfig.getProtocolRepository())
                                                         .build();
         
-        return new Jetty9WebsocketClient(clientConfig);
+        return new Jetty9WebsocketClient(clientConfiguration);
     }
     
     private boolean verifyOrigin(String origin) {
-        boolean validOrigin = webSocketServletConfig.isValidOrigin(origin);
+        boolean validOrigin = clientConfig.isValidOrigin(origin);
         if (!validOrigin) {
             LOG.warn("Invalid origin: " + origin +" in connection attempt");
         }
@@ -85,7 +85,7 @@ public class Jetty9WebsocketCreator implements WebSocketCreator {
     
     private String selectSubProtocol(List<String> subProtocols) {     
         for (String clientProtocol : subProtocols) {
-            if (webSocketServletConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
+            if (clientConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
                 LOG.info("Requested protocol "+ clientProtocol + " found by server");
                 return clientProtocol;
             }

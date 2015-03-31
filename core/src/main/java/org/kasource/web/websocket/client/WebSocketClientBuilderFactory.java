@@ -3,14 +3,14 @@ package org.kasource.web.websocket.client;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
-import org.kasource.web.websocket.manager.WebSocketManager;
 
 public class WebSocketClientBuilderFactory {
-    private WebSocketManager manager;
+    private ClientChannel manager;
     private ClientIdGenerator clientIdGenerator;
     
-    public WebSocketClientBuilderFactory(WebSocketManager manager, ClientIdGenerator clientIdGenerator) {
+    public WebSocketClientBuilderFactory(ClientChannel manager, ClientIdGenerator clientIdGenerator) {
         this.manager = manager;
         this.clientIdGenerator = clientIdGenerator;
     }

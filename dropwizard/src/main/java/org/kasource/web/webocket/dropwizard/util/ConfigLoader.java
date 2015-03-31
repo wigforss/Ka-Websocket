@@ -4,7 +4,7 @@ import org.kasource.web.webocket.dropwizard.config.WebSocketConfiguration;
 import org.kasource.web.websocket.config.BinaryProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.loader.AbstractwebSocketServletConfigBuilder;
+import org.kasource.web.websocket.config.loader.AbstractClientConfigBuilder;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 
 /**
@@ -12,7 +12,7 @@ import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
  * 
  * @author rikardwi
  */
-public class ConfigLoader extends AbstractwebSocketServletConfigBuilder {
+public class ConfigLoader extends AbstractClientConfigBuilder {
     
     public WebSocketConfigImpl configure(WebSocketConfiguration dwConfig) {
         WebSocketConfigImpl config = new WebSocketConfigImpl();

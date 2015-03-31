@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.config.annotation.WebSocket;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
@@ -40,7 +40,7 @@ public class WebSocketListenerInjectionListener implements InjectionListener<Obj
     
     
    @Inject
-    public void initialize(Injector injector, WebSocketChannelFactory factory, ServletRegistrator servletRegistrator) {   
+    public void initialize(Injector injector, ServerChannelFactory factory, ServletRegistrator servletRegistrator) {   
         ServletContext servletContext = injector.getInstance(ServletContext.class);
         this.listenerRegister = new WebSocketListenerRegisterImpl(servletContext);
         this.servletRegistrator = servletRegistrator;

@@ -4,14 +4,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.channel.WebSocketChannel;
-import org.kasource.web.websocket.channel.WebSocketChannelFactory;
-import org.kasource.web.websocket.channel.WebSocketChannelFactoryImpl;
+import org.kasource.web.websocket.channel.server.ServerChannel;
+import org.kasource.web.websocket.channel.server.ServerChannelFactory;
+import org.kasource.web.websocket.channel.server.ServerChannelFactoryImpl;
 import org.kasource.web.websocket.config.WebSocketConfigException;
 import org.kasource.web.websocket.listener.WebSocketEventListener;
 
 @ApplicationScoped
-public class CdiWebSocketChannelFactory extends WebSocketChannelFactoryImpl {
+public class CdiWebSocketChannelFactory extends ServerChannelFactoryImpl {
 
     
     

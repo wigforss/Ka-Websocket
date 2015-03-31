@@ -1,14 +1,12 @@
 package org.kasource.web.websocket.client;
 
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.kasource.web.websocket.manager.WebSocketManager;
+import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 
 public class WebSocketClientConfig {
-    private final WebSocketManager manager; 
+    private final ClientChannel clientChannel; 
     private final String url;
     private final String username; 
     private final String clientId; 
@@ -18,7 +16,7 @@ public class WebSocketClientConfig {
     private final ProtocolHandler<byte[]> binaryProtocolHandler;
     
     private WebSocketClientConfig(Builder builder) {
-        this.manager = builder.manager;
+        this.clientChannel = builder.clientChannel;
         this.url = builder.url;
         this.username = builder.username;
         this.clientId = builder.clientId;
@@ -29,7 +27,7 @@ public class WebSocketClientConfig {
     }
     
     public static class Builder {
-        private WebSocketManager manager; 
+        private ClientChannel clientChannel; 
         private String url;
         private String username; 
         private String clientId; 
@@ -38,8 +36,8 @@ public class WebSocketClientConfig {
         private ProtocolHandler<String> textProtocolHandler;
         private ProtocolHandler<byte[]> binaryProtocolHandler;
         
-        Builder(WebSocketManager manager, String clientId, UpgradeRequestData request) {
-            this.manager = manager;
+        Builder(ClientChannel clientChannel, String clientId, UpgradeRequestData request) {
+            this.clientChannel = clientChannel;
             this.clientId = clientId;
             this.request = request;
         }
@@ -97,8 +95,8 @@ public class WebSocketClientConfig {
     /**
      * @return the manager
      */
-    public WebSocketManager getManager() {
-        return manager;
+    public ClientChannel getManager() {
+        return clientChannel;
     }
 
     /**

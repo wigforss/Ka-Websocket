@@ -1,19 +1,13 @@
 package org.kasource.web.websocket.guice.example.web;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.client.id.ClientIdGeneratorImpl;
-import org.kasource.web.websocket.config.AuthenticationConfig;
 import org.kasource.web.websocket.config.OriginWhiteListConfig;
-import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
-import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
 import org.kasource.web.websocket.guice.KaWebSocketModule;
 import org.kasource.web.websocket.protocol.JsonProtocolHandler;
-import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 import org.kasource.web.websocket.security.PassthroughAutenticationProvider;

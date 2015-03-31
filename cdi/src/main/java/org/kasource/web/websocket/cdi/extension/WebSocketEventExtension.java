@@ -9,7 +9,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import org.kasource.web.websocket.config.WebSocketConfig;
-import org.kasource.web.websocket.config.WebSocketServletConfigImpl;
+import org.kasource.web.websocket.config.ClientConfigImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 
 
@@ -22,7 +22,7 @@ import org.kasource.web.websocket.register.WebSocketListenerRegister;
 public class WebSocketEventExtension implements Extension {
     
     private Set<Object> listenerCandidates = new HashSet<Object>();
-    private Set<WebSocketServletConfigImpl> servletConfigs = new HashSet<WebSocketServletConfigImpl>();
+    private Set<ClientConfigImpl> servletConfigs = new HashSet<ClientConfigImpl>();
     
     /**
      * Handle all injections
@@ -46,9 +46,9 @@ public class WebSocketEventExtension implements Extension {
        for(Object listenerCandidate : listenerCandidates) {
            listenerRegister.registerListener(listenerCandidate);
        }
-       for(WebSocketServletConfigImpl servletConfig : servletConfigs) {
+       for(ClientConfigImpl servletConfig : servletConfigs) {
            if(servletConfig.getServletName() != null) {
-               config.registerServlet(servletConfig);
+               config.registerClientConfig(servletConfig);
            }
        }
    }

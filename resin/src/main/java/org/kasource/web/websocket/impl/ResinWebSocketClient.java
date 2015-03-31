@@ -50,7 +50,7 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
 
     @Override
     public void onReadBinary(WebSocketContext context, InputStream in) throws IOException {
-        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(in));
+        clientConfig.getManager().onMessage(this, IOUtils.toByteArray(in));
        
 
     }
@@ -59,7 +59,7 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
 
     @Override
     public void onReadText(WebSocketContext context, Reader reader) throws IOException {
-        clientConfig.getManager().onWebSocketMessage(this, IOUtils.toByteArray(reader));
+        clientConfig.getManager().onMessage(this, IOUtils.toByteArray(reader));
 
     }
 
