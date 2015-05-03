@@ -10,7 +10,7 @@ import org.kasource.commons.reflection.parameter.binder.SystemPropertyParameterB
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.parameter.ClientHeaderBinder;
 import org.kasource.web.websocket.client.parameter.ClientIdBinder;
-import org.kasource.web.websocket.client.parameter.ClientIpBinder;
+import org.kasource.web.websocket.client.parameter.ClientSessionAttributeBinder;
 import org.kasource.web.websocket.client.parameter.ClientRequestParameterBinder;
 import org.kasource.web.websocket.client.parameter.UsernameBinder;
 
@@ -25,7 +25,7 @@ public class ClientRegistration {
                     .add(new ClientHeaderBinder(client.getUpgradeRequest()))
                     .add(new SystemPropertyParameterBinder())
                     .add(new EnvironmentParameterBinder())
-                    .add(new ClientIpBinder(client.getUpgradeRequest()))
+                    .add(new ClientSessionAttributeBinder(client.getUpgradeRequest()))
                     .add(new UsernameBinder(client))
                     .add(new ClientIdBinder(client))
                     .build());

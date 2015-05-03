@@ -7,13 +7,15 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
-import org.kasource.web.websocket.config.ClientConfig;
+import org.kasource.web.websocket.config.EndpointConfig;
 import org.kasource.web.websocket.security.AuthenticationException;
+import org.kasource.web.websocket.servlet.HttpServletHandshakeRequest;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ public class WebsocketServletImpl extends WebSocketServlet {
     private static final Logger LOG = LoggerFactory.getLogger(WebsocketServletImpl.class);
    
     private ServletConfigUtil configUtil; 
-    private ClientConfig clientConfig;
+    private EndpointConfig endpointConfig;
  
     private int outboundByteBufferSize;
 
@@ -37,15 +39,15 @@ public class WebsocketServletImpl extends WebSocketServlet {
     public void init() throws ServletException {
         super.init();
         configUtil = new ServletConfigUtil(getServletConfig());
-        clientConfig = configUtil.getConfiguration();
+        endpointConfig = configUtil.getConfiguration();
      
         
         outboundByteBufferSize = configUtil.parseInitParamAsInt("outboundByteBufferSize");
         outboundCharBufferSize = configUtil.parseInitParamAsInt("outboundCharBufferSize");
        
-        configUtil.validateMapping(clientConfig.isDynamicAddressing());
-        if (!clientConfig.isDynamicAddressing()) {
-            clientConfig.getClientChannelFor(configUtil.getMaping());
+        configUtil.validateMapping(endpointConfig.isDynamicAddressing());
+        if (!endpointConfig.isDynamicAddressing()) {
+            endpointConfig.getClientChannelFor(configUtil.getMaping());
            
         } 
         LOG.info("Initialization completed.");
@@ -56,27 +58,27 @@ public class WebsocketServletImpl extends WebSocketServlet {
 
     @Override
     protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request) {
-        
+            HandshakeRequest handshakeRequest = new HttpServletHandshakeRequest(request);
             String url = configUtil.getMaping();
        
-            if (clientConfig.isDynamicAddressing()) {
+            if (endpointConfig.isDynamicAddressing()) {
                 url = request.getRequestURI().substring(request.getContextPath().length());
             }
        
-            ClientChannel clientChannel =  clientConfig.getClientChannelFor(url);
+            ClientChannel clientChannel =  endpointConfig.getClientChannelFor(url);
             String username = null;
             try {
-                 username = clientChannel.authenticate(clientConfig.getAuthenticationProvider(), request);
+                 username = clientChannel.authenticate(endpointConfig.getAuthenticationProvider(), handshakeRequest);
             } catch (AuthenticationException e) {
                 LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
                 throw e;
             }
         
             
-            WebSocketClientConfig clientConfiguration = clientConfig.getClientBuilder(clientChannel).get(request)
+            WebSocketClientConfig clientConfiguration = endpointConfig.getClientBuilder(clientChannel).get(handshakeRequest)
                                                     .url(url)
                                                     .username(username)
-                                                    .protocol(subProtocol, clientConfig.getProtocolRepository())
+                                                    .protocol(subProtocol, endpointConfig.getProtocolRepository())
                                                     .build();
             Tomcat7WebSocketClient client = new Tomcat7WebSocketClient(clientConfiguration);
    
@@ -111,7 +113,7 @@ public class WebsocketServletImpl extends WebSocketServlet {
      */
     @Override
     protected boolean verifyOrigin(String origin) {
-        boolean validOrigin = clientConfig.isValidOrigin(origin);
+        boolean validOrigin = endpointConfig.isValidOrigin(origin);
         LOG.warn("Invalid origin: " + origin +" in connection attempt");
         return validOrigin;
         
@@ -119,7 +121,7 @@ public class WebsocketServletImpl extends WebSocketServlet {
     
     protected String selectSubProtocol(List<String> subProtocols) {     
         for (String clientProtocol : subProtocols) {
-            if (clientConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
+            if (endpointConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
                 LOG.info("Requested protocol "+ clientProtocol + " found by server");
                 return clientProtocol;
             }

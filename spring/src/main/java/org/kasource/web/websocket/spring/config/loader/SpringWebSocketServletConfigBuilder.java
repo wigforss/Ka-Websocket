@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.config.BinaryProtocolHandlerConfigImpl;
+import org.kasource.web.websocket.config.EndpointConfigImpl;
 import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.WebSocketConfigException;
-import org.kasource.web.websocket.config.ClientConfigImpl;
 import org.kasource.web.websocket.config.annotation.AllowedOrigin;
 import org.kasource.web.websocket.config.annotation.Authenticate;
 import org.kasource.web.websocket.config.annotation.BinaryProtocol;
@@ -21,7 +21,7 @@ import org.kasource.web.websocket.config.annotation.GenerateId;
 import org.kasource.web.websocket.config.annotation.TextProtocol;
 import org.kasource.web.websocket.config.annotation.TextProtocols;
 import org.kasource.web.websocket.config.annotation.WebSocket;
-import org.kasource.web.websocket.config.loader.ClientAnnotationConfigurationBuilder;
+import org.kasource.web.websocket.config.loader.EndpointAnnotationConfigurationBuilder;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.security.AuthenticationProvider;
@@ -29,11 +29,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class SpringWebSocketServletConfigBuilder implements ClientAnnotationConfigurationBuilder, ApplicationContextAware {
+public class SpringWebSocketServletConfigBuilder implements EndpointAnnotationConfigurationBuilder, ApplicationContextAware {
     private ApplicationContext applicationContext;
     
-    public ClientConfigImpl configure(Class<?> webocketPojo) {
-        ClientConfigImpl config = new ClientConfigImpl();
+    public EndpointConfigImpl configure(Class<?> webocketPojo) {
+        EndpointConfigImpl config = new EndpointConfigImpl();
 
         WebSocket websocket = webocketPojo.getAnnotation(WebSocket.class);
         if (websocket == null) {
@@ -41,7 +41,12 @@ public class SpringWebSocketServletConfigBuilder implements ClientAnnotationConf
         }
 
         config.setDynamicAddressing(websocket.dynamicAddressing());
-
+        config.setName(webocketPojo.getSimpleName());
+        config.setUrl(websocket.value());
+        config.setAsyncSendTimeoutMillis(websocket.asyncSendTimeoutMillis());
+        config.setMaxBinaryMessageBufferSizeByte(websocket.maxBinaryMessageBufferSizeByte());
+        config.setMaxSessionIdleTimeoutMillis(websocket.maxSessionIdleTimeoutMillis());
+        config.setMaxTextMessageBufferSizeByte(websocket.maxTextMessageBufferSizeByte());
         setAllowedOrigin(webocketPojo, config);
         config.setAuthenticationProvider(getAuthenticationProviderFromAnnotation(webocketPojo));
         setClientIdGenerator(webocketPojo, config);
@@ -133,7 +138,7 @@ public class SpringWebSocketServletConfigBuilder implements ClientAnnotationConf
         return protocolHandlerConfigImpl;
     }
 
-    private void setAllowedOrigin(Class<?> webocketPojo, ClientConfigImpl config) {
+    private void setAllowedOrigin(Class<?> webocketPojo, EndpointConfigImpl config) {
         AllowedOrigin allowedOrigin = webocketPojo.getAnnotation(AllowedOrigin.class);
         if (allowedOrigin != null) {
             Set<String> originWhitelist = new HashSet<String>();
@@ -142,7 +147,7 @@ public class SpringWebSocketServletConfigBuilder implements ClientAnnotationConf
         }
     }
 
-    private void setClientIdGenerator(Class<?> webocketPojo, ClientConfigImpl config) {
+    private void setClientIdGenerator(Class<?> webocketPojo, EndpointConfigImpl config) {
         ClientIdGenerator clientIdGenerator = null;
         GenerateId generateId = webocketPojo.getAnnotation(GenerateId.class);
         

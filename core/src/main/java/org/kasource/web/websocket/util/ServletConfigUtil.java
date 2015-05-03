@@ -6,7 +6,7 @@ import javax.servlet.ServletRegistration;
 
 import org.kasource.web.websocket.bootstrap.WebSocketBootstrap;
 import org.kasource.web.websocket.config.WebSocketConfig;
-import org.kasource.web.websocket.config.ClientConfig;
+import org.kasource.web.websocket.config.EndpointConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +35,10 @@ public class ServletConfigUtil {
     }
 
     
-    public ClientConfig getConfiguration() throws ServletException {
+    public EndpointConfig getConfiguration() throws ServletException {
         
         WebSocketConfig webSocketConfig = getAttributeByClass(WebSocketConfig.class);
-        if (webSocketConfig == null || webSocketConfig.getClientConfig(servletConfig.getServletName()) == null) {
+        if (webSocketConfig == null || webSocketConfig.getEndpointConfig(servletConfig.getServletName()) == null) {
             String errorMessage = "Could not loacate websocket configuration as ServletContext attribute, make sure to configure "
                         + WebSocketBootstrap.class
                         + " as listener in web.xml or use the Spring, Guice or CDI extension.";
@@ -50,7 +50,7 @@ public class ServletConfigUtil {
             LOG.error(errorMessage, ex);
             throw ex;
         }
-        return webSocketConfig.getClientConfig(servletConfig.getServletName());
+        return webSocketConfig.getEndpointConfig(servletConfig.getServletName());
     }
     
     

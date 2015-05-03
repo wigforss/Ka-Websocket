@@ -1,6 +1,7 @@
 package org.kasource.web.websocket.spring.client.id;
 
-import javax.servlet.http.HttpServletRequest;
+
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.client.id.AbstractClientIdGenerator;
@@ -12,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SpringSecurityPrincipalClientId extends AbstractClientIdGenerator implements ClientIdGenerator {
 
     @Override
-    public String getId(HttpServletRequest request, ClientChannel clientChannel) {
+    public String getId(HandshakeRequest request, ClientChannel clientChannel) {
         String clientId = getUsername();
         if (clientId == null) {
             return getUuid();

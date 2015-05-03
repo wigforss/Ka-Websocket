@@ -13,7 +13,7 @@ import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
-public abstract class AbstractClientConfigBuilder {
+public abstract class AbstractEndpointConfigBuilder {
     
     protected TextProtocolHandlerConfigImpl getTextProtocols(Class<? extends TextProtocolHandler> defaultTextProtocolClass,
                                                              Map<String, Class<? extends TextProtocolHandler>> textProtocols) {

@@ -1,6 +1,7 @@
 package org.kasource.web.websocket.event;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.server.ServerChannel;
 
@@ -8,11 +9,11 @@ public class AuthenticationFailedEvent extends WebSocketEvent {
 
     private static final long serialVersionUID = 1L;
 
-    private final HttpServletRequest request;
+    private final HandshakeRequest request;
     private final Throwable cause;
     private final String username;
 
-    public AuthenticationFailedEvent(ServerChannel websocket, String username, HttpServletRequest request, Throwable cause) {
+    public AuthenticationFailedEvent(ServerChannel websocket, String username, HandshakeRequest request, Throwable cause) {
         super(websocket);
         this.cause = cause;
         this.request = request;
@@ -29,7 +30,7 @@ public class AuthenticationFailedEvent extends WebSocketEvent {
     /**
      * @return the request
      */
-    public HttpServletRequest getRequest() {
+    public HandshakeRequest getRequest() {
         return request;
     }
 

@@ -20,12 +20,12 @@ public class WebSocketConfigImpl implements WebSocketConfig {
     private ProtocolRepository protocolRepository;   
     private ClientChannelRepository clientChannelRepository;  
     private ServerChannelFactory serverChannelFactory;
-    private Map<String, ClientConfig> clientConfigs = new HashMap<String, ClientConfig>();
+    private Map<String, EndpointConfig> endpointConfigs = new HashMap<String, EndpointConfig>();
     private WebSocketListenerRegister listenerRegister; 
     private ClientIdGenerator clientIdGenerator = new DefaultClientIdGenerator();  
     private AuthenticationProvider authenticationProvider;
     
-    public void registerClientConfig(ClientConfigImpl servletConfig) {
+    public void registerEndpointConfig(EndpointConfigImpl servletConfig) {
        //Override empty or default values
         
         if (servletConfig.getAuthenticationProvider() == null) {
@@ -42,7 +42,7 @@ public class WebSocketConfigImpl implements WebSocketConfig {
         }
         servletConfig.setManagerRepository(clientChannelRepository);
         
-        getClientConfigs().put(servletConfig.getServletName(), servletConfig);
+        getClientConfigs().put(servletConfig.getName(), servletConfig);
     }
 
     /**
@@ -105,22 +105,22 @@ public class WebSocketConfigImpl implements WebSocketConfig {
      * @return the servletConfig
      */
     @Override
-    public ClientConfig getClientConfig(String servletName) {
-        return clientConfigs.get(servletName);
+    public EndpointConfig getEndpointConfig(String servletName) {
+        return endpointConfigs.get(servletName);
     }
 
     /**
      * @return the servletConfigs
      */
-    public Map<String, ClientConfig> getClientConfigs() {
-        return clientConfigs;
+    public Map<String, EndpointConfig> getClientConfigs() {
+        return endpointConfigs;
     }
 
     /**
      * @param servletConfigs the servletConfigs to set
      */
-    public void setClientConfigs(Map<String, ClientConfig> clientConfigs) {
-        this.clientConfigs = clientConfigs;
+    public void setClientConfigs(Map<String, EndpointConfig> endpointConfigs) {
+        this.endpointConfigs = endpointConfigs;
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.kasource.web.websocket.channel;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.client.WebSocketClient;
@@ -35,7 +36,7 @@ public interface ClientChannelListener {
      * @param username Name of the user which was authenticated.
      * @param error    null if authentication was successful, else the cause of the authentication fail.
      **/
-    public void onAuthentication(String username, HttpServletRequest request, Throwable error);
+    public void onAuthentication(String username, HandshakeRequest request, Throwable error);
     
     /**
      * Called when a text message has been received from a client.

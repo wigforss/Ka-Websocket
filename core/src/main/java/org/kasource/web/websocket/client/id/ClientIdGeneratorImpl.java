@@ -2,7 +2,7 @@ package org.kasource.web.websocket.client.id;
 
 
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.client.ClientChannel;
 
@@ -15,7 +15,7 @@ public class ClientIdGeneratorImpl extends AbstractClientIdGenerator {
    
  
     @Override
-    public String getId(HttpServletRequest request,
+    public String getId(HandshakeRequest request,
                         ClientChannel manager) {
         String clientId = getIdValue(request);
        

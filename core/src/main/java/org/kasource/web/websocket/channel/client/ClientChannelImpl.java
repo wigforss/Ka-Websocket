@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.ClientChannelListener;
 import org.kasource.web.websocket.client.WebSocketClient;
@@ -75,7 +75,7 @@ public class ClientChannelImpl implements ClientChannel {
     }
     
     @Override
-    public String authenticate(AuthenticationProvider provider, HttpServletRequest request) throws AuthenticationException {
+    public String authenticate(AuthenticationProvider provider, HandshakeRequest request) throws AuthenticationException {
         AuthenticationProvider auth = resolveAuthenticationProvider(provider);
         if (auth != null) {
             try {
@@ -102,7 +102,7 @@ public class ClientChannelImpl implements ClientChannel {
     }
     
     
-    private void fireAuthentication(String username, HttpServletRequest request, Throwable error) {
+    private void fireAuthentication(String username, HandshakeRequest request, Throwable error) {
         if (!clientChannelListeners.isEmpty()) {
             for (ClientChannelListener listener: clientChannelListeners) {
                 listener.onAuthentication(username, request, error);

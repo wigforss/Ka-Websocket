@@ -1,7 +1,8 @@
 package org.kasource.web.websocket.client.id;
 
 
-import javax.servlet.http.HttpServletRequest;
+
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.client.ClientChannel;
 
@@ -18,7 +19,7 @@ public interface ClientIdGenerator {
      * 
      * @return A unique client ID for the manager supplied.
      **/
-    public String getId(HttpServletRequest request, 
+    public String getId(HandshakeRequest request, 
                         ClientChannel manager);
 
 }

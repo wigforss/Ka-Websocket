@@ -1,7 +1,7 @@
 package org.kasource.web.websocket.channel.client;
 
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.ClientChannelListener;
 import org.kasource.web.websocket.channel.MessageSender;
@@ -39,7 +39,7 @@ public interface ClientChannel extends MessageSender {
      * 
      * @throws AuthenticationException if authentication was unsuccessful.
      */
-    public String authenticate(AuthenticationProvider provider, HttpServletRequest request) throws AuthenticationException;
+    public String authenticate(AuthenticationProvider provider, HandshakeRequest request) throws AuthenticationException;
 
 
     public void onMessage(WebSocketClient client, byte[] byteArray);

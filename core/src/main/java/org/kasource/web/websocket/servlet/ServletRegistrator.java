@@ -6,36 +6,41 @@ import javax.servlet.ServletRegistration;
 
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigException;
-import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.config.EndpointConfigImpl;
 import org.kasource.web.websocket.config.annotation.WebSocket;
-import org.kasource.web.websocket.config.loader.ClientAnnotationConfigurationBuilder;
+import org.kasource.web.websocket.config.loader.EndpointAnnotationConfigurationBuilder;
+import org.kasource.web.websocket.register.EndpointRegistrator;
 
 
-public class ServletRegistrator {
+public class ServletRegistrator implements EndpointRegistrator {
     
     private ServletContext servletContext;
-    private ClientAnnotationConfigurationBuilder configurationBuilder;
+    private EndpointAnnotationConfigurationBuilder configurationBuilder;
+    private Class<? extends Servlet> servletClass;
     
-    public ServletRegistrator(ServletContext servletContext, ClientAnnotationConfigurationBuilder configurationBuilder) {
+    public ServletRegistrator(ServletContext servletContext, 
+                             EndpointAnnotationConfigurationBuilder configurationBuilder,
+                             Class<? extends Servlet> servletClass) {
         this.servletContext = servletContext;
         this.configurationBuilder = configurationBuilder;
+        this.servletClass = servletClass;
     }
     
-    public void addServlet(Class<?> webocketPojo) { 
-        WebSocket websocket = webocketPojo.getAnnotation(WebSocket.class);
+    public void register(Class<?> webSocketPojo) { 
+        WebSocket websocket = webSocketPojo.getAnnotation(WebSocket.class);
         if (websocket == null) {
-            throw new WebSocketConfigException(webocketPojo + " must be annotated with " + WebSocket.class);
+            throw new WebSocketConfigException(webSocketPojo + " must be annotated with " + WebSocket.class);
         }
         String url = websocket.value();
         String name = "ka-websocket-" + url.replace("/", "_").replace("*", "-");
        
-        ClientConfigImpl servletConfig =  configurationBuilder.configure(webocketPojo);
-        servletConfig.setServletName(name);
+        EndpointConfigImpl servletConfig =  configurationBuilder.configure(webSocketPojo);
+        servletConfig.setName(name);
         WebSocketConfig config = (WebSocketConfig) servletContext.getAttribute(WebSocketConfig.class.getName());
-        config.registerClientConfig(servletConfig);
+        config.registerEndpointConfig(servletConfig);
         
         
-        ServletRegistration.Dynamic registration = servletContext.addServlet(name, resolve());
+        ServletRegistration.Dynamic registration = servletContext.addServlet(name, servletClass);
         
 
         registration.setLoadOnStartup(1);
@@ -48,18 +53,5 @@ public class ServletRegistrator {
         
     }
     
-    @SuppressWarnings("unchecked")
-    public Class<? extends Servlet> resolve() {
-        Class <?> servletClass = null;
-        try {
-            servletClass = Class.forName("org.kasource.web.websocket.impl.WebsocketServletImpl");
-        } catch (ClassNotFoundException e) {
-           throw new IllegalStateException("Could not find any WebsocketServlet Implementation i classpath");
-        } 
-        try {
-            return (Class<? extends Servlet>) servletClass;
-        } catch (ClassCastException e) {
-            throw new IllegalStateException(servletClass + " is not a " + Servlet.class + "!");
-        }
-    }
+    
 }

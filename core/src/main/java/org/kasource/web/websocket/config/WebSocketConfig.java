@@ -8,7 +8,7 @@ import org.kasource.web.websocket.register.WebSocketListenerRegister;
 
 public interface WebSocketConfig {
     
-    public ClientConfig getClientConfig(String servletName);
+    public EndpointConfig getEndpointConfig(String name);
     
     public ClientChannelRepository getClientChannelRepository();
     
@@ -16,5 +16,5 @@ public interface WebSocketConfig {
     
     public WebSocketListenerRegister getListenerRegister();
     
-    public void registerClientConfig(ClientConfigImpl clientConfig);
+    public void registerEndpointConfig(EndpointConfigImpl clientConfig);
 }

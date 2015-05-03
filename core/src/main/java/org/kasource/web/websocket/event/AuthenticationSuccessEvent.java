@@ -1,6 +1,6 @@
 package org.kasource.web.websocket.event;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.server.ServerChannel;
 
@@ -8,9 +8,9 @@ public class AuthenticationSuccessEvent extends WebSocketEvent {
 
     private static final long serialVersionUID = 1L;
 
-    private final HttpServletRequest request;
+    private final HandshakeRequest request;
     private final String username;
-    public AuthenticationSuccessEvent(ServerChannel websocket, String username, HttpServletRequest request) {
+    public AuthenticationSuccessEvent(ServerChannel websocket, String username, HandshakeRequest request) {
         super(websocket);
         this.username = username;
         this.request = request;
@@ -19,7 +19,7 @@ public class AuthenticationSuccessEvent extends WebSocketEvent {
     /**
      * @return the request
      */
-    public HttpServletRequest getRequest() {
+    public HandshakeRequest getRequest() {
         return request;
     }
 

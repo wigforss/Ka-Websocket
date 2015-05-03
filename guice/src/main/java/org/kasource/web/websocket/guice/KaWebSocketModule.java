@@ -15,7 +15,7 @@ import org.kasource.web.websocket.config.ProtocolHandlerConfig;
 import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.config.EndpointConfigImpl;
 import org.kasource.web.websocket.guice.channel.GuiceWebSocketChannelFactory;
 import org.kasource.web.websocket.guice.config.GuiceKaWebSocketConfigurer;
 import org.kasource.web.websocket.guice.config.loader.GuiceWebSocketServletConfigBuilder;
@@ -24,6 +24,8 @@ import org.kasource.web.websocket.guice.extension.InjectionTypeListener;
 import org.kasource.web.websocket.guice.registration.WebSocketListenerInjectionListener;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
+import org.kasource.web.websocket.register.EndpointRegistrator;
+import org.kasource.web.websocket.register.EndpointRegistratorImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
 import org.kasource.web.websocket.servlet.ServletRegistrator;
@@ -141,8 +143,8 @@ public class KaWebSocketModule  extends AbstractModule {
     
     
     @Provides @Singleton
-    ServletRegistrator getServletRegistrator(Injector injector, GuiceWebSocketServletConfigBuilder configurationBuilder) {
+    EndpointRegistrator getEndpointRegistrator(Injector injector, GuiceWebSocketServletConfigBuilder configurationBuilder) {
         ServletContext servletContext = injector.getInstance(ServletContext.class);
-        return new ServletRegistrator(servletContext, configurationBuilder);
+        return new EndpointRegistratorImpl(servletContext, configurationBuilder);
     }
 }

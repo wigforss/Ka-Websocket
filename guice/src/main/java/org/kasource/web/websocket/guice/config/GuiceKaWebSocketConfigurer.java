@@ -6,7 +6,7 @@ import javax.servlet.ServletContextAttributeListener;
 
 import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.config.WebSocketConfig;
-import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.config.EndpointConfigImpl;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -45,10 +45,10 @@ public class GuiceKaWebSocketConfigurer implements ServletContextAttributeListen
     
     private void registerServletConfigs() {
         for (Key<?> bindingKey : injector.getBindings().keySet()) {
-            if (ClientConfigImpl.class.isAssignableFrom(bindingKey.getTypeLiteral().getRawType())) {
-                ClientConfigImpl servletConfig = (ClientConfigImpl) injector.getInstance(bindingKey);
-                if(servletConfig.getServletName() != null) {
-                    config.registerClientConfig(servletConfig);
+            if (EndpointConfigImpl.class.isAssignableFrom(bindingKey.getTypeLiteral().getRawType())) {
+                EndpointConfigImpl servletConfig = (EndpointConfigImpl) injector.getInstance(bindingKey);
+                if(servletConfig.getName() != null) {
+                    config.registerEndpointConfig(servletConfig);
                 }
             }
             

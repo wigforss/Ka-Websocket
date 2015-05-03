@@ -8,7 +8,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
-import org.kasource.web.websocket.client.UpgradeRequestData;
+import org.kasource.web.websocket.client.HandshakeRequestData;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
@@ -86,18 +86,13 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
         out.close();
     }
 
-
-
- 
+    
     public void sendBinaryMessage(byte[] message) throws IOException  {
         BufferedOutputStream out = new BufferedOutputStream(context.startBinaryMessage());
         out.write(message);
         out.close();
     }
-
-
-
-    
+   
     private void sendMessageToSocket(String message) {
         try {
             sendMessage(message);
@@ -105,9 +100,6 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
         }
         
     }
-
-
-
     
     private void sendMessageToSocket(byte[] message) {
         try {
@@ -117,8 +109,7 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
         
     }
 
-   
-
+  
     /**
      * @return the username
      */
@@ -133,7 +124,7 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
      * @return the connectionParameters
      */
     @Override
-    public UpgradeRequestData getUpgradeRequest() {
+    public HandshakeRequestData getUpgradeRequest() {
         return clientConfig.getRequest();
     }
 
@@ -147,15 +138,6 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
         return clientConfig.getClientId();
     }
     
-    @Override
-    public String getUrl() {
-        return clientConfig.getUrl();
-    }
-    
-    @Override
-    public String getSubProtocol() {
-        return clientConfig.getSubProtocol();
-    }
 
     /**
      * @return the textProtocolHandler
@@ -164,10 +146,6 @@ public class ResinWebSocketClient implements WebSocketListener, WebSocketClient 
     public ProtocolHandler<String> getTextProtocolHandler() {
         return textProtocolHandler;
     }
-
-
-
-   
 
     /**
      * @return the binaryProtocolHandler

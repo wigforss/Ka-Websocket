@@ -1,6 +1,6 @@
 package org.kasource.web.websocket.security;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 public interface AuthenticationProvider {
     
@@ -13,7 +13,7 @@ public interface AuthenticationProvider {
      * 
      * @throws AuthenticationException if autentication was not successful.
      */
-    public String authenticate(HttpServletRequest request) throws AuthenticationException;
+    public String authenticate(HandshakeRequest request) throws AuthenticationException;
     
     
 }

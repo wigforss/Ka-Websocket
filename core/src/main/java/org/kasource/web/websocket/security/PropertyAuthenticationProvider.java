@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 public class PropertyAuthenticationProvider extends AbstractAuthenticationProvider {
     private Properties props = new Properties();
@@ -16,16 +16,16 @@ public class PropertyAuthenticationProvider extends AbstractAuthenticationProvid
     }
     
     @Override
-    public String authenticate(HttpServletRequest request) throws AuthenticationException {
+    public String authenticate(HandshakeRequest request) throws AuthenticationException {
        String username = getUsername(request);
        String password = getPassword(request);
-       if(username == null) {
-           throw new AuthenticationException("No username found. Request needs to include "+(isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username, request.getRemoteAddr());
+       if (username == null) {
+           throw new AuthenticationException("No username found. Request needs to include " + (isHeaderBased() ? "header" : "parameter" + " named " + getUsernameKey()), username);
        }
        
        String credentials = props.getProperty(username);
        if(credentials == null || !credentials.equals(password)) {
-           throw new AuthenticationException("Invalid username of password", username, request.getRemoteAddr());
+           throw new AuthenticationException("Invalid username of password", username);
        }
        return username;
     }

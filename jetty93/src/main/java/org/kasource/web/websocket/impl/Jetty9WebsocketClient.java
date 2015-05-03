@@ -12,7 +12,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.kasource.web.websocket.client.UpgradeRequestData;
+import org.kasource.web.websocket.client.HandshakeRequestData;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 public class Jetty9WebsocketClient implements WebSocketClient {
     private static final Logger LOG = LoggerFactory.getLogger(Jetty9WebsocketClient.class);
-    private static final long DEFAULT_IDLE_TIMEOUT = -1;
+   
     private WebSocketClientConfig clientConfig;
     private Session session;
     private ProtocolHandler<String> textProtocolHandler;
@@ -42,8 +42,9 @@ public class Jetty9WebsocketClient implements WebSocketClient {
  
     @OnWebSocketConnect
     public void onConnect(Session session) {
-       session.setIdleTimeout(DEFAULT_IDLE_TIMEOUT);
        this.session = session;
+      
+      
        clientConfig.getManager().registerClient(this); 
     }
  
@@ -123,7 +124,7 @@ public class Jetty9WebsocketClient implements WebSocketClient {
     }
 
     @Override
-    public UpgradeRequestData getUpgradeRequest() {
+    public HandshakeRequestData getUpgradeRequest() {
         return clientConfig.getRequest();
     }
 
@@ -138,17 +139,6 @@ public class Jetty9WebsocketClient implements WebSocketClient {
         return binaryProtocolHandler;
     }
 
-    @Override
-    public String getUrl() {
-       
-        return clientConfig.getUrl();
-    }
-
-    @Override
-    public String getSubProtocol() {
-        return clientConfig.getSubProtocol();
-    }
-    
     
     @Override
     public String getId() {

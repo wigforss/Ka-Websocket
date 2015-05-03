@@ -15,11 +15,11 @@
 	</context-param>
 -->
 	<listener>
-		<listener-class>org.kasource.web.websocket.bootstrap.WebSocketConfigListener</listener-class>
+		<listener-class>org.kasource.web.websocket.bootstrap.WebSocketBootstrap</listener-class>
 	</listener>
 	
 	<listener>
-		<listener-class>org.kasource.web.websocket.example.WebSocketServletLoader</listener-class>
+		<listener-class>org.kasource.web.websocket.example.WebSocketEndpointLoader</listener-class>
 	</listener>
 
     

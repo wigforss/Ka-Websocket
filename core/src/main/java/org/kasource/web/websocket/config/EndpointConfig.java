@@ -8,7 +8,7 @@ import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
-public interface ClientConfig {
+public interface EndpointConfig {
     boolean isDynamicAddressing();
 
     WebSocketClientBuilderFactory getClientBuilder(ClientChannel manager);
@@ -23,8 +23,19 @@ public interface ClientConfig {
     
     boolean isValidOrigin(String origin);
     
-    String getServletName();
+    String getName();
     
     ClientIdGenerator getClientIdGenerator();
+    
+    String getUrl();
+    
+    long getAsyncSendTimeoutMillis();
+   
+    int getMaxBinaryMessageBufferSizeByte();
+    
+    long getMaxSessionIdleTimeoutMillis();
+
+    int getMaxTextMessageBufferSizeByte();
+
 
 }

@@ -1,9 +1,10 @@
 package org.kasource.web.websocket.client.id;
 
 
+import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 
 public abstract class AbstractClientIdGenerator implements ClientIdGenerator {
@@ -27,17 +28,19 @@ public abstract class AbstractClientIdGenerator implements ClientIdGenerator {
         this.useHeaderValue = useHeaderValue;
     }
     
-    protected String getIdValue(HttpServletRequest request) {
+    protected String getIdValue(HandshakeRequest request) {
         if (useHeaderValue) {
-            return request.getHeader(idKey);
-        } else {
-            String value = request.getParameter(idKey);
-            if (value != null) {
-                return value;
-            } else {
-                return null;
+            List<String> idHeaders = request.getHeaders().get(idKey);
+            if (idHeaders != null && !idHeaders.isEmpty()) {
+                return idHeaders.get(0);
             }
+        } else {
+            List<String> value = request.getParameterMap().get(idKey);
+            if (value != null && !value.isEmpty()) {
+                return value.get(0);
+            } 
         }
+        return null;
     }
     
     protected String getUuid() {

@@ -12,14 +12,19 @@ import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
-public class ClientConfigImpl implements ClientConfig {
-    private String servletName;
+public class EndpointConfigImpl implements EndpointConfig {
+    private String name;
     private boolean dynamicAddressing;
     private ClientIdGenerator clientIdGenerator = new DefaultClientIdGenerator();
     private ClientChannelRepository managerRepository;
     private ProtocolRepository protocolRepository = new ProtocolRepositoryImpl();
     private Set<String> originWhitelist = new HashSet<String>();
     private AuthenticationProvider authenticationProvider;
+    private String url;
+    private long asyncSendTimeoutMillis = -1;
+    private int maxBinaryMessageBufferSizeByte = -1;
+    private long maxSessionIdleTimeoutMillis = -1;
+    private int maxTextMessageBufferSizeByte = 1;
     
     @Override
     public boolean isDynamicAddressing() {
@@ -28,7 +33,7 @@ public class ClientConfigImpl implements ClientConfig {
 
     @Override
     public WebSocketClientBuilderFactory getClientBuilder(ClientChannel manager) {
-        return new WebSocketClientBuilderFactory(manager, clientIdGenerator);
+        return new WebSocketClientBuilderFactory(this, manager, clientIdGenerator);
     }
 
     @Override
@@ -53,16 +58,16 @@ public class ClientConfigImpl implements ClientConfig {
      * @return the servletName
      */
     @Override
-    public String getServletName() {
-        return servletName;
+    public String getName() {
+        return name;
     }
 
     /**
      * @param servletName
      *            the servletName to set
      */
-    public void setServletName(String servletName) {
-        this.servletName = servletName;
+    public void setName(String servletName) {
+        this.name = servletName;
     }
 
     /**
@@ -147,6 +152,78 @@ public class ClientConfigImpl implements ClientConfig {
     @Override
     public ClientIdGenerator getClientIdGenerator() {
         return clientIdGenerator;
+    }
+
+    @Override
+    public String getUrl() {       
+        return url;
+    }
+
+    /**
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    /**
+     * @param asyncSendTimeoutMillis the asyncSendTimeoutMillis to set
+     */
+    public void setAsyncSendTimeoutMillis(long asyncSendTimeoutMillis) {
+        this.asyncSendTimeoutMillis = asyncSendTimeoutMillis;
+    }
+
+    /**
+     * @param maxBinaryMessageBufferSizeByte the maxBinaryMessageBufferSizeByte to set
+     */
+    public void setMaxBinaryMessageBufferSizeByte(int maxBinaryMessageBufferSizeByte) {
+        this.maxBinaryMessageBufferSizeByte = maxBinaryMessageBufferSizeByte;
+    }
+
+    /**
+     * @param maxSessionIdleTimeoutMillis the maxSessionIdleTimeoutMillis to set
+     */
+    public void setMaxSessionIdleTimeoutMillis(long maxSessionIdleTimeoutMillis) {
+        this.maxSessionIdleTimeoutMillis = maxSessionIdleTimeoutMillis;
+    }
+
+    /**
+     * @param maxTextMessageBufferSizeByte the maxTextMessageBufferSizeByte to set
+     */
+    public void setMaxTextMessageBufferSizeByte(int maxTextMessageBufferSizeByte) {
+        this.maxTextMessageBufferSizeByte = maxTextMessageBufferSizeByte;
+    }
+
+    /**
+     * @return the asyncSendTimeoutMillis
+     */
+    @Override
+    public long getAsyncSendTimeoutMillis() {
+        return asyncSendTimeoutMillis;
+    }
+
+    /**
+     * @return the maxBinaryMessageBufferSizeByte
+     */
+    @Override
+    public int getMaxBinaryMessageBufferSizeByte() {
+        return maxBinaryMessageBufferSizeByte;
+    }
+
+    /**
+     * @return the maxSessionIdleTimeoutMillis
+     */
+    @Override
+    public long getMaxSessionIdleTimeoutMillis() {
+        return maxSessionIdleTimeoutMillis;
+    }
+
+    /**
+     * @return the maxTextMessageBufferSizeByte
+     */
+    @Override
+    public int getMaxTextMessageBufferSizeByte() {
+        return maxTextMessageBufferSizeByte;
     }
 
 

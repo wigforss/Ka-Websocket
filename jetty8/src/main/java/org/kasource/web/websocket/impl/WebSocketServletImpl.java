@@ -2,16 +2,18 @@ package org.kasource.web.websocket.impl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
-import org.kasource.web.websocket.config.ClientConfig;
+import org.kasource.web.websocket.config.EndpointConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.security.AuthenticationException;
+import org.kasource.web.websocket.servlet.HttpServletHandshakeRequest;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +27,18 @@ public class WebSocketServletImpl extends WebSocketServlet {
     
     private ServletConfigUtil configUtil; 
  
-    private ClientConfig clientConfig;
+    private EndpointConfig endpointConfig;
     
     
     @Override
     public void init() throws ServletException {
         super.init();
         configUtil = new ServletConfigUtil(getServletConfig());
-        clientConfig = configUtil.getConfiguration();
+        endpointConfig = configUtil.getConfiguration();
            
-        configUtil.validateMapping(clientConfig.isDynamicAddressing());
-        if (!clientConfig.isDynamicAddressing()) {
-            clientConfig.getClientChannelFor(configUtil.getMaping());
+        configUtil.validateMapping(endpointConfig.isDynamicAddressing());
+        if (!endpointConfig.isDynamicAddressing()) {
+            endpointConfig.getClientChannelFor(configUtil.getMaping());
         }
         LOG.info("Initialization completed.");
     }
@@ -45,7 +47,8 @@ public class WebSocketServletImpl extends WebSocketServlet {
     
     @Override
     public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
-        ProtocolRepository protocolRepository = clientConfig.getProtocolRepository();
+        HandshakeRequest handshakeRequest = new HttpServletHandshakeRequest(request);
+        ProtocolRepository protocolRepository = endpointConfig.getProtocolRepository();
         
         // Only accept protocols configured
         if (protocol != null && !protocolRepository.hasProtocol(protocol)) {
@@ -53,15 +56,15 @@ public class WebSocketServletImpl extends WebSocketServlet {
         }
         
         String url = configUtil.getMaping();
-        if (clientConfig.isDynamicAddressing()) {
+        if (endpointConfig.isDynamicAddressing()) {
             url = request.getRequestURI().substring(request.getContextPath().length());
         }
         
-        ClientChannel clientChannel =  clientConfig.getClientChannelFor(url);
+        ClientChannel clientChannel =  endpointConfig.getClientChannelFor(url);
         
         String username = null;
         try {
-             username = clientChannel.authenticate(clientConfig.getAuthenticationProvider(), request);
+             username = clientChannel.authenticate(endpointConfig.getAuthenticationProvider(), handshakeRequest);
         } catch (AuthenticationException e) {
             LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
             throw e;
@@ -69,7 +72,7 @@ public class WebSocketServletImpl extends WebSocketServlet {
         
        
         
-        WebSocketClientConfig clientConfiguration =  clientConfig.getClientBuilder(clientChannel).get(request)
+        WebSocketClientConfig clientConfiguration =  endpointConfig.getClientBuilder(clientChannel).get(handshakeRequest)
                                                     .url(url)
                                                     .username(username)
                                                     .protocol(protocol, protocolRepository)
@@ -96,7 +99,7 @@ public class WebSocketServletImpl extends WebSocketServlet {
      */
     @Override
     public boolean checkOrigin(HttpServletRequest request, String origin) {
-        boolean validOrigin = clientConfig.isValidOrigin(origin);
+        boolean validOrigin = endpointConfig.isValidOrigin(origin);
         if (!validOrigin) {
             LOG.warn("Invalid origin: " + origin +" in connection attempt");
         }

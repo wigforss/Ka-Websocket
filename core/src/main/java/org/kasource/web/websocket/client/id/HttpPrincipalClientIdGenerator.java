@@ -2,14 +2,14 @@ package org.kasource.web.websocket.client.id;
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.client.ClientChannel;
 
 public class HttpPrincipalClientIdGenerator  extends AbstractClientIdGenerator implements ClientIdGenerator {
 
     @Override
-    public String getId(HttpServletRequest request, ClientChannel manager) {
+    public String getId(HandshakeRequest request, ClientChannel manager) {
         Principal principal = request.getUserPrincipal();
         String clientId = null;
         if (principal != null) {

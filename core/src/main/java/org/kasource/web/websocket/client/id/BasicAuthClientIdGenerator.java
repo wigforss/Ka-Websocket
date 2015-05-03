@@ -1,8 +1,9 @@
 package org.kasource.web.websocket.client.id;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.apache.commons.codec.binary.Base64;
 import org.kasource.web.websocket.channel.client.ClientChannel;
@@ -12,7 +13,7 @@ import org.kasource.web.websocket.channel.client.ClientChannel;
 public class BasicAuthClientIdGenerator extends AbstractClientIdGenerator implements ClientIdGenerator {
     private static final String BASIC_AUTH_PREFIX = "Basic ";
     @Override
-    public String getId(HttpServletRequest request, ClientChannel manager) {
+    public String getId(HandshakeRequest request, ClientChannel manager) {
         String clientId = getUsername(request);
         if (clientId == null) {
             return getUuid();
@@ -23,10 +24,10 @@ public class BasicAuthClientIdGenerator extends AbstractClientIdGenerator implem
         return clientId;
     }
     
-    private String getUsername(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith(BASIC_AUTH_PREFIX)) {
-            String credentials = new String(Base64.decodeBase64(authHeader.substring(BASIC_AUTH_PREFIX.length())), Charset.forName("UTF-8"));
+    private String getUsername(HandshakeRequest request) {
+        List<String> authHeaders = request.getHeaders().get("Authorization");
+        if (authHeaders != null && !authHeaders.isEmpty() && authHeaders.get(0).startsWith(BASIC_AUTH_PREFIX)) {
+            String credentials = new String(Base64.decodeBase64(authHeaders.get(0).substring(BASIC_AUTH_PREFIX.length())), Charset.forName("UTF-8"));
             int index = credentials.indexOf(':');
             return credentials.substring(0, index);
             

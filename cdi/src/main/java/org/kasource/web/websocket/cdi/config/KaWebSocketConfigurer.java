@@ -34,7 +34,7 @@ import org.kasource.web.websocket.config.OriginWhiteListConfig;
 import org.kasource.web.websocket.config.ProtocolHandlerConfig;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.config.EndpointConfigImpl;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
@@ -71,10 +71,10 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
     }
     
     public void registerServletConfigs() {
-        Set<ClientConfigImpl> servletConfigs = getBeansOfType(ClientConfigImpl.class);
-        for(ClientConfigImpl servletConfig : servletConfigs) {
-            if(servletConfig.getServletName() != null) {
-                config.registerClientConfig(servletConfig);
+        Set<EndpointConfigImpl> servletConfigs = getBeansOfType(EndpointConfigImpl.class);
+        for(EndpointConfigImpl servletConfig : servletConfigs) {
+            if(servletConfig.getName() != null) {
+                config.registerEndpointConfig(servletConfig);
             }
         }
     }
@@ -152,9 +152,9 @@ public class KaWebSocketConfigurer  implements ServletContextAttributeListener, 
     }
     
     @Produces @Dependent
-    public ClientConfigImpl getWebSocketServletConfig(ClientChannelRepository managerRepository,
+    public EndpointConfigImpl getWebSocketServletConfig(ClientChannelRepository managerRepository,
                 ProtocolRepository protocolHandlerRepository) {
-        ClientConfigImpl servletConfig = new ClientConfigImpl();
+        EndpointConfigImpl servletConfig = new EndpointConfigImpl();
         servletConfig.setManagerRepository(managerRepository);
         servletConfig.setProtocolRepository(protocolHandlerRepository);
       

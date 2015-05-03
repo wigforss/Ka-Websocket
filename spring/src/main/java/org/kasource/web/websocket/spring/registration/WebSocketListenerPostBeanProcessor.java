@@ -5,11 +5,11 @@ import java.util.Queue;
 
 import javax.servlet.ServletContext;
 
-import org.kasource.web.websocket.config.WebSocketConfig;
 import org.kasource.web.websocket.config.annotation.WebSocket;
+import org.kasource.web.websocket.register.EndpointRegistrator;
+import org.kasource.web.websocket.register.EndpointRegistratorImpl;
 import org.kasource.web.websocket.register.WebSocketListenerRegister;
 import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
-import org.kasource.web.websocket.servlet.ServletRegistrator;
 import org.kasource.web.websocket.spring.config.KaWebSocketBean;
 import org.kasource.web.websocket.spring.config.loader.SpringWebSocketServletConfigBuilder;
 import org.springframework.beans.BeansException;
@@ -31,14 +31,14 @@ public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, Se
        private ServletContext servletContext;
        private WebSocketListenerRegister listenerRegister;
        private Queue<Object> beans = new LinkedList<Object>(); 
-       private ServletRegistrator servletRegistrator;
+       private EndpointRegistrator endpointRegistrator;
        private SpringWebSocketServletConfigBuilder configBuilder;
      
        
         @Override
         public Object postProcessAfterInitialization(Object object, String beanName) throws BeansException {
             if (object.getClass().isAnnotationPresent(WebSocket.class)) {
-                servletRegistrator.addServlet(object.getClass());
+                endpointRegistrator.register(object.getClass());
             }
             if (listenerRegister == null) {
                 beans.add(object);
@@ -65,7 +65,7 @@ public class WebSocketListenerPostBeanProcessor implements BeanPostProcessor, Se
                     listenerRegister.registerListener(beans.poll());
                 }
             }
-            servletRegistrator = new ServletRegistrator(servletContext, configBuilder);       
+            endpointRegistrator = new EndpointRegistratorImpl(servletContext, configBuilder);       
         }
 
         @Override

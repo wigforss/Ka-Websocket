@@ -11,13 +11,12 @@ import java.nio.charset.Charset;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.io.IOUtils;
-import org.kasource.web.websocket.client.UpgradeRequestData;
+import org.kasource.web.websocket.client.HandshakeRequestData;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 
 public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketClient {
@@ -111,7 +110,7 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
      * @return the connectionParameters
      */
     @Override
-    public UpgradeRequestData getUpgradeRequest() {
+    public HandshakeRequestData getUpgradeRequest() {
         return clientConfig.getRequest();
     }
 
@@ -125,15 +124,6 @@ public class Tomcat7WebSocketClient extends StreamInbound implements WebSocketCl
         return clientConfig.getClientId();
     }
 
-    @Override
-    public String getUrl() {
-        return clientConfig.getUrl();
-    }
-    
-    @Override
-    public String getSubProtocol() {
-        return clientConfig.getSubProtocol();
-    }
 
     /**
      * @return the textProtocolHandler

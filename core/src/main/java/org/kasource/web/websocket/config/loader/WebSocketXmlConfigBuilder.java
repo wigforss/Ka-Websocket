@@ -15,7 +15,7 @@ import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.config.BinaryProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.WebSocketConfigImpl;
-import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.config.EndpointConfigImpl;
 import org.kasource.web.websocket.config.xml.AuthenticationProviderXmlConfig;
 import org.kasource.web.websocket.config.xml.OriginWhitelistXmlConfig;
 import org.kasource.web.websocket.config.xml.ProtocolHandlerXmlConfig;
@@ -29,7 +29,7 @@ import org.kasource.web.websocket.register.WebSocketListenerRegisterImpl;
 import org.kasource.web.websocket.security.AbstractAuthenticationProvider;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
-public class WebSocketXmlConfigBuilder extends AbstractClientConfigBuilder {
+public class WebSocketXmlConfigBuilder extends AbstractEndpointConfigBuilder {
     public WebSocketConfigImpl configure(WebsocketConfigXmlConfig xmlConfig, ServletContext servletContext) {
         WebSocketConfigImpl config = new WebSocketConfigImpl();
         config.setServerChannelFactory((ServerChannelFactory) servletContext.getAttribute(ServerChannelFactory.class.getName()));
@@ -46,15 +46,15 @@ public class WebSocketXmlConfigBuilder extends AbstractClientConfigBuilder {
         config.setProtocolRepository(protocolRepository);
         
         for (WebsocketXmlConfig websocketXmlConfig: xmlConfig.getWebsocket()) {
-            config.registerClientConfig(loadServletConfig(websocketXmlConfig));
+            config.registerEndpointConfig(loadServletConfig(websocketXmlConfig));
         }
         
         return config;
     }
     
-    private ClientConfigImpl loadServletConfig(WebsocketXmlConfig websocketXmlConfig) {
-        ClientConfigImpl config = new ClientConfigImpl();
-        config.setServletName(websocketXmlConfig.getServletName());
+    private EndpointConfigImpl loadServletConfig(WebsocketXmlConfig websocketXmlConfig) {
+        EndpointConfigImpl config = new EndpointConfigImpl();
+        config.setName(websocketXmlConfig.getServletName());
         config.setClientIdGenerator(getClientIdGeneratorFromXml(websocketXmlConfig.getClientIdGenerator()));
         config.setAuthenticationProvider(getAuthenticationProviderFromXml(websocketXmlConfig.getAuthenticationProvider()));
         config.setDynamicAddressing(websocketXmlConfig.isDynamicAddressing());

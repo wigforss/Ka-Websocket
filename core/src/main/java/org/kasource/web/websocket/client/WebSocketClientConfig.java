@@ -2,6 +2,8 @@ package org.kasource.web.websocket.client;
 
 
 import org.kasource.web.websocket.channel.client.ClientChannel;
+import org.kasource.web.websocket.config.EndpointConfig;
+import org.kasource.web.websocket.config.annotation.WebSocket;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
 import org.kasource.web.websocket.protocol.ProtocolRepository;
 
@@ -10,10 +12,14 @@ public class WebSocketClientConfig {
     private final String url;
     private final String username; 
     private final String clientId; 
-    private final UpgradeRequestData request; 
+    private final HandshakeRequestData request; 
     private final String subProtocol;
     private final ProtocolHandler<String> textProtocolHandler;
     private final ProtocolHandler<byte[]> binaryProtocolHandler;
+    private final long asyncSendTimeoutMillis;
+    private final int maxBinaryMessageBufferSizeByte;
+    private final long maxSessionIdleTimeoutMillis;
+    private final int maxTextMessageBufferSizeByte;
     
     private WebSocketClientConfig(Builder builder) {
         this.clientChannel = builder.clientChannel;
@@ -24,6 +30,10 @@ public class WebSocketClientConfig {
         this.subProtocol = builder.subProtocol;
         this.binaryProtocolHandler = builder.binaryProtocolHandler;
         this.textProtocolHandler = builder.textProtocolHandler;
+        this.asyncSendTimeoutMillis = builder.asyncSendTimeoutMillis;
+        this.maxBinaryMessageBufferSizeByte = builder.maxBinaryMessageBufferSizeByte;
+        this.maxSessionIdleTimeoutMillis = builder.maxSessionIdleTimeoutMillis;
+        this.maxTextMessageBufferSizeByte = builder.maxTextMessageBufferSizeByte;
     }
     
     public static class Builder {
@@ -31,15 +41,23 @@ public class WebSocketClientConfig {
         private String url;
         private String username; 
         private String clientId; 
-        private UpgradeRequestData request; 
+        private HandshakeRequestData request; 
         private String subProtocol;
         private ProtocolHandler<String> textProtocolHandler;
         private ProtocolHandler<byte[]> binaryProtocolHandler;
+        private long asyncSendTimeoutMillis = -1;
+        private int maxBinaryMessageBufferSizeByte = -1;
+        private long maxSessionIdleTimeoutMillis = -1;
+        private int maxTextMessageBufferSizeByte = 1;
         
-        Builder(ClientChannel clientChannel, String clientId, UpgradeRequestData request) {
+        Builder(EndpointConfig endpointConfig, ClientChannel clientChannel, String clientId, HandshakeRequestData request) {
             this.clientChannel = clientChannel;
             this.clientId = clientId;
             this.request = request;
+            this.asyncSendTimeoutMillis = endpointConfig.getAsyncSendTimeoutMillis();
+            this.maxBinaryMessageBufferSizeByte = endpointConfig.getMaxBinaryMessageBufferSizeByte();
+            this.maxSessionIdleTimeoutMillis = endpointConfig.getMaxSessionIdleTimeoutMillis();
+            this.maxTextMessageBufferSizeByte = endpointConfig.getMaxTextMessageBufferSizeByte();
         }
         
         public WebSocketClientConfig build() {
@@ -48,6 +66,14 @@ public class WebSocketClientConfig {
             }
             
             return new WebSocketClientConfig(this);
+        }
+        
+        public Builder forWebSocket(WebSocket webSocket) {
+            asyncSendTimeoutMillis = webSocket.asyncSendTimeoutMillis();
+            maxBinaryMessageBufferSizeByte = webSocket.maxBinaryMessageBufferSizeByte();
+            maxSessionIdleTimeoutMillis = webSocket.maxSessionIdleTimeoutMillis();
+            maxTextMessageBufferSizeByte = webSocket.maxTextMessageBufferSizeByte();
+            return this;
         }
         
         public Builder url(String urlToUse) {
@@ -123,7 +149,7 @@ public class WebSocketClientConfig {
     /**
      * @return the connectionParameters
      */
-    public UpgradeRequestData getRequest() {
+    public HandshakeRequestData getRequest() {
         return request;
     }
 
@@ -146,5 +172,40 @@ public class WebSocketClientConfig {
      */
     public ProtocolHandler<byte[]> getBinaryProtocolHandler() {
         return binaryProtocolHandler;
+    }
+
+    /**
+     * @return the clientChannel
+     */
+    public ClientChannel getClientChannel() {
+        return clientChannel;
+    }
+
+    /**
+     * @return the asyncSendTimeoutMillis
+     */
+    public long getAsyncSendTimeoutMillis() {
+        return asyncSendTimeoutMillis;
+    }
+
+    /**
+     * @return the maxBinaryMessageBufferSizeByte
+     */
+    public int getMaxBinaryMessageBufferSizeByte() {
+        return maxBinaryMessageBufferSizeByte;
+    }
+
+    /**
+     * @return the maxSessionIdleTimeoutMillis
+     */
+    public long getMaxSessionIdleTimeoutMillis() {
+        return maxSessionIdleTimeoutMillis;
+    }
+
+    /**
+     * @return the maxTextMessageBufferSizeByte
+     */
+    public int getMaxTextMessageBufferSizeByte() {
+        return maxTextMessageBufferSizeByte;
     }
 }

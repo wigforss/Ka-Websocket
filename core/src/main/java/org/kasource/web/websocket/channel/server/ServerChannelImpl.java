@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.commons.reflection.parameter.ParameterBinder;
 import org.kasource.web.websocket.channel.ClientChannelListener;
@@ -34,8 +35,6 @@ import org.kasource.web.websocket.protocol.XmlProtocolHandler;
 public class ServerChannelImpl implements ServerChannel, ClientChannelListener {
     private String url;
     private MessageSender sender;
-    private TextProtocolHandler json = new JsonProtocolHandler();
-    private TextProtocolHandler jaxb = new XmlProtocolHandler();
     private Set<WebSocketEventListener> eventListeners = new HashSet<WebSocketEventListener>(); 
         
     /**
@@ -216,7 +215,7 @@ public class ServerChannelImpl implements ServerChannel, ClientChannelListener {
     }
 
     @Override
-    public void onAuthentication(String username, HttpServletRequest request, Throwable error) {
+    public void onAuthentication(String username, HandshakeRequest request, Throwable error) {
        if(error == null) {
            fireEvent(new AuthenticationSuccessEvent(this, username, request));
        } else {

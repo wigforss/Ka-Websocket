@@ -19,20 +19,15 @@ public interface WebSocketClient {
      */
     public String getUsername();
 
-
     /**
      * @return the Upgrdade (connection) request
      */
-    public UpgradeRequestData getUpgradeRequest();
+    public HandshakeRequestData getUpgradeRequest();
     
     public ProtocolHandler<String> getTextProtocolHandler();
     
     public ProtocolHandler<byte[]> getBinaryProtocolHandler();
-    
-    public String getUrl();
-    
-    public String getSubProtocol();
-    
+       
     /**
      * @return the id
      */

@@ -10,7 +10,7 @@ import org.kasource.web.websocket.client.id.ClientIdGenerator;
 import org.kasource.web.websocket.config.BinaryProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.TextProtocolHandlerConfigImpl;
 import org.kasource.web.websocket.config.WebSocketConfigException;
-import org.kasource.web.websocket.config.ClientConfigImpl;
+import org.kasource.web.websocket.config.EndpointConfigImpl;
 import org.kasource.web.websocket.config.annotation.AllowedOrigin;
 import org.kasource.web.websocket.config.annotation.Authenticate;
 import org.kasource.web.websocket.config.annotation.BinaryProtocol;
@@ -26,9 +26,9 @@ import org.kasource.web.websocket.protocol.ProtocolRepositoryImpl;
 import org.kasource.web.websocket.protocol.TextProtocolHandler;
 import org.kasource.web.websocket.security.AuthenticationProvider;
 
-public class AnnotatedClientConfigBuilder extends AbstractClientConfigBuilder implements ClientAnnotationConfigurationBuilder {
-    public ClientConfigImpl configure(Class<?> webocketPojo) {
-        ClientConfigImpl config = new ClientConfigImpl();
+public class AnnotatedEndpointConfigBuilder extends AbstractEndpointConfigBuilder implements EndpointAnnotationConfigurationBuilder {
+    public EndpointConfigImpl configure(Class<?> webocketPojo) {
+        EndpointConfigImpl config = new EndpointConfigImpl();
 
         WebSocket websocket = webocketPojo.getAnnotation(WebSocket.class);
         if (websocket == null) {
@@ -36,7 +36,12 @@ public class AnnotatedClientConfigBuilder extends AbstractClientConfigBuilder im
         }
 
         config.setDynamicAddressing(websocket.dynamicAddressing());
-
+        config.setUrl(websocket.value());
+        config.setAsyncSendTimeoutMillis(websocket.asyncSendTimeoutMillis());
+        config.setMaxBinaryMessageBufferSizeByte(websocket.maxBinaryMessageBufferSizeByte());
+        config.setMaxSessionIdleTimeoutMillis(websocket.maxSessionIdleTimeoutMillis());
+        config.setMaxTextMessageBufferSizeByte(websocket.maxTextMessageBufferSizeByte());
+        config.setName(webocketPojo.getSimpleName());
         setAllowedOrigin(webocketPojo, config);
         config.setAuthenticationProvider(getAuthenticationProviderFromAnnotation(webocketPojo));
         setClientIdGenerator(webocketPojo, config);
@@ -97,7 +102,7 @@ public class AnnotatedClientConfigBuilder extends AbstractClientConfigBuilder im
         return super.getBinaryProtocols(defaultBinaryProtocolClass, binaryProtocolMap);
     }
 
-    private void setAllowedOrigin(Class<?> webocketPojo, ClientConfigImpl config) {
+    private void setAllowedOrigin(Class<?> webocketPojo, EndpointConfigImpl config) {
         AllowedOrigin allowedOrigin = webocketPojo.getAnnotation(AllowedOrigin.class);
         if (allowedOrigin != null) {
             Set<String> originWhitelist = new HashSet<String>();
@@ -106,7 +111,7 @@ public class AnnotatedClientConfigBuilder extends AbstractClientConfigBuilder im
         }
     }
 
-    private void setClientIdGenerator(Class<?> webocketPojo, ClientConfigImpl config) {
+    private void setClientIdGenerator(Class<?> webocketPojo, EndpointConfigImpl config) {
       
         GenerateId generateId = webocketPojo.getAnnotation(GenerateId.class);
         Class<? extends ClientIdGenerator> idGeneratorClass = null;

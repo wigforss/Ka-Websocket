@@ -7,7 +7,6 @@ import javax.servlet.ServletContextAttributeListener;
 import org.kasource.web.websocket.channel.server.ServerChannelFactory;
 import org.kasource.web.websocket.config.WebSocketConfig;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 
 

@@ -9,11 +9,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.HandshakeRequest;
 
 import org.kasource.web.websocket.channel.client.ClientChannel;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
-import org.kasource.web.websocket.config.ClientConfig;
+import org.kasource.web.websocket.config.EndpointConfig;
 import org.kasource.web.websocket.security.AuthenticationException;
+import org.kasource.web.websocket.servlet.HttpServletHandshakeRequest;
 import org.kasource.web.websocket.util.ServletConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,19 +32,19 @@ public class WebsocketServletImpl extends HttpServlet {
 
     private ServletConfigUtil configUtil; 
    
-    private ClientConfig clientConfig;
+    private EndpointConfig endpointConfig;
 
 
     @Override
     public void init() throws ServletException {
         super.init();
         configUtil = new ServletConfigUtil(getServletConfig());
-        clientConfig = configUtil.getConfiguration();
+        endpointConfig = configUtil.getConfiguration();
        
        
-        configUtil.validateMapping(clientConfig.isDynamicAddressing());
-        if(!clientConfig.isDynamicAddressing()) {
-            clientConfig.getClientChannelFor(configUtil.getMaping());
+        configUtil.validateMapping(endpointConfig.isDynamicAddressing());
+        if(!endpointConfig.isDynamicAddressing()) {
+            endpointConfig.getClientChannelFor(configUtil.getMaping());
         }
         LOG.info("Initialization completed.");
     }
@@ -50,7 +52,7 @@ public class WebsocketServletImpl extends HttpServlet {
    
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {    
         String origin = req.getHeader("Sec-WebSocket-Origin");
         if (!validOrigin(origin)) {
             res.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -75,7 +77,7 @@ public class WebsocketServletImpl extends HttpServlet {
 
     private String selectSubProtocol(String[] subProtocols) {
         for (String clientProtocol : subProtocols) {
-            if(clientConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
+            if(endpointConfig.getProtocolRepository().hasProtocol(clientProtocol)) {
                 return clientProtocol;
             }
         }
@@ -85,7 +87,7 @@ public class WebsocketServletImpl extends HttpServlet {
 
 
     private boolean validOrigin(String origin) {
-        boolean validOrigin = clientConfig.isValidOrigin(origin);;
+        boolean validOrigin = endpointConfig.isValidOrigin(origin);;
         LOG.warn("Invalid origin: " + origin +" in connection attempt");
         return validOrigin;
     }
@@ -93,24 +95,26 @@ public class WebsocketServletImpl extends HttpServlet {
 
 
     private WebSocketListener createClient(HttpServletRequest request, String protocol) {
+        HandshakeRequest handshakeRequest = new HttpServletHandshakeRequest(request);
+        
         String url = configUtil.getMaping();
         
-        if (clientConfig.isDynamicAddressing()) {
+        if (endpointConfig.isDynamicAddressing()) {
             url = request.getRequestURI().substring(request.getContextPath().length());
         }
-        ClientChannel clientChannel = clientConfig.getClientChannelFor(url);
+        ClientChannel clientChannel = endpointConfig.getClientChannelFor(url);
         String username = null;
         try {
-             username = clientChannel.authenticate(clientConfig.getAuthenticationProvider(), request);
+             username = clientChannel.authenticate(endpointConfig.getAuthenticationProvider(), handshakeRequest);
         } catch (AuthenticationException e) {
             LOG.error("Unauthorized access for " + request.getRemoteHost(), e);
             throw e;
         }
         
-        WebSocketClientConfig clientConfiguration = clientConfig.getClientBuilder(clientChannel).get(request)
+        WebSocketClientConfig clientConfiguration = endpointConfig.getClientBuilder(clientChannel).get(handshakeRequest)
                                                 .url(url)
                                                 .username(username)
-                                                .protocol(protocol, clientConfig.getProtocolRepository())
+                                                .protocol(protocol, endpointConfig.getProtocolRepository())
                                                 .build();
         
         ResinWebSocketClient client = new ResinWebSocketClient(clientConfiguration);

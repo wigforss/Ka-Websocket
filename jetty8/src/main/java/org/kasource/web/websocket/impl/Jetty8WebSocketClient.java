@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.websocket.WebSocket;
-import org.kasource.web.websocket.client.UpgradeRequestData;
+import org.kasource.web.websocket.client.HandshakeRequestData;
 import org.kasource.web.websocket.client.WebSocketClient;
 import org.kasource.web.websocket.client.WebSocketClientConfig;
 import org.kasource.web.websocket.protocol.ProtocolHandler;
@@ -98,10 +98,9 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
      * @return the connectionParameters
      */
     @Override
-    public UpgradeRequestData getUpgradeRequest() {
+    public HandshakeRequestData getUpgradeRequest() {
         return clientConfig.getRequest();
     }
-
 
 
     /**
@@ -112,15 +111,6 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
         return clientConfig.getClientId();
     }
     
-    @Override
-    public String getUrl() {
-        return clientConfig.getUrl();
-    }
-    
-    @Override
-    public String getSubProtocol() {
-        return clientConfig.getSubProtocol();
-    }
 
     /**
      * @return the textProtocolHandler
@@ -129,11 +119,6 @@ public class Jetty8WebSocketClient implements WebSocket, WebSocket.OnBinaryMessa
     public ProtocolHandler<String> getTextProtocolHandler() {
         return textProtocolHandler;
     }
-
-
-
-    
-
 
     /**
      * @return the binaryProtocolHandler

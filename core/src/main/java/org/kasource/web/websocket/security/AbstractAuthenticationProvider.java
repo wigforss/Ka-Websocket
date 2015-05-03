@@ -1,6 +1,9 @@
 package org.kasource.web.websocket.security;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.HandshakeRequest;
 
 public abstract class AbstractAuthenticationProvider implements AuthenticationProvider {
     private static final String DEFAULT_USERNAME_KEY = "username";
@@ -10,28 +13,47 @@ public abstract class AbstractAuthenticationProvider implements AuthenticationPr
     private String usernameKey = DEFAULT_USERNAME_KEY;
     private String passwordKey = DEFAULT_PASSWORD_KEY;
     
-    protected String getUsername(HttpServletRequest request) {
+    protected String getUsername(HandshakeRequest request) {
         String username = null;
         if (headerBased) {
-            username = request.getHeader(usernameKey);
+            username = getHeader(request, usernameKey);
         } else {
-            username = request.getParameter(usernameKey);
+            username = getParameter(request, usernameKey);
         }
       
         return username;
     }
     
-    protected String getPassword(HttpServletRequest request) {
+    protected String getPassword(HandshakeRequest request) {
         String password = null;
         if (headerBased) {
-            password = request.getHeader(passwordKey);
+            password = getHeader(request, passwordKey);
         } else {
-            password = request.getParameter(passwordKey);
+            password = getParameter(request, passwordKey);
         }
        
         return password;
     }
 
+    protected String getHeader(HandshakeRequest request, String headerName) {    
+        List<String> headerValues = request.getHeaders().get(headerName);
+        if (headerValues != null && !headerValues.isEmpty()) {
+            return headerValues.get(0);
+        }
+        return null;       
+    }
+    
+    protected String getParameter(HandshakeRequest request, String parameterName) {
+        List<String> parametersValues = request.getParameterMap().get(parameterName);
+        if (parametersValues != null && !parametersValues.isEmpty()) {
+            return parametersValues.get(0);
+        } 
+        return null;
+    }
+    
+   
+    
+    
     /**
      * @return the headerBased
      */
